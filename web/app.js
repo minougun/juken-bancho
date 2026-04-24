@@ -1,5 +1,5 @@
 const TOTAL_TURNS = 144;
-const PROFILE_SELECT_ANIMATION_MS = 1300;
+const PROFILE_SELECT_ANIMATION_MS = 1700;
 
 const statLabels = {
   academics: "学力",

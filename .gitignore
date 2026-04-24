@@ -10,6 +10,9 @@
 # OS/editor
 .DS_Store
 Thumbs.db
+node_modules/
+test-results/
+tmp/
 *.csproj
 *.sln
 *.user

@@ -1,0 +1,15 @@
+{
+  "name": "juken-bancho",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node --check web/app.js && node --check web/data/game-data.js && node --check web/server.mjs && node scripts/check-data-integrity.mjs",
+    "simulate:balance": "node scripts/simulate-balance.mjs",
+    "test:responsive": "node scripts/check-responsive-matrix.mjs",
+    "verify": "npm run check && npm run simulate:balance -- --runs 400 --out test-results/balance-simulation-verify.csv && npm run test:responsive"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.59.1"
+  }
+}

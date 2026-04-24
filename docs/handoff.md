@@ -36,6 +36,10 @@ Unity プロジェクトの骨格、実行時自動生成 UI、カード選択�
 - Unity Editor で開き、UI の実機解像度確認を行う。
 - Web 版でルール調整を先に行い、固まった内容を Unity 側へ反映する。
 - Web版の結末帳は `localStorage` にエンディングIDだけを保存する。秘密情報や個人情報は保存しない。
+- Web版のゲームデータは `/mnt/c/Users/minou/juken-bancho/web/data/game-data.js` に分離し、`web/app.js` と検証スクリプトから共通利用する。
+- データ整合性は `npm run check` で確認する。カード/イベント/志望校/主人公のID重複、効果値、ステータスキーを検証する。
+- バランス検証は `npm run simulate:balance -- --runs 1000 --out docs/balance-simulation-latest.csv` で実行する。説明は `/mnt/c/Users/minou/juken-bancho/docs/balance-simulation.md`。
+- レスポンシブ検証は `npm run test:responsive` で実行する。390x844、360x800、844x390、1280x800で主人公選択から週次選択まで確認し、スクリーンショットを `/mnt/c/Users/minou/juken-bancho/test-results/responsive-matrix/` に出力する。
 - Web版はプロローグ後に志望校を選ぶ。志望校ごとに偏差値、合格学力、人望/メンツ条件、月末と終盤の受験圧が変わる。
 - Web版は `ルックス` ステータスを持つ。ストレスが高いとルックスと人望が落ち、ルックスが低いと人望/メンツにも追加ペナルティが入る。
 - Web版の週次カードは、`自習室に乗り込む` が高学力・高負荷でメンツも立つ攻めの学習、`補習を受ける` が低負荷の信頼寄り学習という役割で差別化している。

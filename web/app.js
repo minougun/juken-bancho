@@ -253,7 +253,7 @@ const cards = [
     title: "自習室に乗り込む",
     subtitle: "静寂を制する者が受験を制す",
     flavor: "参考書を机に叩きつける。今日はシャーペンが相棒だ。",
-    effects: { academics: 2, trust: -2, face: 0, looks: -1, stamina: -4, stress: 3 },
+    effects: { academics: 3, trust: -1, face: 1, looks: 0, stamina: -4, stress: 3 },
     minStamina: 14,
     unlockTurn: 0,
     oneShot: false,

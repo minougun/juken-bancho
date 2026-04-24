@@ -97,13 +97,15 @@ async function assertBothProfileSpritesVisible(page, label) {
   }
 }
 
-async function assertCentered(page, label) {
+async function assertCentered(page, label, viewport) {
   const data = await page.locator("#characterSprite").evaluate((element) => {
     const rect = element.getBoundingClientRect();
     const style = getComputedStyle(element);
     return {
       center: rect.x + rect.width / 2,
       viewportCenter: window.innerWidth / 2,
+      width: rect.width,
+      height: rect.height,
       display: style.display,
       opacity: Number(style.opacity),
       screen: document.querySelector(".novel-stage").dataset.screen,
@@ -115,6 +117,12 @@ async function assertCentered(page, label) {
   }
   if (Math.abs(data.center - data.viewportCenter) > 26) {
     throw new Error(`${label}: character is not centered ${JSON.stringify(data)}`);
+  }
+  if (viewport.width <= 560 && viewport.height >= 700 && data.width < 230) {
+    throw new Error(`${label}: mobile portrait character is too small ${JSON.stringify(data)}`);
+  }
+  if (viewport.height <= 520 && data.width < 160) {
+    throw new Error(`${label}: mobile landscape character is too small ${JSON.stringify(data)}`);
   }
 }
 
@@ -133,22 +141,22 @@ async function runCase(browser, baseUrl, viewport, profile) {
 
   await page.getByRole("button", { name: profile.label }).click();
   await page.waitForTimeout(80);
-  await assertCentered(page, `${label} intro`);
+  await assertCentered(page, `${label} intro`, viewport);
   await assertNoHorizontalOverflow(page, `${label} intro`);
   await screenshot(page, `${label}-intro`);
 
   for (let index = 0; index < 3; index += 1) {
     await page.getByRole("button", { name: "次へ" }).click();
-    await assertCentered(page, `${label} intro-${index + 2}`);
+    await assertCentered(page, `${label} intro-${index + 2}`, viewport);
   }
 
   await page.getByRole("button", { name: "予定を決める" }).click();
-  await assertCentered(page, `${label} target`);
+  await assertCentered(page, `${label} target`, viewport);
   await assertNoHorizontalOverflow(page, `${label} target`);
   await screenshot(page, `${label}-target`);
 
   await page.getByRole("button", { name: /城北実学大学/ }).click();
-  await assertCentered(page, `${label} choices`);
+  await assertCentered(page, `${label} choices`, viewport);
   await assertNoHorizontalOverflow(page, `${label} choices`);
   await screenshot(page, `${label}-choices`);
   await page.close();

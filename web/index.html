@@ -15,9 +15,11 @@
             <h1 id="game-title">受験番長</h1>
           </div>
           <div class="system-controls" aria-label="システム操作">
+            <button id="skipIntroButton" class="hud-button" type="button" hidden>導入スキップ</button>
             <button id="endingBookButton" class="hud-button" type="button" aria-expanded="false">結末帳</button>
             <button id="eventGalleryButton" class="hud-button" type="button" aria-expanded="false" hidden>回想帳</button>
             <button id="bgmButton" class="hud-button" type="button" aria-pressed="false">BGM</button>
+            <button id="sfxButton" class="hud-button" type="button" aria-pressed="true">効果音ON</button>
             <label class="volume-control">
               <span>音量</span>
               <input id="volumeSlider" type="range" min="0" max="100" value="32" />

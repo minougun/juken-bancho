@@ -27,12 +27,15 @@ const state = {
   introIndex: 0,
   pendingResult: null,
   profile: null,
+  pendingProfile: null,
   targetSchool: null,
   endingBookOpen: false,
   eventGalleryOpen: false,
   unlockedEndingIds: loadUnlockedEndings(),
   unlockedEventCgIds: loadUnlockedEventCgs(),
   bgmEnabled: false,
+  sfxEnabled: true,
+  audioContext: null,
   profileSelectionLocked: false,
   profileSelectionToken: 0,
   characterCentered: false,
@@ -59,26 +62,32 @@ const elements = {
   eventGalleryCount: document.querySelector("#eventGalleryCount"),
   eventGalleryList: document.querySelector("#eventGalleryList"),
   eventGalleryClearButton: document.querySelector("#eventGalleryClearButton"),
+  skipIntroButton: document.querySelector("#skipIntroButton"),
   endingArtwork: document.querySelector("#endingArtwork"),
   characterSprite: document.querySelector("#characterSprite"),
   profileCompareSprite: document.querySelector("#profileCompareSprite"),
   restartTopButton: document.querySelector("#restartTopButton"),
   bgmAudio: document.querySelector("#bgmAudio"),
   bgmButton: document.querySelector("#bgmButton"),
+  sfxButton: document.querySelector("#sfxButton"),
   volumeSlider: document.querySelector("#volumeSlider"),
 };
 
+document.addEventListener("click", playButtonClickSound, true);
+elements.skipIntroButton.addEventListener("click", skipIntro);
 elements.endingBookButton.addEventListener("click", toggleEndingBook);
 elements.endingBookClearButton.addEventListener("click", clearEndingBook);
 elements.eventGalleryButton.addEventListener("click", toggleEventGallery);
 elements.eventGalleryClearButton.addEventListener("click", clearEventGallery);
 elements.restartTopButton.addEventListener("click", startNewGame);
 elements.bgmButton.addEventListener("click", toggleBgm);
+elements.sfxButton.addEventListener("click", toggleSfx);
 elements.volumeSlider.addEventListener("input", updateBgmVolume);
 
 startNewGame();
 updateBgmVolume();
 updateBgmButton();
+updateSfxButton();
 scheduleEndingAssetPreload();
 
 function startNewGame() {
@@ -92,6 +101,7 @@ function startNewGame() {
   state.introIndex = 0;
   state.pendingResult = null;
   state.profile = null;
+  state.pendingProfile = null;
   state.targetSchool = null;
   state.endingBookOpen = false;
   state.eventGalleryOpen = false;
@@ -117,12 +127,14 @@ function startProfileSelection(profile) {
   state.profileSelectionLocked = true;
   const selectionToken = state.profileSelectionToken + 1;
   state.profileSelectionToken = selectionToken;
+  state.pendingProfile = profile;
   elements.novelStage.dataset.selectedProfile = profile.id;
   elements.novelStage.classList.add("novel-stage--profile-selecting", `novel-stage--selected-${profile.id}`);
   elements.dialogueText.textContent = `${profile.title}で走り抜ける。\n三年間の予定表が、静かに開く。`;
   elements.choiceList.querySelectorAll("button").forEach((button) => {
     button.disabled = true;
   });
+  renderSkipIntroButton();
 
   window.setTimeout(() => {
     if (selectionToken !== state.profileSelectionToken || state.screen !== "profile") {
@@ -135,6 +147,7 @@ function startProfileSelection(profile) {
 function selectProfile(profile) {
   clearProfileSelectionAnimation();
   state.profile = profile;
+  state.pendingProfile = null;
   state.stats = { ...profile.initialStats };
   state.log = [`1年春。${profile.title}の三年間が始まった。`];
   state.screen = "intro";
@@ -209,6 +222,21 @@ function advanceScene() {
 
   state.screen = "choices";
   state.pendingResult = null;
+  render();
+}
+
+function skipIntro() {
+  if (!canUseSecondRunSkip()) {
+    return;
+  }
+
+  if (state.screen === "profile" && state.profileSelectionLocked && state.pendingProfile) {
+    selectProfile(state.pendingProfile);
+    return;
+  }
+
+  state.screen = "target";
+  state.introIndex = getProfile().intro.length - 1;
   render();
 }
 
@@ -392,6 +420,7 @@ function render() {
   renderStats();
   renderEndingBook();
   renderEventGallery();
+  renderSkipIntroButton();
 
   if (state.screen === "profile") {
     renderProfileSelect();
@@ -591,6 +620,18 @@ function renderEventGallery() {
 
 function hasEventGalleryAccess() {
   return state.unlockedEndingIds.size > 0;
+}
+
+function canUseSecondRunSkip() {
+  const hasClearedOnce = state.unlockedEndingIds.size > 0;
+  const canSkipProfileAnimation = state.screen === "profile" && state.profileSelectionLocked && state.pendingProfile;
+  const canSkipIntroScenes = state.screen === "intro" && state.profile;
+  return hasClearedOnce && (canSkipProfileAnimation || canSkipIntroScenes);
+}
+
+function renderSkipIntroButton() {
+  elements.skipIntroButton.hidden = !canUseSecondRunSkip();
+  elements.skipIntroButton.textContent = state.screen === "profile" ? "演出スキップ" : "導入スキップ";
 }
 
 function createEventGalleryRecord(event, index) {
@@ -1073,6 +1114,7 @@ function showProfileSelectSprites() {
 
 function clearProfileSelectionAnimation() {
   state.profileSelectionLocked = false;
+  state.pendingProfile = null;
   elements.novelStage.classList.remove(
     "novel-stage--profile-selecting",
     "novel-stage--selected-bancho",
@@ -1107,6 +1149,57 @@ async function toggleBgm() {
   state.bgmEnabled = false;
   elements.bgmAudio.pause();
   updateBgmButton();
+}
+
+function toggleSfx() {
+  state.sfxEnabled = !state.sfxEnabled;
+  updateSfxButton();
+}
+
+function updateSfxButton() {
+  elements.sfxButton.textContent = state.sfxEnabled ? "効果音ON" : "効果音OFF";
+  elements.sfxButton.setAttribute("aria-pressed", state.sfxEnabled ? "true" : "false");
+}
+
+function playButtonClickSound(event) {
+  if (!state.sfxEnabled || !(event.target instanceof Element) || !event.target.closest("button")) {
+    return;
+  }
+
+  const audioContext = getAudioContext();
+  if (!audioContext) {
+    return;
+  }
+
+  const now = audioContext.currentTime;
+  const oscillator = audioContext.createOscillator();
+  const gain = audioContext.createGain();
+  oscillator.type = "triangle";
+  oscillator.frequency.setValueAtTime(880, now);
+  oscillator.frequency.exponentialRampToValueAtTime(440, now + 0.045);
+  gain.gain.setValueAtTime(0.0001, now);
+  gain.gain.exponentialRampToValueAtTime(0.08, now + 0.008);
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.07);
+  oscillator.connect(gain).connect(audioContext.destination);
+  oscillator.start(now);
+  oscillator.stop(now + 0.08);
+}
+
+function getAudioContext() {
+  const AudioContextConstructor = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContextConstructor) {
+    return null;
+  }
+
+  if (!state.audioContext) {
+    state.audioContext = new AudioContextConstructor();
+  }
+
+  if (state.audioContext.state === "suspended") {
+    void state.audioContext.resume();
+  }
+
+  return state.audioContext;
 }
 
 function setBgmTrack(src) {

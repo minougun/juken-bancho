@@ -145,9 +145,9 @@ p {
 h1 {
   margin-top: 4px;
   color: var(--ink);
-  font-size: clamp(32px, 7vw, 54px);
+  font-size: 48px;
   font-weight: 600;
-  letter-spacing: 0.02em;
+  letter-spacing: 0;
   line-height: 1.15;
 }
 
@@ -336,11 +336,12 @@ h1 {
 .ending-artwork {
   position: absolute;
   inset: 0;
-  z-index: -2;
+  z-index: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   object-position: center;
+  pointer-events: none;
 }
 
 .ending-artwork:not([hidden]) + .dialogue-box {
@@ -394,7 +395,7 @@ h1 {
 .dialogue-text {
   min-height: 78px;
   color: var(--ink);
-  font-size: clamp(18px, 3.5vw, 24px);
+  font-size: 22px;
   font-weight: 500;
   line-height: 1.75;
   white-space: pre-line;
@@ -494,12 +495,17 @@ h1 {
 }
 
 @media (max-width: 860px) {
+  .novel-shell {
+    width: 100%;
+  }
+
   .novel-stage {
     min-height: calc(100svh - 54px);
   }
 
   .top-hud {
     flex-direction: column;
+    gap: 12px;
   }
 
   .system-controls {
@@ -527,20 +533,60 @@ h1 {
 }
 
 @media (max-width: 560px) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+
   .novel-shell {
-    padding: 8px;
+    padding: 0;
   }
 
   .novel-stage {
-    min-height: calc(100svh - 44px);
+    min-height: 100svh;
+    border-radius: 0;
   }
 
   .top-hud {
-    padding: 14px;
+    gap: 10px;
+    padding: max(10px, env(safe-area-inset-top)) 10px 8px;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+  }
+
+  h1 {
+    margin-top: 2px;
+    font-size: 30px;
+    line-height: 1.08;
+  }
+
+  .system-controls {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  #restartTopButton {
+    order: 3;
+  }
+
+  .hud-button {
+    width: 100%;
+    min-width: 0;
+    padding: 8px 6px;
+    font-size: 12px;
+    line-height: 1.25;
   }
 
   .volume-control {
-    flex: 1 1 150px;
+    order: 4;
+    grid-column: 1 / -1;
+    min-height: 40px;
+    padding: 7px 9px;
+    font-size: 12px;
   }
 
   .volume-control input {
@@ -548,33 +594,71 @@ h1 {
   }
 
   .stats-hud {
-    left: 12px;
-    top: 168px;
-    width: calc(100% - 24px);
+    left: 8px;
+    top: 184px;
+    width: calc(100% - 16px);
+    padding: 10px;
+  }
+
+  .turn-text {
+    margin-bottom: 8px;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 8px;
+  }
+
+  .stat-row {
+    grid-template-columns: 44px minmax(48px, 1fr) 24px;
+    gap: 5px;
+  }
+
+  .stat-name,
+  .stat-value {
+    font-size: 11px;
+  }
+
+  .meter {
+    height: 7px;
   }
 
   .ending-book {
-    left: 12px;
-    top: 360px;
-    width: calc(100% - 24px);
-    max-height: 240px;
+    left: 8px;
+    top: 330px;
+    width: calc(100% - 16px);
+    max-height: min(38svh, 270px);
+    padding: 10px;
+  }
+
+  .ending-book__header {
+    gap: 8px;
+  }
+
+  .ending-record {
+    padding: 9px;
   }
 
   .character-sprite {
     right: 50%;
-    bottom: 352px;
-    width: 250px;
-    max-height: 360px;
+    bottom: 44svh;
+    width: min(220px, 62vw);
+    max-height: 300px;
     transform: translateX(50%);
-    opacity: 0.26;
+    opacity: 0.22;
   }
 
   .dialogue-box {
-    left: 12px;
-    right: 12px;
-    bottom: 12px;
-    min-height: 330px;
-    padding: 14px;
+    left: 8px;
+    right: 8px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    gap: 9px;
+    min-height: 0;
+    max-height: min(58svh, 430px);
+    overflow: auto;
+    padding: 12px;
   }
 
   .speaker-row {
@@ -584,7 +668,164 @@ h1 {
   }
 
   .dialogue-text {
-    min-height: 92px;
+    min-height: 0;
+    font-size: 17px;
+    line-height: 1.72;
+  }
+
+  .choice-list {
+    gap: 8px;
+  }
+
+  .choice-button {
+    min-height: 72px;
+    padding: 10px;
+  }
+
+  .choice-button--school {
+    min-height: 102px;
+  }
+
+  .choice-title {
+    font-size: 14px;
+  }
+
+  .choice-subtitle {
+    font-size: 11px;
+  }
+
+  .school-requirements {
+    font-size: 10px;
+  }
+
+  .effect-pill {
+    padding: 2px 7px;
+    font-size: 10px;
+  }
+
+  .advance-button {
+    width: 100%;
+    justify-self: stretch;
+    min-width: 0;
+  }
+
+  .credit {
+    padding: 0 8px 8px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .stats-hud {
+    top: 178px;
+  }
+
+  .stat-row {
+    grid-template-columns: 38px minmax(44px, 1fr) 22px;
+  }
+
+  .stat-name,
+  .stat-value {
+    font-size: 10px;
+  }
+
+  .dialogue-text {
+    font-size: 16px;
+  }
+}
+
+@media (max-height: 620px) and (max-width: 560px) {
+  .stats-hud {
+    top: 168px;
+  }
+
+  .ending-book {
+    top: 292px;
+    max-height: 32svh;
+  }
+
+  .dialogue-box {
+    max-height: 50svh;
+  }
+
+  .character-sprite {
+    opacity: 0.14;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .novel-shell {
+    padding: 0;
+  }
+
+  .novel-stage {
+    min-height: 100svh;
+    border-radius: 0;
+  }
+
+  .top-hud {
+    padding: max(8px, env(safe-area-inset-top)) 10px 6px;
+  }
+
+  h1 {
+    font-size: 26px;
+  }
+
+  .system-controls {
+    gap: 6px;
+  }
+
+  .hud-button,
+  .volume-control {
+    min-height: 38px;
+  }
+
+  .stats-hud {
+    left: 10px;
+    top: 86px;
+    width: min(300px, 38vw);
+    padding: 10px;
+  }
+
+  .stats-grid {
+    gap: 5px;
+  }
+
+  .ending-book {
+    left: 10px;
+    top: 248px;
+    width: min(320px, 42vw);
+    max-height: calc(100svh - 258px);
+  }
+
+  .character-sprite {
+    display: none;
+  }
+
+  .dialogue-box {
+    left: calc(min(300px, 38vw) + 22px);
+    right: 10px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    min-height: 0;
+    max-height: calc(100svh - 96px);
+    overflow: auto;
+    padding: 12px;
+  }
+
+  .dialogue-text {
+    min-height: 0;
+    font-size: 16px;
+    line-height: 1.65;
+  }
+
+  .choice-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .choice-button {
+    min-height: 68px;
+    padding: 9px;
   }
 }
 

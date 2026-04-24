@@ -328,6 +328,7 @@ const elements = {
   statsGrid: document.querySelector("#statsGrid"),
   speakerName: document.querySelector("#speakerName"),
   sceneTag: document.querySelector("#sceneTag"),
+  dialogueBox: document.querySelector(".dialogue-box"),
   dialogueText: document.querySelector("#dialogueText"),
   choiceList: document.querySelector("#choiceList"),
   advanceButton: document.querySelector("#advanceButton"),
@@ -352,6 +353,7 @@ elements.volumeSlider.addEventListener("input", updateBgmVolume);
 startNewGame();
 updateBgmVolume();
 updateBgmButton();
+scheduleEndingAssetPreload();
 
 function startNewGame() {
   state.turn = 0;
@@ -586,6 +588,7 @@ function render() {
 
 function renderIntro() {
   hideEndingArtwork();
+  resetDialogueScroll();
   const scene = introScenes[state.introIndex];
   elements.speakerName.textContent = scene.speaker;
   elements.sceneTag.textContent = scene.sceneTag;
@@ -598,6 +601,7 @@ function renderIntro() {
 
 function renderTargetSchoolSelect() {
   hideEndingArtwork();
+  resetDialogueScroll();
   elements.speakerName.textContent = "進路指導室";
   elements.sceneTag.textContent = "志望校選択";
   elements.dialogueText.textContent =
@@ -608,6 +612,7 @@ function renderTargetSchoolSelect() {
 
 function renderChoices() {
   hideEndingArtwork();
+  resetDialogueScroll();
   elements.speakerName.textContent = "受験番長";
   elements.sceneTag.textContent = sceneNameForTurn();
   elements.dialogueText.textContent = buildChoicePrompt();
@@ -619,6 +624,7 @@ function renderChoices() {
 
 function renderResult() {
   hideEndingArtwork();
+  resetDialogueScroll();
   elements.speakerName.textContent = state.pendingResult.speaker;
   elements.sceneTag.textContent = state.pendingResult.sceneTag;
   elements.dialogueText.textContent = state.pendingResult.text;
@@ -634,6 +640,7 @@ function renderEnding() {
   renderEndingBook();
   showEndingArtwork(ending);
   setBgmTrack(ending.bgm);
+  resetDialogueScroll();
   elements.speakerName.textContent = "合格発表";
   elements.sceneTag.textContent = "ENDING";
   elements.dialogueText.textContent = `${ending.title}\n\n${ending.body}`;
@@ -658,6 +665,10 @@ function hideEndingArtwork() {
   elements.endingArtwork.hidden = true;
   elements.endingArtwork.removeAttribute("src");
   elements.endingArtwork.alt = "";
+}
+
+function resetDialogueScroll() {
+  elements.dialogueBox.scrollTop = 0;
 }
 
 function toggleEndingBook() {
@@ -971,4 +982,25 @@ function updateBgmButton() {
 
 function updateBgmVolume() {
   elements.bgmAudio.volume = Number(elements.volumeSlider.value) / 100;
+}
+
+function scheduleEndingAssetPreload() {
+  const preload = () => {
+    for (const ending of endingCatalog) {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = ending.artwork;
+
+      const audio = document.createElement("audio");
+      audio.preload = "metadata";
+      audio.src = ending.bgm;
+    }
+  };
+
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(preload, { timeout: 4000 });
+    return;
+  }
+
+  window.setTimeout(preload, 1200);
 }

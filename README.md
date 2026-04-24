@@ -2,7 +2,7 @@
 
 Unity 向けのスマホ縦画面スケジュール管理ゲーム MVP です。
 
-プレイヤーは高校の番長として、仲間からの人望と番長としてのメンツを守りながら、受験合格に必要な勉強時間を確保します。初版は 1 周 10 分以内で遊べるカード選択式プロトタイプです。
+プレイヤーは高校の番長、または情に厚い優等生ギャルとして、仲間からの人望とメンツを守りながら、受験合格に必要な勉強時間を確保します。Web版は高校1年春から3年冬までの3年間を遊ぶカード選択式プロトタイプです。
 
 ## Project
 
@@ -52,8 +52,12 @@ Generated protagonist sprite:
 Ending presentation:
 
 - Web版はエンディングごとに一枚絵と専用BGMへ切り替えます。
+- Web版は `受験番長` と `優等生ギャル` の主人公選択に対応しています。
+- 進行は高校1年春の入学式から3年冬の卒業式までの3年間です。
+- 季節・学校行事・テスト時期ごとにBGMが切り替わります。
 - Ending CG directory: `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/`
 - Ending BGM directory: `/mnt/c/Users/minou/juken-bancho/web/assets/audio/endings/`
+- Seasonal BGM directory: `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/`
 - Asset notices: `/mnt/c/Users/minou/juken-bancho/docs/third-party-notices.md`
 - Ending CG prompts: `/mnt/c/Users/minou/juken-bancho/docs/ending-cg-prompts-2026-04-25.md`
 
@@ -72,6 +76,7 @@ Ending completion:
 
 - Web版は `結末帳` に到達済みエンディングを記録します。
 - 保存先はブラウザの `localStorage` で、保存内容はエンディングIDのみです。
+- 記録対象は男主人公5種類、ギャル主人公5種類の計10種類です。
 
 Target school difficulty:
 

@@ -24,6 +24,18 @@ All ending tracks below are embedded from OpenGameArt.org pages that list the li
 
 License reference for all listed ending tracks: `http://creativecommons.org/publicdomain/zero/1.0/`
 
+## Seasonal / Event BGM
+
+| Use | Title | Author | Source | License | Local file |
+| --- | --- | --- | --- | --- | --- |
+| Spring / entrance | `Springtechno` | Spring Spring | `https://opengameart.org/content/springtechno` | CC0 option listed on source page | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/springtechno.ogg` |
+| Summer | `Summer Park - 8bit tune (loop)` | Scribe | `https://opengameart.org/content/summer-park-8bit-tune-loop` | CC0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/summer-park.mp3` |
+| Autumn | `Autumn` | divjedrevo | `https://opengameart.org/content/autumn` | CC BY 4.0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/autumn.ogg` |
+| Winter | `Wintery loop` | Emma_MA | `https://opengameart.org/content/wintery-loop` | CC0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/wintery-loop.mp3` |
+| School events | `Happy Adventure (Loop)` | TinyWorlds | `https://opengameart.org/content/happy-adventure-loop` | CC0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/happy-adventure.mp3` |
+
+CC BY 4.0 license reference for `Autumn`: `https://creativecommons.org/licenses/by/4.0/`
+
 ## Generated Ending CGs
 
 The ending CGs were generated with the built-in image generation tool and copied into the project.
@@ -35,6 +47,18 @@ The ending CGs were generated with the built-in image generation tool and copied
 | `補欠の伝説` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebc208dd8c819190dce59987d39b7b.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/waitlist-legend.png` |
 | `番長伝説` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebc2751b6c8191b473c87898a0265d.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/bancho-legend.png` |
 | `不合格` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebc2e5f4248191b3d3d5229fa8e9cd.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/failed.png` |
+
+## Generated Gyaru Route Images
+
+| Asset | Generated source | Local file |
+| --- | --- | --- |
+| `優等生ギャル` source sprite | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebcc57da3481919c6f85738710c594.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/protagonists/gyaru-protagonist.png` |
+| `優等生ギャル` transparent sprite | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebcf3b26a0819182bd8791be000787.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/protagonists/gyaru-protagonist-transparent.png` |
+| `優等生ギャル` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebccb4529881918a7a180a50f353f4.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/passed-gyaru.png` |
+| `孤独な合格ギャル` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebccf092d481918bfb122ee21da2c5.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/lonely-gyaru.png` |
+| `補欠のギャル伝説` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebcd6c6ff88191bb64bea96ea3c9b3.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/waitlist-gyaru.png` |
+| `ギャル伝説` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebcdececec8191a86859777279050a.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/legend-gyaru.png` |
+| `不合格ギャル` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebce30fb208191a72d0d5a9c2a9938.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/failed-gyaru.png` |
 
 ## Considered But Not Embedded
 

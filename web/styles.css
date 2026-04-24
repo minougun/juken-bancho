@@ -333,6 +333,11 @@ h1 {
   filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.18));
 }
 
+.character-sprite--gyaru {
+  right: clamp(-18px, 6vw, 110px);
+  width: min(38vw, 340px);
+}
+
 .ending-artwork {
   position: absolute;
   inset: 0;
@@ -527,6 +532,10 @@ h1 {
     opacity: 0.9;
   }
 
+  .character-sprite--gyaru {
+    width: 42vw;
+  }
+
   .choice-list {
     grid-template-columns: 1fr;
   }
@@ -648,6 +657,10 @@ h1 {
     max-height: 300px;
     transform: translateX(50%);
     opacity: 0.22;
+  }
+
+  .character-sprite--gyaru {
+    width: min(205px, 58vw);
   }
 
   .dialogue-box {

@@ -68,3 +68,13 @@ Composition/framing: wide 16:9, protagonist right of center at desk, strong empt
 Lighting/mood: quiet failure, heavy, reflective, a small hint of resolve.
 Color palette: black uniform, cool blue rain, gray classroom, small warm desk light, restrained red accent.
 Constraints: no readable text, no logos, no watermark, no gore, no weapons, no real school names.
+
+## 優等生ギャル Route
+
+Gyaru route assets use the same 16:9 visual novel CG format and the same no-text/no-logo/no-watermark constraints. The protagonist is a Japanese high school gyaru with blonde-brown wavy hair, a loose cardigan, skirt, pink/gold accessories, a decorated reference book, and a mechanical pencil. The route tone is `目指せ優等生ギャル`, with `マヂ情に厚い` as the core character trait.
+
+- `優等生ギャル`: school gate acceptance scene, friends cheering, bright spring graduation mood.
+- `孤独な合格ギャル`: quiet dusk school gate, successful but emotionally distant.
+- `補欠のギャル伝説`: evening classroom, friends support her after a waitlist-style result.
+- `ギャル伝説`: rooftop sunset, proud and loyal, famous at school even without academic triumph.
+- `不合格ギャル`: rainy classroom, tired but resilient, ready to start over.

@@ -430,6 +430,38 @@ h1 {
   min-height: 118px;
 }
 
+.choice-button--profile {
+  grid-template-columns: minmax(92px, 0.42fr) minmax(0, 1fr);
+  min-height: 174px;
+  align-items: center;
+  gap: 6px 12px;
+}
+
+.profile-preview {
+  grid-row: 1 / 4;
+  align-self: stretch;
+  display: grid;
+  min-height: 132px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+  box-shadow: 0 0 0 1px rgb(235, 235, 235);
+}
+
+.profile-preview__image {
+  align-self: end;
+  justify-self: center;
+  width: min(118px, 100%);
+  max-height: 146px;
+  object-fit: contain;
+  object-position: bottom center;
+  filter: drop-shadow(0 10px 12px rgba(0, 0, 0, 0.16));
+}
+
+.profile-preview__image--gyaru {
+  width: min(106px, 94%);
+}
+
 .choice-title {
   color: var(--ink);
   font-size: 15px;
@@ -697,6 +729,24 @@ h1 {
 
   .choice-button--school {
     min-height: 102px;
+  }
+
+  .choice-button--profile {
+    grid-template-columns: 82px minmax(0, 1fr);
+    min-height: 136px;
+  }
+
+  .profile-preview {
+    min-height: 112px;
+  }
+
+  .profile-preview__image {
+    width: min(92px, 100%);
+    max-height: 120px;
+  }
+
+  .profile-preview__image--gyaru {
+    width: min(84px, 94%);
   }
 
   .choice-title {

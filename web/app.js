@@ -859,12 +859,23 @@ function createEndingRecord(ending, index) {
 
 function createProfileButton(profile) {
   const button = document.createElement("button");
-  button.className = "choice-button choice-button--school";
+  button.className = "choice-button choice-button--school choice-button--profile";
   button.type = "button";
   button.setAttribute("aria-label", `${profile.title}。${profile.routeTitle}。${profile.subtitle}`);
   button.addEventListener("click", () => {
     selectProfile(profile);
   });
+
+  const preview = document.createElement("span");
+  preview.className = "profile-preview";
+
+  const image = document.createElement("img");
+  image.className = `profile-preview__image profile-preview__image--${profile.id}`;
+  image.src = profile.sprite;
+  image.alt = "";
+  image.decoding = "async";
+
+  preview.append(image);
 
   const title = document.createElement("span");
   title.className = "choice-title";
@@ -878,7 +889,7 @@ function createProfileButton(profile) {
   line.className = "school-requirements";
   line.textContent = `学力${profile.initialStats.academics} / 人望${profile.initialStats.trust} / メンツ${profile.initialStats.face} / 体力${profile.initialStats.stamina}`;
 
-  button.append(title, subtitle, line);
+  button.append(preview, title, subtitle, line);
   return button;
 }
 

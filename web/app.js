@@ -4,6 +4,7 @@ const statLabels = {
   academics: "学力",
   trust: "人望",
   face: "メンツ",
+  looks: "ルックス",
   stamina: "体力",
   stress: "ストレス",
 };
@@ -27,7 +28,7 @@ const protagonistProfiles = [
     sprite: "./assets/images/protagonist-bancho-transparent.png",
     spriteClass: "character-sprite character-sprite--bancho",
     spriteAlt: "白い鉢巻きを巻き、学ラン姿で参考書とシャープペンを構える受験番長",
-    initialStats: { academics: 14, trust: 60, face: 58, stamina: 72, stress: 20 },
+    initialStats: { academics: 14, trust: 60, face: 58, looks: 50, stamina: 72, stress: 20 },
     intro: [
       {
         speaker: "受験番長",
@@ -42,7 +43,7 @@ const protagonistProfiles = [
       {
         speaker: "受験番長",
         sceneTag: "三年計画",
-        text: "毎週、俺は一つの予定を選ぶ。\n机に向かえば学力は積める。仲間と向き合えば人望やメンツは守れる。無理を重ねれば体力が削れ、焦りも腹にたまる。",
+        text: "毎週、俺は一つの予定を選ぶ。\n机に向かえば学力は積める。仲間と向き合えば人望やメンツは守れる。無理を重ねれば体力とルックスが削れ、焦りも腹にたまる。",
       },
       {
         speaker: "受験番長",
@@ -59,7 +60,7 @@ const protagonistProfiles = [
     sprite: "./assets/images/protagonists/gyaru-protagonist-transparent.png",
     spriteClass: "character-sprite character-sprite--gyaru",
     spriteAlt: "参考書とシャープペンを持ち、カーディガン姿で笑う優等生ギャル",
-    initialStats: { academics: 16, trust: 66, face: 55, stamina: 66, stress: 22 },
+    initialStats: { academics: 16, trust: 66, face: 55, looks: 72, stamina: 66, stress: 22 },
     intro: [
       {
         speaker: "優等生ギャル",
@@ -74,7 +75,7 @@ const protagonistProfiles = [
       {
         speaker: "優等生ギャル",
         sceneTag: "三年計画",
-        text: "毎週、選べる予定は一つだけ。\n勉強すれば学力は上がる。友だちと向き合えば人望とメンツは守れる。でも無理しすぎたら、肌も心も荒れるってワケ。",
+        text: "毎週、選べる予定は一つだけ。\n勉強すれば学力は上がる。友だちと向き合えば人望とメンツは守れる。でも無理しすぎたら、肌も心も荒れてルックスも落ちるってワケ。",
       },
       {
         speaker: "優等生ギャル",
@@ -251,7 +252,7 @@ const cards = [
     title: "自習室に乗り込む",
     subtitle: "静寂を制する者が受験を制す",
     flavor: "参考書を机に叩きつける。今日はシャーペンが相棒だ。",
-    effects: { academics: 1, trust: -1, face: 0, stamina: -3, stress: 2 },
+    effects: { academics: 1, trust: -1, face: 0, looks: -1, stamina: -3, stress: 2 },
     minStamina: 12,
     unlockTurn: 0,
     oneShot: false,
@@ -264,7 +265,7 @@ const cards = [
     title: "補習を受ける",
     subtitle: "先生に頭を下げるのも器量",
     flavor: "番長のメンツは少し削れるが、赤点回避の技術は身につく。",
-    effects: { academics: 1, trust: 1, face: -1, stamina: -3, stress: 2 },
+    effects: { academics: 1, trust: 1, face: -1, looks: 0, stamina: -3, stress: 2 },
     minStamina: 10,
     unlockTurn: 0,
     oneShot: false,
@@ -277,7 +278,7 @@ const cards = [
     title: "仲間とラーメン会議",
     subtitle: "替え玉より厚い信頼",
     flavor: "湯気の向こうで進路相談と近況報告を聞く。",
-    effects: { academics: 0, trust: 2, face: 1, stamina: 2, stress: -2 },
+    effects: { academics: 0, trust: 2, face: 1, looks: 1, stamina: 2, stress: -2 },
     minStamina: 0,
     unlockTurn: 0,
     oneShot: false,
@@ -290,7 +291,7 @@ const cards = [
     title: "仲裁に走る",
     subtitle: "仲間が絡まれたら、まず止めに入る",
     flavor: "参考書を閉じ、校門へ走る。拳より先に声を張るのが、今日の答案だ。",
-    effects: { academics: 0, trust: 2, face: 2, stamina: -5, stress: 3 },
+    effects: { academics: 0, trust: 2, face: 2, looks: -1, stamina: -5, stress: 3 },
     minStamina: 24,
     unlockTurn: 0,
     oneShot: false,
@@ -303,7 +304,7 @@ const cards = [
     title: "今日は寝る",
     subtitle: "番長も睡眠で回復する",
     flavor: "布団に沈む。夢の中で英単語とタイマンを張る。",
-    effects: { academics: 0, trust: -1, face: 0, stamina: 9, stress: -6 },
+    effects: { academics: 0, trust: -1, face: 0, looks: 2, stamina: 9, stress: -6 },
     minStamina: 0,
     unlockTurn: 0,
     oneShot: false,
@@ -316,7 +317,7 @@ const cards = [
     title: "模試に特攻",
     subtitle: "点数表から逃げない",
     flavor: "結果から逃げない。点数表を見て次の一手を決める。",
-    effects: { academics: 3, trust: 0, face: 1, stamina: -6, stress: 5 },
+    effects: { academics: 3, trust: 0, face: 1, looks: -1, stamina: -6, stress: 5 },
     minStamina: 20,
     unlockTurn: 48,
     oneShot: false,
@@ -329,7 +330,7 @@ const cards = [
     title: "赤本ラストスパート",
     subtitle: "本番直前の詰め込み仁義",
     flavor: "眠気も弱音も廊下に立たせる。最後は過去問だ。",
-    effects: { academics: 4, trust: -2, face: 0, stamina: -9, stress: 7 },
+    effects: { academics: 4, trust: -2, face: 0, looks: -2, stamina: -9, stress: 7 },
     minStamina: 28,
     unlockTurn: 120,
     oneShot: false,
@@ -345,7 +346,7 @@ const events = [
     title: "ライバル校の挑発",
     speaker: "ライバル校の不良",
     message: "売られた喧嘩を買わずに睨みだけで返した。余計な火種は消えた。",
-    effects: { academics: 0, trust: 1, face: 2, stamina: -3, stress: 2 },
+    effects: { academics: 0, trust: 1, face: 2, looks: 0, stamina: -3, stress: 2 },
     minTurn: 16,
     chance: 0.08,
   },
@@ -354,7 +355,7 @@ const events = [
     title: "仲間の進路相談",
     speaker: "舎弟",
     message: "話を聞いたら、自分の焦りも少し言葉になった。",
-    effects: { academics: 1, trust: 3, face: 0, stamina: -2, stress: -2 },
+    effects: { academics: 1, trust: 3, face: 0, looks: 0, stamina: -2, stress: -2 },
     minTurn: 24,
     chance: 0.07,
   },
@@ -363,7 +364,7 @@ const events = [
     title: "生活指導の呼び出し",
     speaker: "生活指導の先生",
     message: "廊下の説教は長い。だが願書の締切も教えてもらった。",
-    effects: { academics: 2, trust: 0, face: -3, stamina: -2, stress: 3 },
+    effects: { academics: 2, trust: 0, face: -3, looks: -1, stamina: -2, stress: 3 },
     minTurn: 32,
     chance: 0.07,
     gateStat: "face",
@@ -374,7 +375,7 @@ const events = [
     title: "深夜の集中切れ",
     speaker: "受験番長",
     message: "目が滑る。今日は単語帳を閉じる勇気も必要だ。",
-    effects: { academics: -2, trust: 0, face: 0, stamina: 5, stress: -7 },
+    effects: { academics: -2, trust: 0, face: 0, looks: 1, stamina: 5, stress: -7 },
     minTurn: 56,
     chance: 0.1,
     gateStat: "stress",
@@ -385,7 +386,7 @@ const events = [
     title: "受験票が消えた夜",
     speaker: "舎弟",
     message: "受験票がないと大騒ぎになった。机も鞄も総ざらいして、最後は単語帳の間から見つかった。",
-    effects: { academics: 3, trust: 4, face: -2, stamina: -8, stress: 8 },
+    effects: { academics: 3, trust: 4, face: -2, looks: -2, stamina: -8, stress: 8 },
     minTurn: 120,
     chance: 0.04,
   },
@@ -394,7 +395,7 @@ const events = [
     title: "校長室の休戦協定",
     speaker: "校長",
     message: "番長の顔で揉め事を収め、受験生として自習室の鍵も預かった。なぜか校内が静かになった。",
-    effects: { academics: 3, trust: 2, face: 3, stamina: -4, stress: -3 },
+    effects: { academics: 3, trust: 2, face: 3, looks: 1, stamina: -4, stress: -3 },
     minTurn: 96,
     chance: 0.04,
     gateStat: "trust",
@@ -581,12 +582,20 @@ function tryApplyRandomEvent() {
 function applyPressureRules() {
   const messages = [];
   if (state.stats.stress >= 88) {
-    applyEffects({ academics: -6, trust: -2, face: 0, stamina: 0, stress: -10 });
-    messages.push("受験番長「焦りで文字が暴れやがる。詰め込みだけじゃ押し切れねえ。」");
+    applyEffects({ academics: -6, trust: -3, face: -1, looks: -5, stamina: 0, stress: -10 });
+    messages.push("鏡の前で顔色の悪さに気づく。焦りでルックスも人望も削れていく。");
+  } else if (state.stats.stress >= 72) {
+    applyEffects({ academics: 0, trust: -1, face: 0, looks: -2, stamina: 0, stress: 0 });
+    messages.push("寝不足の顔が隠せない。妙な空気が流れて、人望も少し冷える。");
+  }
+
+  if (state.stats.looks <= 35) {
+    applyEffects({ academics: 0, trust: -2, face: -2, looks: 0, stamina: 0, stress: 2 });
+    messages.push("髪も肌も荒れている。異性の視線は遠のき、仲間にも少しナメられる。");
   }
 
   if (state.stats.stamina <= 6) {
-    applyEffects({ academics: 0, trust: 0, face: -4, stamina: 0, stress: 8 });
+    applyEffects({ academics: 0, trust: 0, face: -4, looks: -1, stamina: 0, stress: 8 });
     messages.push("受験番長「足が笑ってやがる。寝不足でメンツは張れねえな。」");
   }
 
@@ -610,7 +619,7 @@ function applyTargetSchoolPressure() {
     return [];
   }
 
-  const effects = { academics: 0, trust: 0, face: 0, stamina, stress };
+  const effects = { academics: 0, trust: 0, face: 0, looks: 0, stamina, stress };
   applyEffects(effects);
   return [`進路指導室の赤線が濃くなる。${school.name}の偏差値${school.deviation}は、今週の疲れにも容赦しない。${formatEffectSentence(effects)}`];
 }
@@ -898,7 +907,7 @@ function createProfileButton(profile) {
 
   const line = document.createElement("span");
   line.className = "school-requirements";
-  line.textContent = `学力${profile.initialStats.academics} / 人望${profile.initialStats.trust} / メンツ${profile.initialStats.face} / 体力${profile.initialStats.stamina}`;
+  line.textContent = `学力${profile.initialStats.academics} / 人望${profile.initialStats.trust} / メンツ${profile.initialStats.face} / ルックス${profile.initialStats.looks} / 体力${profile.initialStats.stamina}`;
 
   button.append(preview, title, subtitle, line);
   return button;

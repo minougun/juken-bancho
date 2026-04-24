@@ -799,17 +799,18 @@ function saveUnlockedEventCgs() {
 }
 
 function createChoiceButton(card) {
+  const cardTitle = getCardTitle(card);
   const button = document.createElement("button");
   button.className = "choice-button";
   button.type = "button";
-  button.setAttribute("aria-label", `${card.title}。${card.subtitle}。効果: ${formatEffectSummary(card.effects)}`);
+  button.setAttribute("aria-label", `${cardTitle}。${card.subtitle}。効果: ${formatEffectSummary(card.effects)}`);
   button.addEventListener("click", () => {
     chooseCard(card);
   });
 
   const title = document.createElement("span");
   title.className = "choice-title";
-  title.textContent = card.title;
+  title.textContent = cardTitle;
 
   const subtitle = document.createElement("span");
   subtitle.className = "choice-subtitle";
@@ -821,6 +822,14 @@ function createChoiceButton(card) {
 
   button.append(title, subtitle, effects);
   return button;
+}
+
+function getCardTitle(card) {
+  if (card.id === "ramen_meeting" && getProfile().id === "gyaru") {
+    return "仲間とマクド会議";
+  }
+
+  return card.title;
 }
 
 function renderStats() {

@@ -338,6 +338,17 @@ h1 {
   width: min(38vw, 340px);
 }
 
+.character-sprite--profile-bancho {
+  right: auto;
+  left: clamp(4px, 10vw, 176px);
+  width: min(32vw, 330px);
+}
+
+.character-sprite--profile-gyaru {
+  right: clamp(0px, 9vw, 164px);
+  width: min(31vw, 310px);
+}
+
 .ending-artwork {
   position: absolute;
   inset: 0;
@@ -568,6 +579,17 @@ h1 {
     width: 42vw;
   }
 
+  .character-sprite--profile-bancho {
+    left: 6vw;
+    right: auto;
+    width: min(36vw, 260px);
+  }
+
+  .character-sprite--profile-gyaru {
+    right: 6vw;
+    width: min(34vw, 244px);
+  }
+
   .choice-list {
     grid-template-columns: 1fr;
   }
@@ -693,6 +715,23 @@ h1 {
 
   .character-sprite--gyaru {
     width: min(205px, 58vw);
+  }
+
+  .character-sprite--profile-bancho {
+    left: 7vw;
+    right: auto;
+    bottom: 50svh;
+    width: min(150px, 39vw);
+    transform: none;
+    opacity: 0.32;
+  }
+
+  .character-sprite--profile-gyaru {
+    right: 7vw;
+    bottom: 50svh;
+    width: min(140px, 37vw);
+    transform: none;
+    opacity: 0.36;
   }
 
   .dialogue-box {
@@ -863,6 +902,22 @@ h1 {
 
   .character-sprite {
     display: none;
+  }
+
+  .character-sprite--profile-bancho,
+  .character-sprite--profile-gyaru {
+    display: block;
+    bottom: 12px;
+    width: min(18vw, 120px);
+    opacity: 0.24;
+  }
+
+  .character-sprite--profile-bancho {
+    left: 12px;
+  }
+
+  .character-sprite--profile-gyaru {
+    right: 12px;
   }
 
   .dialogue-box {

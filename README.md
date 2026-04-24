@@ -2,7 +2,7 @@
 
 Unity 向けのスマホ縦画面スケジュール管理ゲーム MVP です。
 
-プレイヤーは高校の番長、または情に厚い優等生ギャルとして、仲間からの人望とメンツを守りながら、受験合格に必要な勉強時間を確保します。Web版は高校1年春から3年冬までの3年間を遊ぶカード選択式プロトタイプです。
+プレイヤーは高校の番長、または情に厚い優等生ギャルとして、仲間からの人望とメンツを守りながら、受験合格に必要な勉強時間を確保します。Web版は高校1年春から3年冬まで、毎週の予定を選ぶカード選択式プロトタイプです。
 
 ## Project
 
@@ -53,8 +53,8 @@ Ending presentation:
 
 - Web版はエンディングごとに一枚絵と専用BGMへ切り替えます。
 - Web版は `受験番長` と `優等生ギャル` の主人公選択に対応しています。
-- 進行は高校1年春の入学式から3年冬の卒業式までの3年間です。
-- 季節・学校行事・テスト時期ごとにBGMが切り替わります。
+- 進行は高校1年春の入学式から3年冬の卒業式までの3年間144週です。
+- BGMは週ごとの行事ではなく、1学期、夏休み、2学期、3学期の区切りで切り替わります。
 - Ending CG directory: `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/`
 - Ending BGM directory: `/mnt/c/Users/minou/juken-bancho/web/assets/audio/endings/`
 - Seasonal BGM directory: `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/`

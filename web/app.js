@@ -1,4 +1,4 @@
-const TOTAL_TURNS = 36;
+const TOTAL_TURNS = 144;
 
 const statLabels = {
   academics: "学力",
@@ -11,13 +11,11 @@ const statLabels = {
 const ENDING_STORAGE_KEY = "jukenBancho.unlockedEndings.v1";
 const GAMEPLAY_BGM_SRC = "./assets/audio/flesh-and-blood.mp3";
 
-const seasonalBgm = {
-  spring: "./assets/audio/seasons/springtechno.ogg",
-  summer: "./assets/audio/seasons/summer-park.mp3",
-  autumn: "./assets/audio/seasons/autumn.ogg",
-  winter: "./assets/audio/seasons/wintery-loop.mp3",
-  event: "./assets/audio/seasons/happy-adventure.mp3",
-  exam: "./assets/audio/flesh-and-blood.mp3",
+const termBgm = {
+  first: "./assets/audio/seasons/springtechno.ogg",
+  summerBreak: "./assets/audio/seasons/summer-park.mp3",
+  second: "./assets/audio/seasons/autumn.ogg",
+  third: "./assets/audio/seasons/wintery-loop.mp3",
 };
 
 const protagonistProfiles = [
@@ -44,7 +42,7 @@ const protagonistProfiles = [
       {
         speaker: "受験番長",
         sceneTag: "三年計画",
-        text: "毎月、俺は一つの予定を選ぶ。\n机に向かえば学力は積める。仲間と向き合えば人望やメンツは守れる。無理を重ねれば体力が削れ、焦りも腹にたまる。",
+        text: "毎週、俺は一つの予定を選ぶ。\n机に向かえば学力は積める。仲間と向き合えば人望やメンツは守れる。無理を重ねれば体力が削れ、焦りも腹にたまる。",
       },
       {
         speaker: "受験番長",
@@ -76,7 +74,7 @@ const protagonistProfiles = [
       {
         speaker: "優等生ギャル",
         sceneTag: "三年計画",
-        text: "毎月、選べる予定は一つだけ。\n勉強すれば学力は上がる。友だちと向き合えば人望とメンツは守れる。でも無理しすぎたら、肌も心も荒れるってワケ。",
+        text: "毎週、選べる予定は一つだけ。\n勉強すれば学力は上がる。友だちと向き合えば人望とメンツは守れる。でも無理しすぎたら、肌も心も荒れるってワケ。",
       },
       {
         speaker: "優等生ギャル",
@@ -93,7 +91,7 @@ const targetSchools = [
     name: "城北実学大学",
     deviation: 52,
     subtitle: "基礎を固めれば届く現実路線",
-    totalTurns: 36,
+    totalTurns: 144,
     passAcademic: 74,
     passTrust: 42,
     passFace: 42,
@@ -101,7 +99,7 @@ const targetSchools = [
     waitlistTrust: 68,
     waitlistFace: 68,
     weeklyStress: 0,
-    lateStress: 2,
+    lateStress: 1,
     staminaDrain: 0,
   },
   {
@@ -109,7 +107,7 @@ const targetSchools = [
     name: "東都学院大学",
     deviation: 60,
     subtitle: "番長業との両立に綻びが出る中堅上位",
-    totalTurns: 36,
+    totalTurns: 144,
     passAcademic: 82,
     passTrust: 48,
     passFace: 48,
@@ -117,7 +115,7 @@ const targetSchools = [
     waitlistTrust: 70,
     waitlistFace: 70,
     weeklyStress: 1,
-    lateStress: 3,
+    lateStress: 1,
     staminaDrain: 0,
   },
   {
@@ -125,15 +123,15 @@ const targetSchools = [
     name: "帝王義塾大学",
     deviation: 68,
     subtitle: "赤本も校内の視線も重くなる難関校",
-    totalTurns: 36,
+    totalTurns: 144,
     passAcademic: 90,
     passTrust: 54,
     passFace: 54,
     waitlistAcademic: 80,
     waitlistTrust: 73,
     waitlistFace: 73,
-    weeklyStress: 2,
-    lateStress: 4,
+    weeklyStress: 1,
+    lateStress: 2,
     staminaDrain: 1,
   },
   {
@@ -141,16 +139,16 @@ const targetSchools = [
     name: "国立天嶺大学",
     deviation: 74,
     subtitle: "半端な仁義も半端な勉強も通らない最難関",
-    totalTurns: 36,
+    totalTurns: 144,
     passAcademic: 96,
     passTrust: 60,
     passFace: 60,
     waitlistAcademic: 88,
     waitlistTrust: 76,
     waitlistFace: 76,
-    weeklyStress: 3,
-    lateStress: 5,
-    staminaDrain: 2,
+    weeklyStress: 2,
+    lateStress: 2,
+    staminaDrain: 1,
   },
 ];
 
@@ -253,7 +251,7 @@ const cards = [
     title: "自習室に乗り込む",
     subtitle: "静寂を制する者が受験を制す",
     flavor: "参考書を机に叩きつける。今日はシャーペンが相棒だ。",
-    effects: { academics: 5, trust: -2, face: -1, stamina: -8, stress: 6 },
+    effects: { academics: 1, trust: -1, face: 0, stamina: -3, stress: 2 },
     minStamina: 12,
     unlockTurn: 0,
     oneShot: false,
@@ -266,7 +264,7 @@ const cards = [
     title: "補習を受ける",
     subtitle: "先生に頭を下げるのも器量",
     flavor: "番長のメンツは少し削れるが、赤点回避の技術は身につく。",
-    effects: { academics: 4, trust: 3, face: -4, stamina: -7, stress: 4 },
+    effects: { academics: 1, trust: 1, face: -1, stamina: -3, stress: 2 },
     minStamina: 10,
     unlockTurn: 0,
     oneShot: false,
@@ -279,7 +277,7 @@ const cards = [
     title: "仲間とラーメン会議",
     subtitle: "替え玉より厚い信頼",
     flavor: "湯気の向こうで進路相談と近況報告を聞く。",
-    effects: { academics: -1, trust: 7, face: 2, stamina: 4, stress: -4 },
+    effects: { academics: 0, trust: 2, face: 1, stamina: 2, stress: -2 },
     minStamina: 0,
     unlockTurn: 0,
     oneShot: false,
@@ -292,7 +290,7 @@ const cards = [
     title: "仲裁に走る",
     subtitle: "仲間が絡まれたら、まず止めに入る",
     flavor: "参考書を閉じ、校門へ走る。拳より先に声を張るのが、今日の答案だ。",
-    effects: { academics: -2, trust: 7, face: 7, stamina: -14, stress: 6 },
+    effects: { academics: 0, trust: 2, face: 2, stamina: -5, stress: 3 },
     minStamina: 24,
     unlockTurn: 0,
     oneShot: false,
@@ -305,7 +303,7 @@ const cards = [
     title: "今日は寝る",
     subtitle: "番長も睡眠で回復する",
     flavor: "布団に沈む。夢の中で英単語とタイマンを張る。",
-    effects: { academics: 0, trust: -1, face: -1, stamina: 24, stress: -15 },
+    effects: { academics: 0, trust: -1, face: 0, stamina: 9, stress: -6 },
     minStamina: 0,
     unlockTurn: 0,
     oneShot: false,
@@ -318,9 +316,9 @@ const cards = [
     title: "模試に特攻",
     subtitle: "点数表から逃げない",
     flavor: "結果から逃げない。点数表を見て次の一手を決める。",
-    effects: { academics: 8, trust: 0, face: 2, stamina: -12, stress: 10 },
+    effects: { academics: 3, trust: 0, face: 1, stamina: -6, stress: 5 },
     minStamina: 20,
-    unlockTurn: 12,
+    unlockTurn: 48,
     oneShot: false,
     tag: "exam",
     speaker: "模試監督",
@@ -331,9 +329,9 @@ const cards = [
     title: "赤本ラストスパート",
     subtitle: "本番直前の詰め込み仁義",
     flavor: "眠気も弱音も廊下に立たせる。最後は過去問だ。",
-    effects: { academics: 10, trust: -3, face: 0, stamina: -18, stress: 14 },
+    effects: { academics: 4, trust: -2, face: 0, stamina: -9, stress: 7 },
     minStamina: 28,
-    unlockTurn: 28,
+    unlockTurn: 120,
     oneShot: false,
     tag: "exam",
     speaker: "受験番長",
@@ -347,27 +345,27 @@ const events = [
     title: "ライバル校の挑発",
     speaker: "ライバル校の不良",
     message: "売られた喧嘩を買わずに睨みだけで返した。余計な火種は消えた。",
-    effects: { academics: 0, trust: 2, face: 4, stamina: -5, stress: 3 },
-    minTurn: 4,
-    chance: 0.12,
+    effects: { academics: 0, trust: 1, face: 2, stamina: -3, stress: 2 },
+    minTurn: 16,
+    chance: 0.08,
   },
   {
     id: "friend_panic",
     title: "仲間の進路相談",
     speaker: "舎弟",
     message: "話を聞いたら、自分の焦りも少し言葉になった。",
-    effects: { academics: 2, trust: 6, face: 0, stamina: -4, stress: -3 },
-    minTurn: 6,
-    chance: 0.1,
+    effects: { academics: 1, trust: 3, face: 0, stamina: -2, stress: -2 },
+    minTurn: 24,
+    chance: 0.07,
   },
   {
     id: "teacher_warning",
     title: "生活指導の呼び出し",
     speaker: "生活指導の先生",
     message: "廊下の説教は長い。だが願書の締切も教えてもらった。",
-    effects: { academics: 4, trust: 0, face: -6, stamina: -3, stress: 5 },
-    minTurn: 8,
-    chance: 0.1,
+    effects: { academics: 2, trust: 0, face: -3, stamina: -2, stress: 3 },
+    minTurn: 32,
+    chance: 0.07,
     gateStat: "face",
     gateBelowOrEqual: 45,
   },
@@ -376,9 +374,9 @@ const events = [
     title: "深夜の集中切れ",
     speaker: "受験番長",
     message: "目が滑る。今日は単語帳を閉じる勇気も必要だ。",
-    effects: { academics: -3, trust: 0, face: 0, stamina: 8, stress: -10 },
-    minTurn: 14,
-    chance: 0.15,
+    effects: { academics: -2, trust: 0, face: 0, stamina: 5, stress: -7 },
+    minTurn: 56,
+    chance: 0.1,
     gateStat: "stress",
     gateBelowOrEqual: 100,
   },
@@ -387,18 +385,18 @@ const events = [
     title: "受験票が消えた夜",
     speaker: "舎弟",
     message: "受験票がないと大騒ぎになった。机も鞄も総ざらいして、最後は単語帳の間から見つかった。",
-    effects: { academics: 5, trust: 8, face: -4, stamina: -12, stress: 14 },
-    minTurn: 28,
-    chance: 0.06,
+    effects: { academics: 3, trust: 4, face: -2, stamina: -8, stress: 8 },
+    minTurn: 120,
+    chance: 0.04,
   },
   {
     id: "principal_truce",
     title: "校長室の休戦協定",
     speaker: "校長",
     message: "番長の顔で揉め事を収め、受験生として自習室の鍵も預かった。なぜか校内が静かになった。",
-    effects: { academics: 8, trust: 4, face: 6, stamina: -6, stress: -4 },
-    minTurn: 24,
-    chance: 0.05,
+    effects: { academics: 3, trust: 2, face: 3, stamina: -4, stress: -3 },
+    minTurn: 96,
+    chance: 0.04,
     gateStat: "trust",
     gateBelowOrEqual: 100,
   },
@@ -440,6 +438,7 @@ const elements = {
   endingBookClearButton: document.querySelector("#endingBookClearButton"),
   endingArtwork: document.querySelector("#endingArtwork"),
   characterSprite: document.querySelector("#characterSprite"),
+  profileCompareSprite: document.querySelector("#profileCompareSprite"),
   restartTopButton: document.querySelector("#restartTopButton"),
   bgmAudio: document.querySelector("#bgmAudio"),
   bgmButton: document.querySelector("#bgmButton"),
@@ -599,6 +598,11 @@ function applyTargetSchoolPressure() {
     return [];
   }
 
+  const isMonthlyCheck = state.turn > 0 && state.turn % 4 === 0;
+  if (!isMonthlyCheck && !isLateStage()) {
+    return [];
+  }
+
   const stress = school.weeklyStress + (isLateStage() ? school.lateStress : 0);
   const stamina = isLateStage() ? -school.staminaDrain : 0;
   if (!stress && !stamina) {
@@ -607,7 +611,7 @@ function applyTargetSchoolPressure() {
 
   const effects = { academics: 0, trust: 0, face: 0, stamina, stress };
   applyEffects(effects);
-  return [`進路指導室の赤線が濃くなる。${school.name}の偏差値${school.deviation}は、今日の疲れにも容赦しない。${formatEffectSentence(effects)}`];
+  return [`進路指導室の赤線が濃くなる。${school.name}の偏差値${school.deviation}は、今週の疲れにも容赦しない。${formatEffectSentence(effects)}`];
 }
 
 function applyEffects(effects) {
@@ -721,10 +725,11 @@ function render() {
 
 function renderProfileSelect() {
   hideEndingArtwork();
+  showProfileSelectSprites();
   resetDialogueScroll();
   elements.speakerName.textContent = "主人公選択";
   elements.sceneTag.textContent = "入学式";
-  elements.dialogueText.textContent = "三年間を誰として走り抜ける？\n仁義の番長か、マヂ情に厚い優等生ギャルか。卒業式までの予定を選び続けろ。";
+  elements.dialogueText.textContent = "三年間を誰として走り抜ける？\n仁義の番長か、マヂ情に厚い優等生ギャルか。卒業式まで、毎週の予定を選び続けろ。";
   elements.choiceList.replaceChildren(...protagonistProfiles.map(createProfileButton));
   elements.advanceButton.hidden = true;
 }
@@ -774,7 +779,7 @@ function renderResult() {
   elements.dialogueText.textContent = state.pendingResult.text;
   elements.choiceList.replaceChildren();
   elements.advanceButton.hidden = false;
-  elements.advanceButton.textContent = state.complete ? "合格発表へ" : "次の月へ";
+  elements.advanceButton.textContent = state.complete ? "合格発表へ" : "次の週へ";
   elements.advanceButton.onclick = advanceScene;
 }
 
@@ -915,7 +920,7 @@ function createTargetSchoolButton(school) {
 
   const line = document.createElement("span");
   line.className = "school-requirements";
-  line.textContent = `偏差値${school.deviation} / 必要学力${school.passAcademic} / 仁義${school.passTrust}+ / メンツ${school.passFace}+ / 3年間`;
+  line.textContent = `偏差値${school.deviation} / 必要学力${school.passAcademic} / 仁義${school.passTrust}+ / メンツ${school.passFace}+ / 3年間144週`;
 
   button.append(title, subtitle, line);
   return button;
@@ -1028,13 +1033,13 @@ function buildChoicePrompt() {
 
   if (isLateStage()) {
     return profile.id === "gyaru"
-      ? `${getTargetSchool().name}の本番が近い。\n友だちの通知も赤本の重みも、ぜんぶ背中に乗ってる。今月どう盛る？`
-      : `${getTargetSchool().name}の本番が近い。\n仲間の視線も、赤本の重みも、背中に乗っている。今月をどう使う？`;
+      ? `${getTargetSchool().name}の本番が近い。\n友だちの通知も赤本の重みも、ぜんぶ背中に乗ってる。今週どう盛る？`
+      : `${getTargetSchool().name}の本番が近い。\n仲間の視線も、赤本の重みも、背中に乗っている。今週をどう使う？`;
   }
 
   return profile.id === "gyaru"
-    ? `${entry.label}。\n教室には友だちの声、鞄には参考書。ギャルとして、受験生として、今月の予定を選べ。`
-    : `${entry.label}。\n廊下には仲間の声、鞄には参考書。番長として、受験生として、今月の予定を選べ。`;
+    ? `${entry.label}。\n教室には友だちの声、鞄には参考書。ギャルとして、受験生として、今週の予定を選べ。`
+    : `${entry.label}。\n廊下には仲間の声、鞄には参考書。番長として、受験生として、今週の予定を選べ。`;
 }
 
 function sceneNameForTurn() {
@@ -1097,7 +1102,7 @@ function getProfile() {
 }
 
 function isLateStage() {
-  return state.targetSchool && state.turn >= state.totalTurns - 8;
+  return state.targetSchool && state.turn >= state.totalTurns - 24;
 }
 
 function buildCardReaction(card) {
@@ -1176,39 +1181,65 @@ function getCardSpeaker(card) {
 }
 
 function createSchoolCalendar() {
-  const seasonalEvents = [
-    { season: "春", key: "spring", event: "入学式", bgm: seasonalBgm.spring },
-    { season: "春", key: "spring", event: "新歓", bgm: seasonalBgm.event },
-    { season: "春", key: "spring", event: "中間テスト", bgm: seasonalBgm.exam },
-    { season: "夏", key: "summer", event: "体育祭", bgm: seasonalBgm.event },
-    { season: "夏", key: "summer", event: "夏休み", bgm: seasonalBgm.summer },
-    { season: "夏", key: "summer", event: "期末テスト", bgm: seasonalBgm.exam },
-    { season: "秋", key: "autumn", event: "文化祭", bgm: seasonalBgm.event },
-    { season: "秋", key: "autumn", event: "模試", bgm: seasonalBgm.exam },
-    { season: "秋", key: "autumn", event: "進路面談", bgm: seasonalBgm.autumn },
-    { season: "冬", key: "winter", event: "冬休み", bgm: seasonalBgm.winter },
-    { season: "冬", key: "winter", event: "学年末テスト", bgm: seasonalBgm.exam },
-    { season: "冬", key: "winter", event: "春待ち", bgm: seasonalBgm.winter },
+  const months = [
+    { month: 4, term: "1学期", bgm: termBgm.first },
+    { month: 5, term: "1学期", bgm: termBgm.first },
+    { month: 6, term: "1学期", bgm: termBgm.first },
+    { month: 7, term: "1学期", bgm: termBgm.first },
+    { month: 8, term: "夏休み", bgm: termBgm.summerBreak },
+    { month: 9, term: "2学期", bgm: termBgm.second },
+    { month: 10, term: "2学期", bgm: termBgm.second },
+    { month: 11, term: "2学期", bgm: termBgm.second },
+    { month: 12, term: "2学期", bgm: termBgm.second },
+    { month: 1, term: "3学期", bgm: termBgm.third },
+    { month: 2, term: "3学期", bgm: termBgm.third },
+    { month: 3, term: "3学期", bgm: termBgm.third },
   ];
+  const eventsByMonthWeek = {
+    "4-1": "始業式",
+    "4-2": "新歓",
+    "5-3": "中間テスト",
+    "6-2": "体育祭",
+    "7-4": "期末テスト",
+    "8-1": "夏休み",
+    "9-3": "文化祭",
+    "10-2": "模試",
+    "11-2": "進路面談",
+    "12-4": "冬休み",
+    "2-2": "学年末テスト",
+    "3-4": "春休み前",
+  };
 
   const entries = [];
   for (let year = 1; year <= 3; year += 1) {
-    for (const item of seasonalEvents) {
-      entries.push({
-        ...item,
-        year,
-        label: `${year}年${item.season}・${item.event}`,
-      });
+    for (const item of months) {
+      for (let week = 1; week <= 4; week += 1) {
+        const event =
+          year === 1 && item.month === 4 && week === 1
+            ? "入学式"
+            : eventsByMonthWeek[`${item.month}-${week}`] ?? "";
+        const labelParts = [`${year}年${item.term}`, `${item.month}月第${week}週`];
+        if (event) {
+          labelParts.push(event);
+        }
+        entries.push({
+          ...item,
+          week,
+          event,
+          label: labelParts.join("・"),
+        });
+      }
     }
   }
 
   entries[entries.length - 1] = {
     year: 3,
-    season: "冬",
-    key: "winter",
+    month: 3,
+    week: 4,
+    term: "3学期",
     event: "卒業式",
-    bgm: seasonalBgm.event,
-    label: "3年冬・卒業式",
+    bgm: termBgm.third,
+    label: "3年3学期・3月第4週・卒業式",
   };
   return entries;
 }
@@ -1220,13 +1251,27 @@ function getCalendarEntry(offset = 0) {
 
 function getSceneBgm() {
   if (state.screen === "profile" || state.screen === "intro" || state.screen === "target") {
-    return seasonalBgm.spring;
+    return termBgm.first;
   }
 
   return getCalendarEntry().bgm ?? GAMEPLAY_BGM_SRC;
 }
 
+function showProfileSelectSprites() {
+  const [bancho, gyaru] = protagonistProfiles;
+  elements.characterSprite.src = bancho.sprite;
+  elements.characterSprite.className = `${bancho.spriteClass} character-sprite--profile-bancho`;
+  elements.characterSprite.alt = bancho.spriteAlt;
+  elements.profileCompareSprite.src = gyaru.sprite;
+  elements.profileCompareSprite.className = "character-sprite character-sprite--profile-gyaru";
+  elements.profileCompareSprite.alt = gyaru.spriteAlt;
+  elements.profileCompareSprite.hidden = false;
+}
+
 function setCharacterSprite(profile) {
+  elements.profileCompareSprite.hidden = true;
+  elements.profileCompareSprite.removeAttribute("src");
+  elements.profileCompareSprite.alt = "";
   elements.characterSprite.src = profile.sprite;
   elements.characterSprite.className = profile.spriteClass;
   elements.characterSprite.alt = profile.spriteAlt;
@@ -1280,7 +1325,7 @@ function updateBgmVolume() {
 
 function scheduleEndingAssetPreload() {
   const preload = () => {
-    for (const src of Object.values(seasonalBgm)) {
+    for (const src of Object.values(termBgm)) {
       const audio = document.createElement("audio");
       audio.preload = "metadata";
       audio.src = src;

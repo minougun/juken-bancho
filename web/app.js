@@ -1,4 +1,5 @@
 const TOTAL_TURNS = 144;
+const PROFILE_SELECT_ANIMATION_MS = 1300;
 
 const statLabels = {
   academics: "学力",
@@ -420,6 +421,8 @@ const state = {
   endingBookOpen: false,
   unlockedEndingIds: loadUnlockedEndings(),
   bgmEnabled: false,
+  profileSelectionLocked: false,
+  profileSelectionToken: 0,
 };
 
 const elements = {
@@ -470,13 +473,44 @@ function startNewGame() {
   state.pendingResult = null;
   state.profile = null;
   state.targetSchool = null;
+  clearProfileSelectionAnimation();
+  state.profileSelectionToken += 1;
   setCharacterSprite(protagonistProfiles[0]);
   setBgmTrack(getSceneBgm());
   elements.advanceButton.onclick = advanceScene;
   render();
 }
 
+function startProfileSelection(profile) {
+  if (state.profileSelectionLocked) {
+    return;
+  }
+
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    selectProfile(profile);
+    return;
+  }
+
+  state.profileSelectionLocked = true;
+  const selectionToken = state.profileSelectionToken + 1;
+  state.profileSelectionToken = selectionToken;
+  elements.novelStage.dataset.selectedProfile = profile.id;
+  elements.novelStage.classList.add("novel-stage--profile-selecting", `novel-stage--selected-${profile.id}`);
+  elements.dialogueText.textContent = `${profile.title}で走り抜ける。\n三年間の予定表が、静かに開く。`;
+  elements.choiceList.querySelectorAll("button").forEach((button) => {
+    button.disabled = true;
+  });
+
+  window.setTimeout(() => {
+    if (selectionToken !== state.profileSelectionToken || state.screen !== "profile") {
+      return;
+    }
+    selectProfile(profile);
+  }, PROFILE_SELECT_ANIMATION_MS);
+}
+
 function selectProfile(profile) {
+  clearProfileSelectionAnimation();
   state.profile = profile;
   state.stats = { ...profile.initialStats };
   state.log = [`1年春。${profile.title}の三年間が始まった。`];
@@ -703,6 +737,9 @@ function render() {
   elements.novelStage.classList.toggle("novel-stage--playing", state.screen === "choices" || state.screen === "result");
   elements.novelStage.classList.toggle("novel-stage--ending", state.screen === "ending");
   elements.statsHud.hidden = state.screen === "profile" || state.screen === "intro" || state.screen === "target";
+  if (state.screen !== "profile") {
+    clearProfileSelectionAnimation();
+  }
   elements.turnText.textContent = buildTurnText();
   if (state.screen !== "ending") {
     setBgmTrack(getSceneBgm());
@@ -744,7 +781,7 @@ function renderProfileSelect() {
   resetDialogueScroll();
   elements.speakerName.textContent = "主人公選択";
   elements.sceneTag.textContent = "入学式";
-  elements.dialogueText.textContent = "三年間を誰として走り抜ける？\n仁義の番長か、マヂ情に厚い優等生ギャルか。卒業式まで、毎週の予定を選び続けろ。";
+  elements.dialogueText.textContent = "三年間をどっちの受験生で走り抜ける？\n仁義の番長か、マヂ情に厚い優等生ギャルか。卒業式まで、毎週の予定を選び続けろ。";
   elements.choiceList.replaceChildren(...protagonistProfiles.map(createProfileButton));
   elements.advanceButton.hidden = true;
 }
@@ -883,7 +920,7 @@ function createProfileButton(profile) {
   button.type = "button";
   button.setAttribute("aria-label", `${profile.title}。${profile.routeTitle}。${profile.subtitle}`);
   button.addEventListener("click", () => {
-    selectProfile(profile);
+    startProfileSelection(profile);
   });
 
   const preview = document.createElement("span");
@@ -1281,6 +1318,19 @@ function showProfileSelectSprites() {
   elements.profileCompareSprite.className = "character-sprite character-sprite--profile-gyaru";
   elements.profileCompareSprite.alt = gyaru.spriteAlt;
   elements.profileCompareSprite.hidden = false;
+}
+
+function clearProfileSelectionAnimation() {
+  state.profileSelectionLocked = false;
+  elements.novelStage.classList.remove(
+    "novel-stage--profile-selecting",
+    "novel-stage--selected-bancho",
+    "novel-stage--selected-gyaru",
+  );
+  delete elements.novelStage.dataset.selectedProfile;
+  elements.choiceList.querySelectorAll("button").forEach((button) => {
+    button.disabled = false;
+  });
 }
 
 function setCharacterSprite(profile) {

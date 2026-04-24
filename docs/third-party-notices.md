@@ -60,6 +60,17 @@ The ending CGs were generated with the built-in image generation tool and copied
 | `ギャル伝説` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebcdececec8191a86859777279050a.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/legend-gyaru.png` |
 | `不合格ギャル` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebce30fb208191a72d0d5a9c2a9938.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/failed-gyaru.png` |
 
+## Generated Seasonal Event CGs
+
+The seasonal event CGs were generated with the built-in image generation tool and copied into the project.
+
+| Event | Generated source | Local file |
+| --- | --- | --- |
+| `桜の自習室` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_02bcdcaad889b0710169ebf71634908191aa0bd2516f8c6b0f.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/spring-study-room.png` |
+| `夏祭りの単語帳` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_02bcdcaad889b0710169ebf75029548191a23078402de17734.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/summer-study-festival.png` |
+| `文化祭後の作戦会議` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_02bcdcaad889b0710169ebf7caa8288191bf98141772718872.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/autumn-festival-study.png` |
+| `雪夜の最終演習` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_02bcdcaad889b0710169ebf849ecfc8191b314ddb392a1569a.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/winter-final-study.png` |
+
 ## Considered But Not Embedded
 
 - OtoLogic `力がみなぎる`

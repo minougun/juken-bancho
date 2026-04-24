@@ -3,6 +3,7 @@ import {
   endingCatalog,
   events,
   protagonistProfiles,
+  seasonalEvents,
   statLabels,
   targetSchools,
 } from "../web/data/game-data.js";
@@ -40,6 +41,7 @@ function assertEffectShape(effects, label) {
 assertUniqueIds(protagonistProfiles, "protagonistProfiles");
 assertUniqueIds(targetSchools, "targetSchools");
 assertUniqueIds(endingCatalog, "endingCatalog");
+assertUniqueIds(seasonalEvents, "seasonalEvents");
 assertUniqueIds(cards, "cards");
 assertUniqueIds(events, "events");
 
@@ -75,6 +77,16 @@ for (const card of cards) {
   }
 }
 
+for (const event of seasonalEvents) {
+  assertEffectShape(event.effects, `seasonal event ${event.id}`);
+  if (!Number.isInteger(event.triggerTurn) || event.triggerTurn <= 0) {
+    fail(`${event.id}.triggerTurn must be a positive integer`);
+  }
+  if (!event.artwork || !event.artworkAlt) {
+    fail(`${event.id} must have artwork and artworkAlt`);
+  }
+}
+
 for (const event of events) {
   assertEffectShape(event.effects, `event ${event.id}`);
   if (typeof event.chance !== "number" || event.chance < 0 || event.chance > 1) {
@@ -85,4 +97,6 @@ for (const event of events) {
   }
 }
 
-console.log(`Data integrity ok: ${protagonistProfiles.length} profiles, ${targetSchools.length} schools, ${cards.length} cards, ${events.length} events.`);
+console.log(
+  `Data integrity ok: ${protagonistProfiles.length} profiles, ${targetSchools.length} schools, ${cards.length} cards, ${seasonalEvents.length} seasonal events, ${events.length} random events.`,
+);

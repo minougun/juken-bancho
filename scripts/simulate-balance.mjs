@@ -4,6 +4,7 @@ import {
   cards,
   events,
   protagonistProfiles,
+  seasonalEvents,
   statLabels,
   targetSchools,
 } from "../web/data/game-data.js";
@@ -99,6 +100,16 @@ function tryApplyRandomEvent(stats, turn, rng) {
     }
   }
   return null;
+}
+
+function tryApplySeasonalEvent(stats, turn) {
+  const event = seasonalEvents.find((candidate) => candidate.triggerTurn === turn);
+  if (!event) {
+    return null;
+  }
+
+  applyEffects(stats, event.effects);
+  return event.id;
 }
 
 function isCardAvailable(card, state) {
@@ -210,6 +221,7 @@ function runSimulation(profile, school, strategy, seed) {
       state.usedCardIds.add(card.id);
     }
     tryApplyRandomEvent(state.stats, state.turn, rng);
+    tryApplySeasonalEvent(state.stats, state.turn);
     applyTargetSchoolPressure(state.stats, school, state.turn, state.totalTurns);
     applyPressureRules(state.stats);
   }

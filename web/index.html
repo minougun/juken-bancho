@@ -16,6 +16,7 @@
           </div>
           <div class="system-controls" aria-label="システム操作">
             <button id="endingBookButton" class="hud-button" type="button" aria-expanded="false">結末帳</button>
+            <button id="eventGalleryButton" class="hud-button" type="button" aria-expanded="false" hidden>回想帳</button>
             <button id="bgmButton" class="hud-button" type="button" aria-pressed="false">BGM</button>
             <label class="volume-control">
               <span>音量</span>
@@ -39,6 +40,17 @@
             <button id="endingBookClearButton" class="hud-button hud-button--compact" type="button">記録消去</button>
           </div>
           <div id="endingBookList" class="ending-book__list"></div>
+        </aside>
+
+        <aside id="eventGalleryPanel" class="ending-book event-gallery" aria-label="回収済みのイベント一枚絵" hidden>
+          <div class="ending-book__header">
+            <div>
+              <p class="scene-tag">回想帳</p>
+              <p id="eventGalleryCount" class="ending-book__count"></p>
+            </div>
+            <button id="eventGalleryClearButton" class="hud-button hud-button--compact" type="button">回想消去</button>
+          </div>
+          <div id="eventGalleryList" class="ending-book__list cg-gallery-list"></div>
         </aside>
 
         <div class="scene-backdrop" aria-hidden="true">

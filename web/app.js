@@ -1,5 +1,6 @@
 import {
   ENDING_STORAGE_KEY,
+  EVENT_CG_STORAGE_KEY,
   GAMEPLAY_BGM_SRC,
   PROFILE_SELECT_ANIMATION_MS,
   TOTAL_TURNS,
@@ -7,6 +8,7 @@ import {
   endingCatalog,
   events,
   protagonistProfiles,
+  seasonalEvents,
   statLabels,
   targetSchools,
   termBgm,
@@ -27,7 +29,9 @@ const state = {
   profile: null,
   targetSchool: null,
   endingBookOpen: false,
+  eventGalleryOpen: false,
   unlockedEndingIds: loadUnlockedEndings(),
+  unlockedEventCgIds: loadUnlockedEventCgs(),
   bgmEnabled: false,
   profileSelectionLocked: false,
   profileSelectionToken: 0,
@@ -50,6 +54,11 @@ const elements = {
   endingBookCount: document.querySelector("#endingBookCount"),
   endingBookList: document.querySelector("#endingBookList"),
   endingBookClearButton: document.querySelector("#endingBookClearButton"),
+  eventGalleryButton: document.querySelector("#eventGalleryButton"),
+  eventGalleryPanel: document.querySelector("#eventGalleryPanel"),
+  eventGalleryCount: document.querySelector("#eventGalleryCount"),
+  eventGalleryList: document.querySelector("#eventGalleryList"),
+  eventGalleryClearButton: document.querySelector("#eventGalleryClearButton"),
   endingArtwork: document.querySelector("#endingArtwork"),
   characterSprite: document.querySelector("#characterSprite"),
   profileCompareSprite: document.querySelector("#profileCompareSprite"),
@@ -61,6 +70,8 @@ const elements = {
 
 elements.endingBookButton.addEventListener("click", toggleEndingBook);
 elements.endingBookClearButton.addEventListener("click", clearEndingBook);
+elements.eventGalleryButton.addEventListener("click", toggleEventGallery);
+elements.eventGalleryClearButton.addEventListener("click", clearEventGallery);
 elements.restartTopButton.addEventListener("click", startNewGame);
 elements.bgmButton.addEventListener("click", toggleBgm);
 elements.volumeSlider.addEventListener("input", updateBgmVolume);
@@ -82,6 +93,8 @@ function startNewGame() {
   state.pendingResult = null;
   state.profile = null;
   state.targetSchool = null;
+  state.endingBookOpen = false;
+  state.eventGalleryOpen = false;
   state.characterCentered = false;
   clearProfileSelectionAnimation();
   state.profileSelectionToken += 1;
@@ -151,9 +164,13 @@ function chooseCard(card) {
   }
 
   const event = tryApplyRandomEvent();
+  const seasonalEvent = tryApplySeasonalEvent();
   const pressureMessages = [...applyTargetSchoolPressure(), ...applyPressureRules()];
   const effectText = formatEffectSentence(card.effects);
   const eventText = event ? `\n\n${event.speaker}「${event.message}」${formatEffectSentence(event.effects)}` : "";
+  const seasonalText = seasonalEvent
+    ? `\n\n${seasonalEvent.title}\n${seasonalEvent.text}${formatEffectSentence(seasonalEvent.effects)}`
+    : "";
   const pressureText = pressureMessages.length ? `\n\n${pressureMessages.join("\n")}` : "";
 
   if (state.turn >= state.totalTurns) {
@@ -161,11 +178,13 @@ function chooseCard(card) {
   }
 
   const reactionText = buildCardReaction(card);
-  const resultText = `${card.resultLead}\n${card.flavor}${reactionText}${effectText}${eventText}${pressureText}`;
+  const resultText = `${card.resultLead}\n${card.flavor}${reactionText}${effectText}${eventText}${seasonalText}${pressureText}`;
   state.pendingResult = {
-    speaker: getCardSpeaker(card),
-    sceneTag: event ? event.title : sceneNameForTurn(),
+    speaker: seasonalEvent?.speaker ?? getCardSpeaker(card),
+    sceneTag: seasonalEvent?.sceneTag ?? (event ? event.title : sceneNameForTurn()),
     text: resultText,
+    artwork: seasonalEvent?.artwork,
+    artworkAlt: seasonalEvent?.artworkAlt,
   };
   state.log.push(resultText);
   state.screen = "result";
@@ -222,6 +241,17 @@ function tryApplyRandomEvent() {
   }
 
   return null;
+}
+
+function tryApplySeasonalEvent() {
+  const event = seasonalEvents.find((candidate) => candidate.triggerTurn === state.turn);
+  if (!event) {
+    return null;
+  }
+
+  applyEffects(event.effects);
+  unlockEventCg(event.id);
+  return event;
 }
 
 function applyPressureRules() {
@@ -361,6 +391,7 @@ function render() {
   }
   renderStats();
   renderEndingBook();
+  renderEventGallery();
 
   if (state.screen === "profile") {
     renderProfileSelect();
@@ -439,7 +470,11 @@ function renderChoices() {
 }
 
 function renderResult() {
-  hideEndingArtwork();
+  if (state.pendingResult.artwork) {
+    showArtwork(state.pendingResult.artwork, state.pendingResult.artworkAlt);
+  } else {
+    hideEndingArtwork();
+  }
   resetDialogueScroll();
   elements.speakerName.textContent = state.pendingResult.speaker;
   elements.sceneTag.textContent = state.pendingResult.sceneTag;
@@ -454,7 +489,8 @@ function renderEnding() {
   const ending = attachEndingAssets(resolveEnding());
   unlockEnding(ending.id);
   renderEndingBook();
-  showEndingArtwork(ending);
+  renderEventGallery();
+  showArtwork(ending.artwork, ending.artworkAlt);
   setBgmTrack(ending.bgm);
   resetDialogueScroll();
   elements.speakerName.textContent = "合格発表";
@@ -471,9 +507,9 @@ function attachEndingAssets(ending) {
   return { ...catalogEntry, ...ending };
 }
 
-function showEndingArtwork(ending) {
-  elements.endingArtwork.src = ending.artwork;
-  elements.endingArtwork.alt = ending.artworkAlt;
+function showArtwork(src, alt) {
+  elements.endingArtwork.src = src;
+  elements.endingArtwork.alt = alt;
   elements.endingArtwork.hidden = false;
 }
 
@@ -489,7 +525,11 @@ function resetDialogueScroll() {
 
 function toggleEndingBook() {
   state.endingBookOpen = !state.endingBookOpen;
+  if (state.endingBookOpen) {
+    state.eventGalleryOpen = false;
+  }
   renderEndingBook();
+  renderEventGallery();
 }
 
 function clearEndingBook() {
@@ -500,7 +540,9 @@ function clearEndingBook() {
 
   state.unlockedEndingIds = new Set();
   saveUnlockedEndings();
+  state.eventGalleryOpen = false;
   renderEndingBook();
+  renderEventGallery();
 }
 
 function renderEndingBook() {
@@ -510,6 +552,72 @@ function renderEndingBook() {
   elements.endingBookCount.textContent = `${unlockedCount}/${endingCatalog.length} 解放`;
   elements.endingBookPanel.hidden = !state.endingBookOpen;
   elements.endingBookList.replaceChildren(...endingCatalog.map(createEndingRecord));
+}
+
+function toggleEventGallery() {
+  if (!hasEventGalleryAccess()) {
+    return;
+  }
+
+  state.eventGalleryOpen = !state.eventGalleryOpen;
+  if (state.eventGalleryOpen) {
+    state.endingBookOpen = false;
+  }
+  renderEndingBook();
+  renderEventGallery();
+}
+
+function clearEventGallery() {
+  const shouldClear = window.confirm("回想帳の記録を消しますか？");
+  if (!shouldClear) {
+    return;
+  }
+
+  state.unlockedEventCgIds = new Set();
+  saveUnlockedEventCgs();
+  renderEventGallery();
+}
+
+function renderEventGallery() {
+  const unlockedCount = state.unlockedEventCgIds.size;
+  const hasAccess = hasEventGalleryAccess();
+  elements.eventGalleryButton.hidden = !hasAccess;
+  elements.eventGalleryButton.textContent = `回想帳 ${unlockedCount}/${seasonalEvents.length}`;
+  elements.eventGalleryButton.setAttribute("aria-expanded", state.eventGalleryOpen ? "true" : "false");
+  elements.eventGalleryCount.textContent = `${unlockedCount}/${seasonalEvents.length} 回収`;
+  elements.eventGalleryPanel.hidden = !hasAccess || !state.eventGalleryOpen;
+  elements.eventGalleryList.replaceChildren(...seasonalEvents.map(createEventGalleryRecord));
+}
+
+function hasEventGalleryAccess() {
+  return state.unlockedEndingIds.size > 0;
+}
+
+function createEventGalleryRecord(event, index) {
+  const unlocked = state.unlockedEventCgIds.has(event.id);
+  const record = document.createElement("article");
+  record.className = unlocked ? "ending-record cg-record" : "ending-record cg-record cg-record--locked";
+
+  if (unlocked) {
+    const image = document.createElement("img");
+    image.className = "cg-record__image";
+    image.src = event.artwork;
+    image.alt = event.artworkAlt;
+    image.loading = "lazy";
+    image.decoding = "async";
+    record.append(image);
+  }
+
+  const title = document.createElement("p");
+  title.className = "ending-record__title";
+  title.textContent = unlocked ? `${index + 1}. ${event.title}` : `${index + 1}. ？？？`;
+
+  const body = document.createElement("p");
+  body.className = "ending-record__body";
+  body.textContent = unlocked ? event.hint : "まだ回収していない一枚絵。";
+
+  record.append(title, body);
+  return record;
 }
 
 function createEndingRecord(ending, index) {
@@ -602,6 +710,15 @@ function unlockEnding(endingId) {
   saveUnlockedEndings();
 }
 
+function unlockEventCg(eventId) {
+  if (state.unlockedEventCgIds.has(eventId)) {
+    return;
+  }
+
+  state.unlockedEventCgIds.add(eventId);
+  saveUnlockedEventCgs();
+}
+
 function loadUnlockedEndings() {
   try {
     const raw = window.localStorage.getItem(ENDING_STORAGE_KEY);
@@ -613,11 +730,30 @@ function loadUnlockedEndings() {
   }
 }
 
+function loadUnlockedEventCgs() {
+  try {
+    const raw = window.localStorage.getItem(EVENT_CG_STORAGE_KEY);
+    const values = raw ? JSON.parse(raw) : [];
+    const knownIds = new Set(seasonalEvents.map((event) => event.id));
+    return new Set(values.filter((id) => knownIds.has(id)));
+  } catch {
+    return new Set();
+  }
+}
+
 function saveUnlockedEndings() {
   try {
     window.localStorage.setItem(ENDING_STORAGE_KEY, JSON.stringify([...state.unlockedEndingIds]));
   } catch {
     // Ending completion is optional local progress; gameplay should continue even if storage is unavailable.
+  }
+}
+
+function saveUnlockedEventCgs() {
+  try {
+    window.localStorage.setItem(EVENT_CG_STORAGE_KEY, JSON.stringify([...state.unlockedEventCgIds]));
+  } catch {
+    // Event CG collection is optional local progress; gameplay should continue even if storage is unavailable.
   }
 }
 
@@ -1019,6 +1155,12 @@ function scheduleEndingAssetPreload() {
       const audio = document.createElement("audio");
       audio.preload = "metadata";
       audio.src = ending.bgm;
+    }
+
+    for (const event of seasonalEvents) {
+      const image = new Image();
+      image.decoding = "async";
+      image.src = event.artwork;
     }
   };
 

@@ -11,6 +11,7 @@ export const statLabels = {
 };
 
 export const ENDING_STORAGE_KEY = "jukenBancho.unlockedEndings.v1";
+export const EVENT_CG_STORAGE_KEY = "jukenBancho.unlockedEventCgs.v1";
 export const GAMEPLAY_BGM_SRC = "./assets/audio/flesh-and-blood.mp3";
 
 export const termBgm = {
@@ -244,6 +245,65 @@ export const endingCatalog = [
     artworkAlt: "雨の教室で机に向かい、参考書を見つめる優等生ギャル",
     bgm: "./assets/audio/endings/failed-game-over.ogg",
     bgmTitle: "Game Over",
+  },
+];
+
+export const seasonalEvents = [
+  {
+    id: "spring_study_room",
+    title: "桜の自習室",
+    term: "1学期",
+    triggerTurn: 10,
+    speaker: "放課後の教室",
+    sceneTag: "1学期イベント",
+    text:
+      "桜が散る窓際で、参考書のページだけがやけに白く光っていた。\n仲間の笑い声も、シャーペンの音も、今日だけは同じ方向を向いている。",
+    hint: "1学期、桜の教室で机に向かった記憶。",
+    artwork: "./assets/images/events/spring-study-room.png",
+    artworkAlt: "桜が見える春の教室で、受験番長と優等生ギャルが仲間に囲まれながら勉強する",
+    effects: { academics: 1, trust: 2, face: 0, looks: 0, stamina: 0, stress: -1 },
+  },
+  {
+    id: "summer_study_festival",
+    title: "夏祭りの単語帳",
+    term: "夏休み",
+    triggerTurn: 18,
+    speaker: "夏祭りの夜",
+    sceneTag: "夏休みイベント",
+    text:
+      "提灯の明かりの下、かき氷のカップと単語帳が並んだ。\n遊びきる顔も、受験生の顔も、どっちも捨てない夏にする。",
+    hint: "夏休み、祭りの灯りの下で単語帳を開いた記憶。",
+    artwork: "./assets/images/events/summer-study-festival.png",
+    artworkAlt: "夏祭りの夜、受験番長と優等生ギャルが仲間たちと参考書やかき氷を持って歩く",
+    effects: { academics: 1, trust: 2, face: 1, looks: 1, stamina: -2, stress: -1 },
+  },
+  {
+    id: "autumn_culture_cleanup",
+    title: "文化祭後の作戦会議",
+    term: "2学期",
+    triggerTurn: 72,
+    speaker: "文化祭の後",
+    sceneTag: "2学期イベント",
+    text:
+      "文化祭の飾りを片づけた後、机の上に残ったのは問題集だった。\n騒いだ分だけ、次は点数で取り返す。誰からともなく、そう決まった。",
+    hint: "2学期、文化祭の余韻の中で進路を見直した記憶。",
+    artwork: "./assets/images/events/autumn-festival-study.png",
+    artworkAlt: "文化祭後の秋の教室で、受験番長と優等生ギャルが飾り付けの残る机で参考書を開く",
+    effects: { academics: 2, trust: 1, face: 1, looks: 0, stamina: -2, stress: 1 },
+  },
+  {
+    id: "winter_final_classroom",
+    title: "雪夜の最終演習",
+    term: "3学期",
+    triggerTurn: 132,
+    speaker: "雪夜の教室",
+    sceneTag: "3学期イベント",
+    text:
+      "窓の外では雪が降り、教室の灯りだけが夜に浮いていた。\n最後の一問に向かう背中を、仲間たちは声を落として見守っている。",
+    hint: "3学期、雪の夜に最後の演習へ向かった記憶。",
+    artwork: "./assets/images/events/winter-final-study.png",
+    artworkAlt: "雪の夜の教室で、受験番長と優等生ギャルが仲間に見守られながら受験勉強をする",
+    effects: { academics: 3, trust: 1, face: 0, looks: -1, stamina: -4, stress: 3 },
   },
 ];
 

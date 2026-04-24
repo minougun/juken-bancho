@@ -423,6 +423,7 @@ const state = {
   bgmEnabled: false,
   profileSelectionLocked: false,
   profileSelectionToken: 0,
+  characterCentered: false,
 };
 
 const elements = {
@@ -473,6 +474,7 @@ function startNewGame() {
   state.pendingResult = null;
   state.profile = null;
   state.targetSchool = null;
+  state.characterCentered = false;
   clearProfileSelectionAnimation();
   state.profileSelectionToken += 1;
   setCharacterSprite(protagonistProfiles[0]);
@@ -516,6 +518,7 @@ function selectProfile(profile) {
   state.log = [`1年春。${profile.title}の三年間が始まった。`];
   state.screen = "intro";
   state.introIndex = 0;
+  state.characterCentered = true;
   setCharacterSprite(profile);
   render();
 }
@@ -736,6 +739,10 @@ function render() {
   elements.novelStage.classList.toggle("novel-stage--profile", state.screen === "profile");
   elements.novelStage.classList.toggle("novel-stage--playing", state.screen === "choices" || state.screen === "result");
   elements.novelStage.classList.toggle("novel-stage--ending", state.screen === "ending");
+  elements.novelStage.classList.toggle(
+    "novel-stage--route-centered",
+    state.characterCentered && state.screen !== "profile" && state.screen !== "ending",
+  );
   elements.statsHud.hidden = state.screen === "profile" || state.screen === "intro" || state.screen === "target";
   if (state.screen !== "profile") {
     clearProfileSelectionAnimation();

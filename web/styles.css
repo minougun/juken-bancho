@@ -346,6 +346,7 @@ h1 {
     opacity 1.45s ease,
     width 1.65s cubic-bezier(0.16, 1, 0.3, 1),
     filter 1.65s ease;
+  will-change: transform, opacity;
 }
 
 .character-sprite--gyaru {
@@ -401,6 +402,19 @@ h1 {
 .novel-stage--selected-gyaru .character-sprite--profile-bancho {
   opacity: 0;
   transform: translateX(-28px);
+}
+
+.novel-stage--route-centered .character-sprite {
+  left: 50%;
+  right: auto;
+  width: min(36vw, 360px);
+  opacity: 1;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 20px 24px rgba(0, 0, 0, 0.2));
+}
+
+.novel-stage--route-centered .character-sprite--gyaru {
+  width: min(34vw, 340px);
 }
 
 .ending-artwork {
@@ -805,6 +819,20 @@ h1 {
     transform: translateX(-34px);
   }
 
+  .novel-stage--route-centered .character-sprite {
+    left: 50%;
+    right: auto;
+    bottom: 53svh;
+    width: min(210px, 56vw);
+    max-height: 236px;
+    opacity: 0.96;
+    transform: translateX(-50%);
+  }
+
+  .novel-stage--route-centered .character-sprite--gyaru {
+    width: min(196px, 52vw);
+  }
+
   .dialogue-box {
     left: 8px;
     right: 8px;
@@ -923,6 +951,12 @@ h1 {
   .character-sprite {
     opacity: 0.08;
   }
+
+  .novel-stage--route-centered .character-sprite {
+    bottom: 54svh;
+    max-height: 198px;
+    opacity: 0.9;
+  }
 }
 
 @media (orientation: landscape) and (max-height: 520px) {
@@ -972,6 +1006,17 @@ h1 {
 
   .character-sprite {
     display: none;
+  }
+
+  .novel-stage--route-centered .character-sprite {
+    display: block;
+    left: 50%;
+    right: auto;
+    bottom: 8px;
+    width: min(16vw, 128px);
+    max-height: calc(100svh - 18px);
+    opacity: 0.22;
+    transform: translateX(-50%);
   }
 
   .character-sprite--profile-bancho,

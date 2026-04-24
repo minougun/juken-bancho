@@ -611,17 +611,17 @@ h1 {
   }
 
   .top-hud {
-    gap: 10px;
-    padding: max(10px, env(safe-area-inset-top)) 10px 8px;
+    gap: 7px;
+    padding: max(8px, env(safe-area-inset-top)) 8px 7px;
   }
 
   .eyebrow {
-    font-size: 10px;
+    display: none;
   }
 
   h1 {
-    margin-top: 2px;
-    font-size: 30px;
+    margin-top: 0;
+    font-size: 26px;
     line-height: 1.08;
   }
 
@@ -638,6 +638,7 @@ h1 {
 
   .hud-button {
     width: 100%;
+    min-height: 38px;
     min-width: 0;
     padding: 8px 6px;
     font-size: 12px;
@@ -645,22 +646,14 @@ h1 {
   }
 
   .volume-control {
-    order: 4;
-    grid-column: 1 / -1;
-    min-height: 40px;
-    padding: 7px 9px;
-    font-size: 12px;
-  }
-
-  .volume-control input {
-    width: 100%;
+    display: none;
   }
 
   .stats-hud {
     left: 8px;
-    top: 184px;
+    top: 96px;
     width: calc(100% - 16px);
-    padding: 10px;
+    padding: 9px 10px;
   }
 
   .turn-text {
@@ -690,7 +683,7 @@ h1 {
 
   .ending-book {
     left: 8px;
-    top: 330px;
+    top: 222px;
     width: calc(100% - 16px);
     max-height: min(38svh, 270px);
     padding: 10px;
@@ -706,32 +699,32 @@ h1 {
 
   .character-sprite {
     right: 50%;
-    bottom: 44svh;
-    width: min(220px, 62vw);
-    max-height: 300px;
+    bottom: 42svh;
+    width: min(190px, 54vw);
+    max-height: 250px;
     transform: translateX(50%);
-    opacity: 0.22;
+    opacity: 0.12;
   }
 
   .character-sprite--gyaru {
-    width: min(205px, 58vw);
+    width: min(180px, 52vw);
   }
 
   .character-sprite--profile-bancho {
     left: 7vw;
     right: auto;
     bottom: 50svh;
-    width: min(150px, 39vw);
+    width: min(134px, 36vw);
     transform: none;
-    opacity: 0.32;
+    opacity: 0.28;
   }
 
   .character-sprite--profile-gyaru {
     right: 7vw;
     bottom: 50svh;
-    width: min(140px, 37vw);
+    width: min(126px, 34vw);
     transform: none;
-    opacity: 0.36;
+    opacity: 0.3;
   }
 
   .dialogue-box {
@@ -740,9 +733,13 @@ h1 {
     bottom: max(8px, env(safe-area-inset-bottom));
     gap: 9px;
     min-height: 0;
-    max-height: min(58svh, 430px);
+    max-height: min(53svh, 410px);
     overflow: auto;
     padding: 12px;
+  }
+
+  .novel-stage--profile .dialogue-box {
+    max-height: min(46svh, 360px);
   }
 
   .speaker-row {
@@ -771,21 +768,12 @@ h1 {
   }
 
   .choice-button--profile {
-    grid-template-columns: 82px minmax(0, 1fr);
-    min-height: 136px;
+    grid-template-columns: 1fr;
+    min-height: 78px;
   }
 
   .profile-preview {
-    min-height: 112px;
-  }
-
-  .profile-preview__image {
-    width: min(92px, 100%);
-    max-height: 120px;
-  }
-
-  .profile-preview__image--gyaru {
-    width: min(84px, 94%);
+    display: none;
   }
 
   .choice-title {
@@ -819,7 +807,7 @@ h1 {
 
 @media (max-width: 380px) {
   .stats-hud {
-    top: 178px;
+    top: 94px;
   }
 
   .stat-row {
@@ -838,11 +826,11 @@ h1 {
 
 @media (max-height: 620px) and (max-width: 560px) {
   .stats-hud {
-    top: 168px;
+    top: 92px;
   }
 
   .ending-book {
-    top: 292px;
+    top: 214px;
     max-height: 32svh;
   }
 
@@ -850,8 +838,12 @@ h1 {
     max-height: 50svh;
   }
 
+  .novel-stage--profile .dialogue-box {
+    max-height: 44svh;
+  }
+
   .character-sprite {
-    opacity: 0.14;
+    opacity: 0.08;
   }
 }
 

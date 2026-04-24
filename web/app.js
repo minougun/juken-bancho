@@ -422,6 +422,7 @@ const state = {
 };
 
 const elements = {
+  novelStage: document.querySelector(".novel-stage"),
   statsHud: document.querySelector("#statsHud"),
   turnText: document.querySelector("#turnText"),
   statsGrid: document.querySelector("#statsGrid"),
@@ -688,6 +689,11 @@ function resolveEnding() {
 }
 
 function render() {
+  elements.novelStage.dataset.screen = state.screen;
+  elements.novelStage.classList.toggle("novel-stage--profile", state.screen === "profile");
+  elements.novelStage.classList.toggle("novel-stage--playing", state.screen === "choices" || state.screen === "result");
+  elements.novelStage.classList.toggle("novel-stage--ending", state.screen === "ending");
+  elements.statsHud.hidden = state.screen === "profile" || state.screen === "intro" || state.screen === "target";
   elements.turnText.textContent = buildTurnText();
   if (state.screen !== "ending") {
     setBgmTrack(getSceneBgm());

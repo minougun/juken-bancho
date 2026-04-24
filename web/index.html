@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>受験番長</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="novel-shell" aria-labelledby="game-title">
+      <section class="novel-stage" aria-label="受験番長 ゲーム画面">
+        <header class="top-hud">
+          <div class="title-lockup">
+            <p class="eyebrow">JUKEN BANCHO / AFTER SCHOOL</p>
+            <h1 id="game-title">受験番長</h1>
+          </div>
+          <div class="system-controls" aria-label="システム操作">
+            <button id="endingBookButton" class="hud-button" type="button" aria-expanded="false">結末帳</button>
+            <button id="bgmButton" class="hud-button" type="button" aria-pressed="false">BGM</button>
+            <label class="volume-control">
+              <span>音量</span>
+              <input id="volumeSlider" type="range" min="0" max="100" value="32" />
+            </label>
+            <button id="restartTopButton" class="hud-button" type="button">最初から</button>
+          </div>
+        </header>
+
+        <aside id="statsHud" class="stats-hud" aria-label="現在のステータス">
+          <p id="turnText" class="turn-text"></p>
+          <div id="statsGrid" class="stats-grid"></div>
+        </aside>
+
+        <aside id="endingBookPanel" class="ending-book" aria-label="解放済みの結末" hidden>
+          <div class="ending-book__header">
+            <div>
+              <p class="scene-tag">結末帳</p>
+              <p id="endingBookCount" class="ending-book__count"></p>
+            </div>
+            <button id="endingBookClearButton" class="hud-button hud-button--compact" type="button">記録消去</button>
+          </div>
+          <div id="endingBookList" class="ending-book__list"></div>
+        </aside>
+
+        <div class="scene-backdrop" aria-hidden="true">
+          <div class="school-building"></div>
+          <div class="school-windows"></div>
+          <div class="sun-slash"></div>
+        </div>
+
+        <img
+          id="characterSprite"
+          class="character-sprite character-sprite--bancho"
+          src="./assets/images/protagonist-bancho-transparent.png"
+          alt="白い鉢巻きを巻き、学ラン姿で参考書とシャープペンを構える受験番長"
+          decoding="async"
+        />
+
+        <img id="endingArtwork" class="ending-artwork" alt="" decoding="async" hidden />
+
+        <section class="dialogue-box" aria-live="polite">
+          <div class="speaker-row">
+            <p id="speakerName" class="speaker-name">受験番長</p>
+            <p id="sceneTag" class="scene-tag">放課後</p>
+          </div>
+          <p id="dialogueText" class="dialogue-text"></p>
+          <div id="choiceList" class="choice-list"></div>
+          <button id="advanceButton" class="advance-button" type="button" hidden>次へ</button>
+        </section>
+      </section>
+
+      <p class="credit">
+        BGM素材: OpenGameArt.org / CC0
+      </p>
+    </main>
+
+    <audio id="bgmAudio" src="./assets/audio/flesh-and-blood.mp3" loop preload="auto"></audio>
+
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>

@@ -1373,7 +1373,7 @@ async function playBgm() {
 }
 
 function updateBgmButton() {
-  elements.bgmButton.textContent = state.bgmEnabled ? "BGM停止" : "BGM再生";
+  elements.bgmButton.textContent = state.bgmEnabled ? "BGM ON" : "BGM OFF";
   elements.bgmButton.setAttribute("aria-pressed", state.bgmEnabled ? "true" : "false");
 }
 

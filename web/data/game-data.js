@@ -12,6 +12,7 @@ export const statLabels = {
 
 export const ENDING_STORAGE_KEY = "jukenBancho.unlockedEndings.v1";
 export const EVENT_CG_STORAGE_KEY = "jukenBancho.unlockedEventCgs.v1";
+export const STUDY_REVIEW_STORAGE_KEY = "jukenBancho.studyReview.v1";
 export const GAMEPLAY_BGM_SRC = "./assets/audio/flesh-and-blood.mp3";
 
 export const termBgm = {

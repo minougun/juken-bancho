@@ -18,6 +18,7 @@ const profiles = [
 ];
 const endingStorageKey = "jukenBancho.unlockedEndings.v1";
 const eventCgStorageKey = "jukenBancho.unlockedEventCgs.v1";
+const studyReviewStorageKey = "jukenBancho.studyReview.v1";
 
 function getFreePort() {
   return new Promise((resolvePort, reject) => {
@@ -183,6 +184,14 @@ async function playToFirstSeasonalEvent(page, label, profile) {
     await page.waitForFunction(() => document.querySelector(".novel-stage").dataset.screen === "studyQuiz");
     await assertNoHorizontalOverflow(page, `${label} study quiz ${week + 1}`);
     await page.locator("#choiceList button").first().click();
+    if (week === 0) {
+      await page.locator("#studyReviewButton").click();
+      await page.locator("#studyReviewPanel:not([hidden])").waitFor();
+      await page.waitForFunction(() => document.querySelectorAll("#studyReviewList .study-review-record").length > 0);
+      await assertNoHorizontalOverflow(page, `${label} study review`);
+      await screenshot(page, `${label}-study-review`);
+      await page.locator("#studyReviewBackButton").click();
+    }
     if (week < 9) {
       await page.getByRole("button", { name: "次の週へ" }).click();
     }
@@ -216,11 +225,24 @@ async function runCollectionCase(browser, baseUrl, viewport) {
   const label = `${viewport.name}-collections`;
   const page = await browser.newPage({ viewport, reducedMotion: "reduce" });
   await page.addInitScript(
-    ({ endingKey, eventKey }) => {
+    ({ endingKey, eventKey, studyKey }) => {
       window.localStorage.setItem(endingKey, JSON.stringify(["passed_bancho"]));
       window.localStorage.setItem(eventKey, JSON.stringify(["spring_study_room:bancho"]));
+      window.localStorage.setItem(
+        studyKey,
+        JSON.stringify([
+          {
+            id: "math_quadratic",
+            attempts: 2,
+            correct: 1,
+            lastAnswerIndex: 0,
+            lastCorrect: true,
+            lastAnsweredAt: "2026-04-26T00:00:00.000Z",
+          },
+        ]),
+      );
     },
-    { endingKey: endingStorageKey, eventKey: eventCgStorageKey },
+    { endingKey: endingStorageKey, eventKey: eventCgStorageKey, studyKey: studyReviewStorageKey },
   );
   await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("#choiceList button");
@@ -242,6 +264,14 @@ async function runCollectionCase(browser, baseUrl, viewport) {
   await page.locator("#eventGalleryList button").first().click();
   await assertArtworkViewer(page, `${label} event artwork`, "events/bancho/spring-study-room-bancho.png");
   await screenshot(page, `${label}-event-artwork`);
+  await page.locator("#artworkBackButton").click();
+  await page.locator("#eventGalleryBackButton").click();
+
+  await page.locator("#studyReviewButton").click();
+  await page.locator("#studyReviewPanel:not([hidden])").waitFor();
+  await page.waitForFunction(() => document.querySelectorAll("#studyReviewList .study-review-record").length > 0);
+  await assertNoHorizontalOverflow(page, `${label} seeded study review`);
+  await screenshot(page, `${label}-seeded-study-review`);
   await page.close();
 }
 

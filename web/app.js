@@ -3,6 +3,7 @@ import {
   EVENT_CG_STORAGE_KEY,
   GAMEPLAY_BGM_SRC,
   PROFILE_SELECT_ANIMATION_MS,
+  STUDY_REVIEW_STORAGE_KEY,
   TOTAL_TURNS,
   cards,
   endingCatalog,
@@ -37,6 +38,7 @@ const state = {
   artworkReturnScreen: "endingBook",
   unlockedEndingIds: loadUnlockedEndings(),
   unlockedEventCgIds: loadUnlockedEventCgs(),
+  studyReviewRecords: loadStudyReviewRecords(),
   bgmEnabled: false,
   sfxEnabled: true,
   pendingBgmSrc: GAMEPLAY_BGM_SRC,
@@ -46,6 +48,7 @@ const state = {
   characterCentered: false,
   endingBookRenderKey: "",
   eventGalleryRenderKey: "",
+  studyReviewRenderKey: "",
 };
 
 const elements = {
@@ -71,6 +74,12 @@ const elements = {
   eventGalleryList: document.querySelector("#eventGalleryList"),
   eventGalleryClearButton: document.querySelector("#eventGalleryClearButton"),
   eventGalleryBackButton: document.querySelector("#eventGalleryBackButton"),
+  studyReviewButton: document.querySelector("#studyReviewButton"),
+  studyReviewPanel: document.querySelector("#studyReviewPanel"),
+  studyReviewCount: document.querySelector("#studyReviewCount"),
+  studyReviewList: document.querySelector("#studyReviewList"),
+  studyReviewClearButton: document.querySelector("#studyReviewClearButton"),
+  studyReviewBackButton: document.querySelector("#studyReviewBackButton"),
   artworkViewer: document.querySelector("#artworkViewer"),
   artworkViewerLabel: document.querySelector("#artworkViewerLabel"),
   artworkViewerTitle: document.querySelector("#artworkViewerTitle"),
@@ -96,6 +105,9 @@ elements.endingBookBackButton.addEventListener("click", returnFromLibraryPage);
 elements.eventGalleryButton.addEventListener("click", openEventGalleryPage);
 elements.eventGalleryClearButton.addEventListener("click", clearEventGallery);
 elements.eventGalleryBackButton.addEventListener("click", returnFromLibraryPage);
+elements.studyReviewButton.addEventListener("click", openStudyReviewPage);
+elements.studyReviewClearButton.addEventListener("click", clearStudyReview);
+elements.studyReviewBackButton.addEventListener("click", returnFromLibraryPage);
 elements.artworkBackButton.addEventListener("click", returnFromArtworkViewer);
 elements.restartTopButton.addEventListener("click", startNewGame);
 elements.bgmButton.addEventListener("click", toggleBgm);
@@ -216,6 +228,7 @@ function answerStudyQuiz(answerIndex) {
   const { card, cardEffects, question } = state.pendingStudyQuiz;
   const correct = answerIndex === question.answerIndex;
   const adjustedEffects = applyStudyQuizResult(cardEffects, card, correct);
+  recordStudyQuestion(question, answerIndex, correct);
   state.pendingStudyQuiz = null;
   completeCardChoice(card, adjustedEffects, { question, correct });
 }
@@ -520,7 +533,7 @@ function resolveEnding() {
 }
 
 function render() {
-  const isLibraryScreen = state.screen === "endingBook" || state.screen === "eventGallery";
+  const isLibraryScreen = state.screen === "endingBook" || state.screen === "eventGallery" || state.screen === "studyReview";
   const isArtworkViewer = state.screen === "artworkViewer";
   const isFullPageScreen = isLibraryScreen || isArtworkViewer;
   elements.novelStage.dataset.screen = state.screen;
@@ -544,6 +557,7 @@ function render() {
   renderStats();
   renderEndingBook();
   renderEventGallery();
+  renderStudyReview();
   renderArtworkViewer();
   renderSkipIntroButton();
 
@@ -782,6 +796,23 @@ function clearEventGallery() {
   renderEventGallery();
 }
 
+function openStudyReviewPage() {
+  state.returnScreen = getReturnableScreen();
+  state.screen = "studyReview";
+  render();
+}
+
+function clearStudyReview() {
+  const shouldClear = window.confirm("復習帳の記録を消しますか？");
+  if (!shouldClear) {
+    return;
+  }
+
+  state.studyReviewRecords = new Map();
+  saveStudyReviewRecords();
+  renderStudyReview();
+}
+
 function renderEventGallery() {
   const galleryCatalog = getEventGalleryCatalog();
   const isPage = state.screen === "eventGallery";
@@ -811,6 +842,32 @@ function renderEventGallery() {
   }
 }
 
+function renderStudyReview() {
+  const isPage = state.screen === "studyReview";
+  const records = getStudyReviewRecords();
+  elements.studyReviewButton.textContent = `復習帳 ${records.length}/${studyQuizQuestions.length}`;
+  if (isPage) {
+    elements.studyReviewButton.setAttribute("aria-current", "page");
+  } else {
+    elements.studyReviewButton.removeAttribute("aria-current");
+  }
+  elements.studyReviewCount.textContent = `${records.length}/${studyQuizQuestions.length} 問`;
+  elements.studyReviewPanel.hidden = !isPage;
+  if (!isPage) {
+    if (state.studyReviewRenderKey) {
+      elements.studyReviewList.replaceChildren();
+      state.studyReviewRenderKey = "";
+    }
+    return;
+  }
+
+  const renderKey = records.map((record) => `${record.id}:${record.attempts}:${record.correct}:${record.lastAnswerIndex}`).join("|");
+  if (renderKey !== state.studyReviewRenderKey) {
+    elements.studyReviewList.replaceChildren(...(records.length ? records.map(createStudyReviewRecord) : [createEmptyStudyReviewRecord()]));
+    state.studyReviewRenderKey = renderKey;
+  }
+}
+
 function returnFromLibraryPage() {
   state.screen = state.returnScreen || "choices";
   render();
@@ -821,7 +878,7 @@ function getReturnableScreen() {
     return state.artworkReturnScreen || "endingBook";
   }
 
-  if (state.screen === "endingBook" || state.screen === "eventGallery") {
+  if (state.screen === "endingBook" || state.screen === "eventGallery" || state.screen === "studyReview") {
     return state.returnScreen || "choices";
   }
 
@@ -942,6 +999,58 @@ function createSeasonalEventChoiceButton(choice) {
 
   button.append(title, subtitle, effects);
   return button;
+}
+
+function createStudyReviewRecord(record, index) {
+  const question = studyQuizQuestions.find((item) => item.id === record.id);
+  const article = document.createElement("article");
+  article.className = "ending-record study-review-record";
+  if (!question) {
+    return article;
+  }
+
+  const title = document.createElement("p");
+  title.className = "ending-record__title";
+  title.textContent = `${index + 1}. ${question.subject} / ${question.area}`;
+
+  const meta = document.createElement("p");
+  meta.className = "quiz-review-meta";
+  meta.textContent = `正解 ${record.correct}/${record.attempts} / 最後: ${record.lastCorrect ? "正解" : "不正解"}`;
+
+  const prompt = document.createElement("p");
+  prompt.className = "quiz-review-prompt";
+  prompt.textContent = question.prompt;
+
+  const answer = document.createElement("p");
+  answer.className = "quiz-review-answer";
+  answer.textContent = `正答: ${question.choices[question.answerIndex]}`;
+
+  const lastAnswer = document.createElement("p");
+  lastAnswer.className = "ending-record__body";
+  lastAnswer.textContent = `最後の回答: ${question.choices[record.lastAnswerIndex] ?? "未記録"}`;
+
+  const explanation = document.createElement("p");
+  explanation.className = "ending-record__body";
+  explanation.textContent = `解説: ${question.explanation}`;
+
+  article.append(title, meta, prompt, answer, lastAnswer, explanation);
+  return article;
+}
+
+function createEmptyStudyReviewRecord() {
+  const article = document.createElement("article");
+  article.className = "ending-record study-review-record";
+
+  const title = document.createElement("p");
+  title.className = "ending-record__title";
+  title.textContent = "まだ出題された問題はない";
+
+  const body = document.createElement("p");
+  body.className = "ending-record__body";
+  body.textContent = "学習系カードを選ぶと、五科目チェックの問題と解説がここに残る。";
+
+  article.append(title, body);
+  return article;
 }
 
 function createStudyQuizChoiceButton(choice, index, cardEffects) {
@@ -1117,6 +1226,30 @@ function loadUnlockedEventCgs() {
   }
 }
 
+function loadStudyReviewRecords() {
+  try {
+    const raw = window.localStorage.getItem(STUDY_REVIEW_STORAGE_KEY);
+    const values = raw ? JSON.parse(raw) : [];
+    const knownIds = new Set(studyQuizQuestions.map((question) => question.id));
+    const records = values
+      .filter((record) => knownIds.has(record.id))
+      .map((record) => [
+        record.id,
+        {
+          id: record.id,
+          attempts: Math.max(1, Number(record.attempts) || 1),
+          correct: clamp(Number(record.correct) || 0, 0, Math.max(1, Number(record.attempts) || 1)),
+          lastAnswerIndex: Number.isInteger(record.lastAnswerIndex) ? record.lastAnswerIndex : 0,
+          lastCorrect: Boolean(record.lastCorrect),
+          lastAnsweredAt: typeof record.lastAnsweredAt === "string" ? record.lastAnsweredAt : "",
+        },
+      ]);
+    return new Map(records);
+  } catch {
+    return new Map();
+  }
+}
+
 function saveUnlockedEndings() {
   try {
     window.localStorage.setItem(ENDING_STORAGE_KEY, JSON.stringify([...state.unlockedEndingIds]));
@@ -1131,6 +1264,39 @@ function saveUnlockedEventCgs() {
   } catch {
     // Event CG collection is optional local progress; gameplay should continue even if storage is unavailable.
   }
+}
+
+function saveStudyReviewRecords() {
+  try {
+    window.localStorage.setItem(STUDY_REVIEW_STORAGE_KEY, JSON.stringify(getStudyReviewRecords()));
+  } catch {
+    // Study review is optional local progress; gameplay should continue even if storage is unavailable.
+  }
+}
+
+function getStudyReviewRecords() {
+  return [...state.studyReviewRecords.values()].sort((a, b) => {
+    if (!a.lastAnsweredAt && !b.lastAnsweredAt) {
+      return a.id.localeCompare(b.id);
+    }
+    return String(b.lastAnsweredAt).localeCompare(String(a.lastAnsweredAt));
+  });
+}
+
+function recordStudyQuestion(question, answerIndex, correct) {
+  const previous = state.studyReviewRecords.get(question.id);
+  const attempts = (previous?.attempts ?? 0) + 1;
+  const nextRecord = {
+    id: question.id,
+    attempts,
+    correct: (previous?.correct ?? 0) + (correct ? 1 : 0),
+    lastAnswerIndex: answerIndex,
+    lastCorrect: correct,
+    lastAnsweredAt: new Date().toISOString(),
+  };
+  state.studyReviewRecords.set(question.id, nextRecord);
+  saveStudyReviewRecords();
+  state.studyReviewRenderKey = "";
 }
 
 function createChoiceButton(card) {
@@ -1272,6 +1438,10 @@ function buildTurnText() {
 
   if (state.screen === "eventGallery") {
     return `回想帳 / ${state.unlockedEventCgIds.size}/${getEventGalleryCatalog().length}`;
+  }
+
+  if (state.screen === "studyReview") {
+    return `復習帳 / ${state.studyReviewRecords.size}/${studyQuizQuestions.length}`;
   }
 
   if (state.screen === "artworkViewer") {

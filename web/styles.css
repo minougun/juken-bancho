@@ -126,6 +126,8 @@ p {
 }
 
 .top-hud {
+  position: relative;
+  z-index: 5;
   display: flex;
   gap: 16px;
   align-items: flex-start;
@@ -222,7 +224,7 @@ h1 {
   right: 18px;
   top: 112px;
   bottom: 18px;
-  z-index: 4;
+  z-index: 6;
   width: auto;
   max-height: none;
   overflow: auto;
@@ -314,6 +316,43 @@ button.ending-record:hover {
 
 .cg-record--locked {
   grid-template-columns: 1fr;
+}
+
+.study-review-list {
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+}
+
+.study-review-record {
+  gap: 10px;
+}
+
+.quiz-review-meta {
+  width: fit-content;
+  border-radius: 9999px;
+  padding: 3px 9px;
+  background: #ebf5ff;
+  color: #0068d6;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.quiz-review-prompt {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.quiz-review-answer {
+  border-radius: 8px;
+  padding: 8px 10px;
+  background: var(--soft);
+  box-shadow: 0 0 0 1px rgb(235, 235, 235);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.6;
 }
 
 .artwork-viewer {
@@ -912,6 +951,7 @@ button.ending-record:hover {
   }
 
   .ending-book__list,
+  .study-review-list,
   .cg-gallery-list {
     grid-template-columns: 1fr;
   }

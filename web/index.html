@@ -18,6 +18,7 @@
             <button id="skipIntroButton" class="hud-button" type="button" hidden>導入スキップ</button>
             <button id="endingBookButton" class="hud-button" type="button">結末帳</button>
             <button id="eventGalleryButton" class="hud-button" type="button" hidden>回想帳</button>
+            <button id="studyReviewButton" class="hud-button" type="button">復習帳</button>
             <button id="bgmButton" class="hud-button" type="button" aria-pressed="false">BGM OFF</button>
             <button id="sfxButton" class="hud-button" type="button" aria-pressed="true">効果音ON</button>
             <label class="volume-control">
@@ -59,6 +60,20 @@
             </div>
           </div>
           <div id="eventGalleryList" class="ending-book__list cg-gallery-list"></div>
+        </section>
+
+        <section id="studyReviewPanel" class="ending-book study-review collection-page" aria-label="出題済み問題の復習" hidden>
+          <div class="ending-book__header">
+            <div>
+              <p class="scene-tag">復習帳</p>
+              <p id="studyReviewCount" class="ending-book__count"></p>
+            </div>
+            <div class="collection-page__actions">
+              <button id="studyReviewBackButton" class="hud-button hud-button--compact" type="button">戻る</button>
+              <button id="studyReviewClearButton" class="hud-button hud-button--compact" type="button">復習消去</button>
+            </div>
+          </div>
+          <div id="studyReviewList" class="ending-book__list study-review-list"></div>
         </section>
 
         <section id="artworkViewer" class="artwork-viewer" aria-label="一枚絵全画面表示" hidden>

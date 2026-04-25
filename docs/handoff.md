@@ -49,6 +49,7 @@ Unity プロジェクトの骨格、実行時自動生成 UI、カード選択�
 - 主人公選択後は選んだキャラが中央へ寄り、もう一方がフェードアウトしてからプロローグへ入る。選択後の立ち絵は、プロローグ終了後の志望校選択・週次選択でも中央配置を維持する。`prefers-reduced-motion` では即時遷移する。
 - Web版は高校1年春の入学式から3年冬の卒業式まで、全144週で進行する。
 - Web版は週ごとの学校行事名を表示するが、BGMは1学期、夏休み、2学期、3学期の区切りだけで切り替える。学期BGMは `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/`。
+- 季節BGMは、春/1学期が `Springtechno`、夏休みが `Summer Park - 8bit tune (loop)`、秋/2学期が `Autumn - mp3 Free music`、冬/3学期が `Wintery loop`。埋め込みBGMはすべてOpenGameArt.org上でCC0として扱える素材に統一している。
 - Web版は1学期、夏休み、2学期、3学期に固定イベントを持つ。各イベントは専用一枚絵を表示し、回収済みCG IDを `localStorage` の `jukenBancho.unlockedEventCgs.v1` に保存する。
 - Web版は初回クリア後に `回想帳` を表示する。回想帳では回収済みの季節イベント一枚絵を一覧し、未回収イベントは伏せ字で表示する。
 - Web版はエンディングごとに一枚絵と専用BGMへ切り替える。BGMがOFFの場合は、エンディング到達時も自動再生しない。

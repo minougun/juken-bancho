@@ -30,11 +30,9 @@ License reference for all listed ending tracks: `http://creativecommons.org/publ
 | --- | --- | --- | --- | --- | --- |
 | Spring / entrance | `Springtechno` | Spring Spring | `https://opengameart.org/content/springtechno` | CC0 option listed on source page | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/springtechno.ogg` |
 | Summer | `Summer Park - 8bit tune (loop)` | Scribe | `https://opengameart.org/content/summer-park-8bit-tune-loop` | CC0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/summer-park.mp3` |
-| Autumn | `Autumn` | divjedrevo | `https://opengameart.org/content/autumn` | CC BY 4.0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/autumn.ogg` |
+| Autumn | `Autumn - mp3 Free music` | Duasun | `https://opengameart.org/content/autumn-mp3-free-music` | CC0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/autumn-duasun.mp3` |
 | Winter | `Wintery loop` | Emma_MA | `https://opengameart.org/content/wintery-loop` | CC0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/wintery-loop.mp3` |
 | School events | `Happy Adventure (Loop)` | TinyWorlds | `https://opengameart.org/content/happy-adventure-loop` | CC0 | `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/happy-adventure.mp3` |
-
-CC BY 4.0 license reference for `Autumn`: `https://creativecommons.org/licenses/by/4.0/`
 
 ## Generated Ending CGs
 

@@ -17,7 +17,7 @@ export const GAMEPLAY_BGM_SRC = "./assets/audio/flesh-and-blood.mp3";
 export const termBgm = {
   first: "./assets/audio/seasons/springtechno.ogg",
   summerBreak: "./assets/audio/seasons/summer-park.mp3",
-  second: "./assets/audio/seasons/autumn.ogg",
+  second: "./assets/audio/seasons/autumn-duasun.mp3",
   third: "./assets/audio/seasons/wintery-loop.mp3",
 };
 

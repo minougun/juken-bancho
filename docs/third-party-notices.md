@@ -60,7 +60,7 @@ The ending CGs were generated with the built-in image generation tool and copied
 | `ギャル伝説` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebcdececec8191a86859777279050a.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/legend-gyaru.png` |
 | `不合格ギャル` ending | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_044ff7593fe574a60169ebce30fb208191a72d0d5a9c2a9938.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/endings/gyaru/failed-gyaru.png` |
 
-Note: the `優等生ギャル` sprite files were edited on 2026-04-25 to change only the socks from black to white while preserving the original pose and transparency. A built-in image generation edit candidate was created at `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0bf288f907228fe40169ec02da3240819193bd082520b2bf9b.png`; the final workspace files use the original transparent sprite as the base with the sock color locally recolored.
+Note: the `優等生ギャル` sprite files were edited on 2026-04-25 to change only the socks from black to white and cover the visible ankles while preserving the original pose and transparency. Built-in image generation edit candidates were created at `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0bf288f907228fe40169ec02da3240819193bd082520b2bf9b.png` and `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0bf288f907228fe40169ec054d065c8191b098dc6a9e5c3b87.png`; the final workspace files use the original transparent sprite as the base with the sock and ankle area locally recolored.
 
 ## Generated Seasonal Event CGs
 

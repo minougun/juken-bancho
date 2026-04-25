@@ -59,7 +59,7 @@ export const protagonistProfiles = [
     id: "gyaru",
     title: "優等生ギャル",
     routeTitle: "目指せ優等生ギャル",
-    subtitle: "マヂ情に厚い、友情も偏差値も盛るルート",
+    subtitle: "マヂ情に厚い、友情も偏差値もアゲるルート",
     sprite: "./assets/images/protagonists/gyaru-protagonist-transparent.png",
     spriteClass: "character-sprite character-sprite--gyaru",
     spriteAlt: "参考書とシャープペンを持ち、カーディガン姿で笑う優等生ギャル",
@@ -73,7 +73,7 @@ export const protagonistProfiles = [
       {
         speaker: "優等生ギャル",
         sceneTag: "新しい教室",
-        text: "高校生活、行事も恋バナも友情もぜんぶ盛りたい。\nでも志望校だって諦めたくない。偏差値もメンタルも、ちゃんと上げてく。",
+        text: "高校生活、行事も恋バナも友情もぜんぶ盛りたい。\nでも志望校だって諦めたくない。偏差値も気分も、ちゃんとアゲてく。",
       },
       {
         speaker: "優等生ギャル",

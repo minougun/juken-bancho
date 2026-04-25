@@ -999,6 +999,10 @@ button.ending-record:hover {
     max-height: min(46svh, 360px);
   }
 
+  .novel-stage--profile .choice-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .speaker-row {
     align-items: flex-start;
     flex-direction: column;
@@ -1026,10 +1030,19 @@ button.ending-record:hover {
 
   .choice-button--profile {
     grid-template-columns: 1fr;
-    min-height: 78px;
+    min-height: 84px;
+    align-content: center;
   }
 
   .profile-preview {
+    display: none;
+  }
+
+  .novel-stage--profile .choice-button--profile {
+    padding: 9px;
+  }
+
+  .novel-stage--profile .school-requirements {
     display: none;
   }
 
@@ -1057,8 +1070,7 @@ button.ending-record:hover {
   }
 
   .credit {
-    padding: 0 8px 8px;
-    font-size: 11px;
+    display: none;
   }
 }
 
@@ -1096,7 +1108,7 @@ button.ending-record:hover {
   }
 
   .novel-stage--profile .dialogue-box {
-    max-height: 44svh;
+    max-height: 54svh;
   }
 
   .character-sprite {
@@ -1113,6 +1125,10 @@ button.ending-record:hover {
 @media (orientation: landscape) and (max-height: 520px) {
   .novel-shell {
     padding: 0;
+  }
+
+  .credit {
+    display: none;
   }
 
   .novel-stage {
@@ -1196,6 +1212,26 @@ button.ending-record:hover {
     max-height: calc(100svh - 96px);
     overflow: auto;
     padding: 12px;
+  }
+
+  .novel-stage--profile .dialogue-box {
+    left: 10px;
+    max-height: calc(100svh - 76px);
+  }
+
+  .novel-stage--profile .choice-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .novel-stage--profile .choice-button--profile {
+    grid-template-columns: 1fr;
+    min-height: 84px;
+    padding: 9px;
+  }
+
+  .novel-stage--profile .profile-preview,
+  .novel-stage--profile .school-requirements {
+    display: none;
   }
 
   .dialogue-text {

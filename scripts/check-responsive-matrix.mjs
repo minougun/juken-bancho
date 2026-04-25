@@ -77,6 +77,19 @@ async function assertNoHorizontalOverflow(page, label) {
   }
 }
 
+async function assertProfileFitsWithoutScroll(page, label) {
+  const overflow = await page.evaluate(() => {
+    const dialogue = document.querySelector(".dialogue-box");
+    return {
+      pageY: document.documentElement.scrollHeight - window.innerHeight,
+      dialogueY: dialogue.scrollHeight - dialogue.clientHeight,
+    };
+  });
+  if (overflow.pageY > 1 || overflow.dialogueY > 1) {
+    throw new Error(`${label}: profile requires vertical scroll ${JSON.stringify(overflow)}`);
+  }
+}
+
 async function assertBothProfileSpritesVisible(page, label) {
   const state = await page.evaluate(() => {
     const main = document.querySelector("#characterSprite");
@@ -136,6 +149,7 @@ async function runCase(browser, baseUrl, viewport, profile) {
   await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
   await page.waitForSelector("#choiceList button");
   await assertNoHorizontalOverflow(page, `${label} profile`);
+  await assertProfileFitsWithoutScroll(page, `${label} profile`);
   await assertBothProfileSpritesVisible(page, `${label} profile`);
   await screenshot(page, `${label}-profile`);
 

@@ -262,6 +262,50 @@ export const seasonalEvents = [
     artwork: "./assets/images/events/spring-study-room.png",
     artworkAlt: "桜が見える春の教室で、受験番長と優等生ギャルが仲間に囲まれながら勉強する",
     effects: { academics: 1, trust: 2, face: 0, looks: 0, stamina: 0, stress: -1 },
+    routes: {
+      bancho: {
+        speaker: "舎弟たち",
+        text:
+          "桜が散る窓際で、舎弟が苦手科目のノートを差し出した。\n舎弟「番長、ここだけ何回やっても詰まるんすよ」\n受験番長「逃げる場所がわかってるなら、そこが今日の正面玄関だ」",
+        artwork: "./assets/images/events/bancho/spring-study-room-bancho.png",
+        artworkAlt: "桜が見える春の教室で、受験番長が舎弟たちと参考書を囲んで作戦を立てる",
+        choices: [
+          {
+            id: "drill_weak_points",
+            label: "弱点を洗い出す",
+            text: "受験番長「全員、間違えた問題を机に出せ。弱点から逃げねえ」\n舎弟たちは顔を見合わせ、ノートの赤丸を一つずつ読み上げた。",
+            effects: { academics: 2, trust: 1, face: 1, looks: 0, stamina: -1, stress: 1 },
+          },
+          {
+            id: "keep_morale",
+            label: "まず背中を押す",
+            text: "受験番長「点数より先に目を上げろ。机に戻ってきた時点で負けちゃいねえ」\n教室の空気が少し軽くなり、シャーペンの音が揃った。",
+            effects: { academics: 1, trust: 3, face: 1, looks: 0, stamina: 0, stress: -2 },
+          },
+        ],
+      },
+      gyaru: {
+        speaker: "友だち",
+        text:
+          "桜色の窓際で、友だちがノートを抱えたまま固まっていた。\n友だち「ゥチ、春から置いてかれてるかも」\n優等生ギャル「置いてかないし。今日のページ、マヂ一緒に盛るよ」",
+        artwork: "./assets/images/events/gyaru/spring-study-room-gyaru.png",
+        artworkAlt: "桜が見える春の教室で、優等生ギャルが友だちとノートを広げて勉強する",
+        choices: [
+          {
+            id: "share_notes",
+            label: "神ノートをシェア",
+            text: "優等生ギャル「ここ、色で分けると一気に見えるから」\n友だちのノートに付箋が増え、笑い声も少し戻った。",
+            effects: { academics: 2, trust: 2, face: 0, looks: 1, stamina: -1, stress: 0 },
+          },
+          {
+            id: "listen_first",
+            label: "まず話を聞く",
+            text: "優等生ギャル「点数の前に、何がしんどいか聞かせて」\n春の光の中で、友だちはようやく本音をこぼした。",
+            effects: { academics: 1, trust: 3, face: 0, looks: 1, stamina: 0, stress: -2 },
+          },
+        ],
+      },
+    },
   },
   {
     id: "summer_study_festival",
@@ -276,6 +320,50 @@ export const seasonalEvents = [
     artwork: "./assets/images/events/summer-study-festival.png",
     artworkAlt: "夏祭りの夜、受験番長と優等生ギャルが仲間たちと参考書やかき氷を持って歩く",
     effects: { academics: 1, trust: 2, face: 1, looks: 1, stamina: -2, stress: -1 },
+    routes: {
+      bancho: {
+        speaker: "屋台の裏",
+        text:
+          "提灯の明かりの下、舎弟がりんご飴と単語帳を同じ手で持っている。\n舎弟「今日くらい勉強忘れてもよくないっすか」\n受験番長「忘れるんじゃねえ。祭りの熱で覚えるんだ」",
+        artwork: "./assets/images/events/bancho/summer-study-festival-bancho.png",
+        artworkAlt: "夏祭りの夜、受験番長が提灯の下で舎弟たちと単語帳を開く",
+        choices: [
+          {
+            id: "festival_vocab",
+            label: "屋台単語勝負",
+            text: "受験番長「焼きそば一口ごとに一問だ。外したら青のり増しな」\n笑いながら始めた勝負は、意外なほど頭に残った。",
+            effects: { academics: 2, trust: 1, face: 2, looks: 0, stamina: -2, stress: 1 },
+          },
+          {
+            id: "cool_down",
+            label: "川沿いで休ませる",
+            text: "受験番長「今日は倒れるまでやる日じゃねえ。明日も机に戻るために座れ」\n祭りの音が遠のき、焦りも少し冷えた。",
+            effects: { academics: 1, trust: 2, face: 1, looks: 1, stamina: 2, stress: -3 },
+          },
+        ],
+      },
+      gyaru: {
+        speaker: "夏祭りの夜",
+        text:
+          "かき氷のカップの横で、友だちが単語帳をぱたぱた揺らしている。\n友だち「遊びたいけど、明日の小テストもヤバい」\n優等生ギャル「じゃ、遊びながら覚える。マヂ夏っぽくいこ」",
+        artwork: "./assets/images/events/gyaru/summer-study-festival-gyaru.png",
+        artworkAlt: "夏祭りの夜、優等生ギャルが友だちと提灯の下で単語帳を見せ合う",
+        choices: [
+          {
+            id: "photo_memory",
+            label: "映える暗記にする",
+            text: "優等生ギャル「この単語、屋台の写真にくっつけて覚えよ」\nスマホの写真フォルダが、夏休みの暗記帳に変わった。",
+            effects: { academics: 2, trust: 2, face: 0, looks: 2, stamina: -1, stress: 0 },
+          },
+          {
+            id: "friend_priority",
+            label: "友だちの顔を立てる",
+            text: "優等生ギャル「今日は泣きそうな顔で我慢する日じゃないし」\n輪投げの景品より、友だちの笑顔の方が残った。",
+            effects: { academics: 1, trust: 3, face: 1, looks: 1, stamina: 1, stress: -2 },
+          },
+        ],
+      },
+    },
   },
   {
     id: "autumn_culture_cleanup",
@@ -290,6 +378,50 @@ export const seasonalEvents = [
     artwork: "./assets/images/events/autumn-festival-study.png",
     artworkAlt: "文化祭後の秋の教室で、受験番長と優等生ギャルが飾り付けの残る机で参考書を開く",
     effects: { academics: 2, trust: 1, face: 1, looks: 0, stamina: -2, stress: 1 },
+    routes: {
+      bancho: {
+        speaker: "文化祭の後",
+        text:
+          "飾りを外した黒板の前で、舎弟が模試の結果を伏せている。\n舎弟「文化祭で浮かれてた分、点数が終わってるっす」\n受験番長「終わったのは祭りだ。点数はまだ動く」",
+        artwork: "./assets/images/events/bancho/autumn-festival-study-bancho.png",
+        artworkAlt: "文化祭後の秋の教室で、受験番長が舎弟たちと模試結果を見ながら作戦会議をする",
+        choices: [
+          {
+            id: "hard_schedule",
+            label: "秋の追い込み表を組む",
+            text: "受験番長「ここから毎週、逃げ道を一つずつ潰す」\n机に書いた予定表は厳しいが、全員の目が前を向いた。",
+            effects: { academics: 3, trust: 1, face: 1, looks: -1, stamina: -3, stress: 3 },
+          },
+          {
+            id: "repair_team",
+            label: "チームを立て直す",
+            text: "受験番長「点数で責め合うな。まず誰がどこを助けるか決める」\n文化祭で残った団結が、勉強の机にも戻ってきた。",
+            effects: { academics: 2, trust: 3, face: 2, looks: 0, stamina: -2, stress: 0 },
+          },
+        ],
+      },
+      gyaru: {
+        speaker: "文化祭の後",
+        text:
+          "飾りの残った教室で、友だちが模試の結果を見て黙り込んだ。\n友だち「文化祭、楽しかったのに急に現実きた」\n優等生ギャル「現実きたなら、こっちも盛って返すだけ」",
+        artwork: "./assets/images/events/gyaru/autumn-festival-study-gyaru.png",
+        artworkAlt: "文化祭後の秋の教室で、優等生ギャルが友だちとカラフルな学習計画を立てる",
+        choices: [
+          {
+            id: "color_plan",
+            label: "盛れる計画にする",
+            text: "優等生ギャル「この予定表、見た瞬間やる気出る色にしよ」\n赤点の赤ではなく、前向きな赤い付箋が増えた。",
+            effects: { academics: 3, trust: 2, face: 0, looks: 1, stamina: -2, stress: 1 },
+          },
+          {
+            id: "relationship_check",
+            label: "友情の空気を整える",
+            text: "優等生ギャル「点数で気まずくなるの、マヂもったいない」\n言いづらかった焦りを出し合うと、教室の空気がほどけた。",
+            effects: { academics: 2, trust: 3, face: 1, looks: 1, stamina: -1, stress: -1 },
+          },
+        ],
+      },
+    },
   },
   {
     id: "winter_final_classroom",
@@ -304,6 +436,50 @@ export const seasonalEvents = [
     artwork: "./assets/images/events/winter-final-study.png",
     artworkAlt: "雪の夜の教室で、受験番長と優等生ギャルが仲間に見守られながら受験勉強をする",
     effects: { academics: 3, trust: 1, face: 0, looks: -1, stamina: -4, stress: 3 },
+    routes: {
+      bancho: {
+        speaker: "雪夜の教室",
+        text:
+          "窓の外では雪が降り、舎弟たちは声を落として見守っている。\n舎弟「番長、ここからまだ伸びますか」\n受験番長「伸ばすんじゃねえ。最後の一点を取りに行く」",
+        artwork: "./assets/images/events/bancho/winter-final-study-bancho.png",
+        artworkAlt: "雪の夜の教室で、受験番長が机のライトの下で最終演習に向かう",
+        choices: [
+          {
+            id: "final_problem",
+            label: "最後の難問へ行く",
+            text: "受験番長「逃げた問題は本番で待ち伏せる。今ここで潰す」\n夜の教室に、鉛筆の音だけが残った。",
+            effects: { academics: 4, trust: 1, face: 1, looks: -1, stamina: -5, stress: 4 },
+          },
+          {
+            id: "protect_condition",
+            label: "体調を守って締める",
+            text: "受験番長「ここで倒れたら答案に名前も書けねえ。今日は勝てる形で帰る」\n仲間たちは静かにうなずき、鞄をまとめた。",
+            effects: { academics: 2, trust: 2, face: 1, looks: 1, stamina: 2, stress: -3 },
+          },
+        ],
+      },
+      gyaru: {
+        speaker: "雪夜の教室",
+        text:
+          "雪明かりの窓際で、友だちが温かい飲み物を机に置いた。\n友だち「もう十分やったよ」\n優等生ギャル「十分じゃなくて、最高にして終わりたい」",
+        artwork: "./assets/images/events/gyaru/winter-final-study-gyaru.png",
+        artworkAlt: "雪の夜の教室で、優等生ギャルが友だちに支えられながら最終演習に向かう",
+        choices: [
+          {
+            id: "beauty_and_focus",
+            label: "集中もルックスも守る",
+            text: "優等生ギャル「明日の顔も答案も、どっちも崩さない」\n深呼吸してから解いた一問は、不思議と迷わなかった。",
+            effects: { academics: 3, trust: 1, face: 0, looks: 2, stamina: -2, stress: -1 },
+          },
+          {
+            id: "last_push",
+            label: "泣きの一問まで粘る",
+            text: "優等生ギャル「この一問だけ、マヂで置いていけない」\n眠気で目は重い。それでも最後の解法が線になった。",
+            effects: { academics: 4, trust: 2, face: 1, looks: -1, stamina: -5, stress: 4 },
+          },
+        ],
+      },
+    },
   },
 ];
 

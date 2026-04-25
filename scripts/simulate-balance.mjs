@@ -16,6 +16,7 @@ const options = parseArgs(process.argv.slice(2));
 const runs = Number(options.runs ?? 1000);
 const outPath = resolve(options.out ?? "docs/balance-simulation-latest.csv");
 const seedBase = Number(options.seed ?? 20260425);
+const effectVariance = 1;
 
 if (!Number.isInteger(runs) || runs <= 0) {
   throw new Error("--runs must be a positive integer");
@@ -53,6 +54,24 @@ function applyEffects(stats, effects) {
   for (const key of statKeys) {
     stats[key] = clamp((stats[key] ?? 0) + (effects[key] ?? 0), 0, 100);
   }
+}
+
+function randomInt(rng, min, max) {
+  return Math.floor(rng() * (max - min + 1)) + min;
+}
+
+function rollEffects(effects, rng, variance = effectVariance) {
+  const rolled = {};
+  for (const key of statKeys) {
+    const base = effects[key] ?? 0;
+    if (!base) {
+      rolled[key] = 0;
+      continue;
+    }
+    const value = base + randomInt(rng, -variance, variance);
+    rolled[key] = base > 0 ? Math.max(0, value) : Math.min(0, value);
+  }
+  return rolled;
 }
 
 function isLateStage(turn, totalTurns) {
@@ -95,20 +114,25 @@ function tryApplyRandomEvent(stats, turn, rng) {
       continue;
     }
     if (rng() <= event.chance) {
-      applyEffects(stats, event.effects);
+      applyEffects(stats, rollEffects(event.effects, rng));
       return event.id;
     }
   }
   return null;
 }
 
-function tryApplySeasonalEvent(stats, turn) {
+function tryApplySeasonalEvent(stats, turn, profile, rng) {
   const event = seasonalEvents.find((candidate) => candidate.triggerTurn === turn);
   if (!event) {
     return null;
   }
 
-  applyEffects(stats, event.effects);
+  applyEffects(stats, rollEffects(event.effects, rng));
+  const choices = event.routes?.[profile.id]?.choices ?? [];
+  if (choices.length) {
+    const choice = choices[Math.floor(rng() * choices.length)];
+    applyEffects(stats, rollEffects(choice.effects, rng));
+  }
   return event.id;
 }
 
@@ -215,13 +239,13 @@ function runSimulation(profile, school, strategy, seed) {
   while (state.turn < state.totalTurns) {
     const card = chooseCard(state, school, strategy, rng);
     state.turn += 1;
-    applyEffects(state.stats, card.effects);
+    applyEffects(state.stats, rollEffects(card.effects, rng));
     state.cardUse.set(card.id, (state.cardUse.get(card.id) ?? 0) + 1);
     if (card.oneShot) {
       state.usedCardIds.add(card.id);
     }
     tryApplyRandomEvent(state.stats, state.turn, rng);
-    tryApplySeasonalEvent(state.stats, state.turn);
+    tryApplySeasonalEvent(state.stats, state.turn, profile, rng);
     applyTargetSchoolPressure(state.stats, school, state.turn, state.totalTurns);
     applyPressureRules(state.stats);
   }

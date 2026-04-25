@@ -71,6 +71,21 @@ The seasonal event CGs were generated with the built-in image generation tool an
 | `文化祭後の作戦会議` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_02bcdcaad889b0710169ebf7caa8288191bf98141772718872.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/autumn-festival-study.png` |
 | `雪夜の最終演習` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_02bcdcaad889b0710169ebf849ecfc8191b314ddb392a1569a.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/winter-final-study.png` |
 
+## Generated Character-Specific Seasonal Event CGs
+
+The character-specific seasonal event CGs were generated with the built-in image generation tool and copied into the project on 2026-04-25.
+
+| Event route | Generated source | Local file |
+| --- | --- | --- |
+| `桜の自習室 / 受験番長` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0919ff3f00aac23d0169ec53e8be908191b5c2aeb1c9c0c3f6.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/bancho/spring-study-room-bancho.png` |
+| `桜の自習室 / 優等生ギャル` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0919ff3f00aac23d0169ec547ac3388191992666281b54eb2e.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/gyaru/spring-study-room-gyaru.png` |
+| `夏祭りの単語帳 / 受験番長` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0919ff3f00aac23d0169ec54f521c88191b53c8c4f381e36fb.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/bancho/summer-study-festival-bancho.png` |
+| `夏祭りの単語帳 / 優等生ギャル` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0919ff3f00aac23d0169ec5547bc9c81919959b16cec210c3a.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/gyaru/summer-study-festival-gyaru.png` |
+| `文化祭後の作戦会議 / 受験番長` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0919ff3f00aac23d0169ec55806f148191a70d946f74564e02.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/bancho/autumn-festival-study-bancho.png` |
+| `文化祭後の作戦会議 / 優等生ギャル` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0919ff3f00aac23d0169ec55f33588819195bc1e8ce550816d.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/gyaru/autumn-festival-study-gyaru.png` |
+| `雪夜の最終演習 / 受験番長` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0919ff3f00aac23d0169ec567208688191b557888dc7084afa.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/bancho/winter-final-study-bancho.png` |
+| `雪夜の最終演習 / 優等生ギャル` | `/home/minougun/.codex-wsl/generated_images/019dc099-3099-7753-9c28-0b7765b5c4f6/ig_0919ff3f00aac23d0169ec56ac3f648191bc5cef092bd50b93.png` | `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/gyaru/winter-final-study-gyaru.png` |
+
 ## Considered But Not Embedded
 
 - OtoLogic `力がみなぎる`

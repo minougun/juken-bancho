@@ -24,5 +24,6 @@ Shared constraints:
 ## Implementation Notes
 
 - Event data lives in `/mnt/c/Users/minou/juken-bancho/web/data/game-data.js` as `seasonalEvents`.
-- The browser stores unlocked event CG IDs in `localStorage` key `jukenBancho.unlockedEventCgs.v1`.
-- The `回想帳` button is hidden until at least one ending has been unlocked, then displays collected seasonal CGs and locked placeholders.
+- Character-specific event CGs were added on 2026-04-25. Each event now has separate `bancho` and `gyaru` route artwork under `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/bancho/` and `/mnt/c/Users/minou/juken-bancho/web/assets/images/events/gyaru/`.
+- The browser stores unlocked event CG IDs in `localStorage` key `jukenBancho.unlockedEventCgs.v1` as `eventId:profileId`.
+- The `回想帳` button is hidden until at least one ending has been unlocked, then displays collected route-specific seasonal CGs and locked placeholders.

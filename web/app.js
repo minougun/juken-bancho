@@ -15,6 +15,7 @@ import {
 } from "./data/game-data.js";
 
 const schoolCalendar = createSchoolCalendar();
+const EFFECT_VARIANCE = 1;
 
 const state = {
   turn: 0,
@@ -184,7 +185,8 @@ function chooseCard(card) {
   }
 
   state.turn += 1;
-  applyEffects(card.effects);
+  const cardEffects = rollEffects(card.effects);
+  applyEffects(cardEffects);
   if (card.oneShot) {
     state.usedCardIds.add(card.id);
   }
@@ -192,10 +194,12 @@ function chooseCard(card) {
   const event = tryApplyRandomEvent();
   const seasonalEvent = tryApplySeasonalEvent();
   const pressureMessages = [...applyTargetSchoolPressure(), ...applyPressureRules()];
-  const effectText = formatEffectSentence(card.effects);
+  const effectText = formatEffectSentence(cardEffects);
   const eventText = event ? `\n\n${event.speaker}「${event.message}」${formatEffectSentence(event.effects)}` : "";
   const seasonalText = seasonalEvent
-    ? `\n\n${seasonalEvent.title}\n${seasonalEvent.text}${formatEffectSentence(seasonalEvent.effects)}`
+    ? `\n\n${seasonalEvent.title}\n${seasonalEvent.text}${formatEffectSentence(seasonalEvent.effects)}${
+        seasonalEvent.choices?.length ? "\n\nどう返す？" : ""
+      }`
     : "";
   const pressureText = pressureMessages.length ? `\n\n${pressureMessages.join("\n")}` : "";
 
@@ -212,6 +216,7 @@ function chooseCard(card) {
     text: resultText,
     artwork: seasonalEvent?.artwork,
     artworkAlt: seasonalEvent?.artworkAlt,
+    eventChoices: seasonalEvent?.choices ?? null,
   };
   state.log.push(resultText);
   state.screen = "result";
@@ -277,8 +282,9 @@ function tryApplyRandomEvent() {
     }
 
     if (Math.random() <= event.chance) {
-      applyEffects(event.effects);
-      return event;
+      const effects = rollEffects(event.effects);
+      applyEffects(effects);
+      return { ...event, effects };
     }
   }
 
@@ -291,9 +297,24 @@ function tryApplySeasonalEvent() {
     return null;
   }
 
-  applyEffects(event.effects);
-  unlockEventCg(event.id);
-  return event;
+  const routeEvent = getSeasonalEventRoute(event);
+  const effects = rollEffects(event.effects);
+  applyEffects(effects);
+  unlockEventCg(getEventGalleryId(event.id, getProfile().id));
+  return { ...event, ...routeEvent, effects };
+}
+
+function chooseSeasonalEventChoice(choice) {
+  if (!state.pendingResult?.eventChoices) {
+    return;
+  }
+
+  const effects = rollEffects(choice.effects);
+  applyEffects(effects);
+  state.pendingResult.text = `${state.pendingResult.text}\n\n${choice.text}${formatEffectSentence(effects)}`;
+  state.pendingResult.eventChoices = null;
+  state.log.push(`${choice.label}\n${choice.text}${formatEffectSentence(effects)}`);
+  render();
 }
 
 function applyPressureRules() {
@@ -345,6 +366,26 @@ function applyEffects(effects) {
   for (const key of Object.keys(statLabels)) {
     state.stats[key] = clamp((state.stats[key] ?? 0) + (effects[key] ?? 0), 0, 100);
   }
+}
+
+function rollEffects(effects, variance = EFFECT_VARIANCE) {
+  const rolled = {};
+  for (const key of Object.keys(statLabels)) {
+    const base = effects[key] ?? 0;
+    if (!base) {
+      rolled[key] = 0;
+      continue;
+    }
+
+    const delta = randomInt(-variance, variance);
+    const value = base + delta;
+    rolled[key] = base > 0 ? Math.max(0, value) : Math.min(0, value);
+  }
+  return rolled;
+}
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 function resolveEnding() {
@@ -534,6 +575,12 @@ function renderResult() {
   elements.speakerName.textContent = state.pendingResult.speaker;
   elements.sceneTag.textContent = state.pendingResult.sceneTag;
   elements.dialogueText.textContent = state.pendingResult.text;
+  if (state.pendingResult.eventChoices?.length) {
+    elements.choiceList.replaceChildren(...state.pendingResult.eventChoices.map(createSeasonalEventChoiceButton));
+    elements.advanceButton.hidden = true;
+    return;
+  }
+
   elements.choiceList.replaceChildren();
   elements.advanceButton.hidden = false;
   elements.advanceButton.textContent = state.complete ? "合格発表へ" : "次の週へ";
@@ -632,19 +679,20 @@ function clearEventGallery() {
 }
 
 function renderEventGallery() {
+  const galleryCatalog = getEventGalleryCatalog();
   const isPage = state.screen === "eventGallery";
   const unlockedCount = state.unlockedEventCgIds.size;
   const hasAccess = hasEventGalleryAccess();
   elements.eventGalleryButton.hidden = !hasAccess;
-  elements.eventGalleryButton.textContent = `回想帳 ${unlockedCount}/${seasonalEvents.length}`;
+  elements.eventGalleryButton.textContent = `回想帳 ${unlockedCount}/${galleryCatalog.length}`;
   if (isPage) {
     elements.eventGalleryButton.setAttribute("aria-current", "page");
   } else {
     elements.eventGalleryButton.removeAttribute("aria-current");
   }
-  elements.eventGalleryCount.textContent = `${unlockedCount}/${seasonalEvents.length} 回収`;
+  elements.eventGalleryCount.textContent = `${unlockedCount}/${galleryCatalog.length} 回収`;
   elements.eventGalleryPanel.hidden = !hasAccess || !isPage;
-  elements.eventGalleryList.replaceChildren(...seasonalEvents.map(createEventGalleryRecord));
+  elements.eventGalleryList.replaceChildren(...galleryCatalog.map(createEventGalleryRecord));
 }
 
 function returnFromLibraryPage() {
@@ -753,6 +801,31 @@ function createEventGalleryRecord(event, index) {
 
   record.append(title, body);
   return record;
+}
+
+function createSeasonalEventChoiceButton(choice) {
+  const button = document.createElement("button");
+  button.className = "choice-button";
+  button.type = "button";
+  button.setAttribute("aria-label", `${choice.label}。効果目安: ${formatEffectSummary(choice.effects)}`);
+  button.addEventListener("click", () => {
+    chooseSeasonalEventChoice(choice);
+  });
+
+  const title = document.createElement("span");
+  title.className = "choice-title";
+  title.textContent = choice.label;
+
+  const subtitle = document.createElement("span");
+  subtitle.className = "choice-subtitle";
+  subtitle.textContent = "会話の返しで流れが変わる";
+
+  const effects = document.createElement("span");
+  effects.className = "choice-effects";
+  effects.append(...createEffectPills(choice.effects));
+
+  button.append(title, subtitle, effects);
+  return button;
 }
 
 function createEndingRecord(ending, index) {
@@ -893,8 +966,15 @@ function loadUnlockedEventCgs() {
   try {
     const raw = window.localStorage.getItem(EVENT_CG_STORAGE_KEY);
     const values = raw ? JSON.parse(raw) : [];
-    const knownIds = new Set(seasonalEvents.map((event) => event.id));
-    return new Set(values.filter((id) => knownIds.has(id)));
+    const knownIds = new Set(getEventGalleryCatalog().map((event) => event.id));
+    const legacyIds = new Set(seasonalEvents.map((event) => event.id));
+    const normalized = values.flatMap((id) => {
+      if (!legacyIds.has(id)) {
+        return [id];
+      }
+      return protagonistProfiles.map((profile) => getEventGalleryId(id, profile.id));
+    });
+    return new Set(normalized.filter((id) => knownIds.has(id)));
   } catch {
     return new Set();
   }
@@ -1054,7 +1134,7 @@ function buildTurnText() {
   }
 
   if (state.screen === "eventGallery") {
-    return `回想帳 / ${state.unlockedEventCgIds.size}/${seasonalEvents.length}`;
+    return `回想帳 / ${state.unlockedEventCgIds.size}/${getEventGalleryCatalog().length}`;
   }
 
   if (state.screen === "artworkViewer") {
@@ -1092,6 +1172,35 @@ function getTargetSchool() {
 
 function getProfile() {
   return state.profile ?? protagonistProfiles[0];
+}
+
+function getSeasonalEventRoute(event, profileId = getProfile().id) {
+  return event.routes?.[profileId] ?? {
+    speaker: event.speaker,
+    text: event.text,
+    artwork: event.artwork,
+    artworkAlt: event.artworkAlt,
+    choices: [],
+  };
+}
+
+function getEventGalleryId(eventId, profileId) {
+  return `${eventId}:${profileId}`;
+}
+
+function getEventGalleryCatalog() {
+  return seasonalEvents.flatMap((event) =>
+    protagonistProfiles.map((profile) => {
+      const route = getSeasonalEventRoute(event, profile.id);
+      return {
+        id: getEventGalleryId(event.id, profile.id),
+        title: `${event.title} / ${profile.title}`,
+        hint: `${profile.title}ルート: ${event.hint}`,
+        artwork: route.artwork,
+        artworkAlt: route.artworkAlt,
+      };
+    }),
+  );
 }
 
 function isLateStage() {
@@ -1399,10 +1508,10 @@ function scheduleEndingAssetPreload() {
       audio.src = ending.bgm;
     }
 
-    for (const event of seasonalEvents) {
+    for (const entry of getEventGalleryCatalog()) {
       const image = new Image();
       image.decoding = "async";
-      image.src = event.artwork;
+      image.src = entry.artwork;
     }
   };
 

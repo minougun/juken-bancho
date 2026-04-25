@@ -7,6 +7,7 @@ import {
   statLabels,
   targetSchools,
 } from "../web/data/game-data.js";
+import { existsSync } from "node:fs";
 
 const statKeys = Object.keys(statLabels);
 
@@ -35,6 +36,37 @@ function assertEffectShape(effects, label) {
     if (!Number.isInteger(effects[key])) {
       fail(`${label}.${key} must be an integer`);
     }
+  }
+}
+
+function assertLocalAsset(path, label) {
+  if (!path.startsWith("./assets/")) {
+    fail(`${label} must be a local web asset path`);
+  }
+  const filePath = `web/${path.slice(2)}`;
+  if (!existsSync(filePath)) {
+    fail(`${label} does not exist: ${filePath}`);
+  }
+}
+
+function assertRouteSeasonalEvent(event, profile) {
+  const route = event.routes?.[profile.id];
+  if (!route) {
+    fail(`${event.id}.routes.${profile.id} is required`);
+  }
+  if (!route.speaker || !route.text || !route.artwork || !route.artworkAlt) {
+    fail(`${event.id}.routes.${profile.id} must have speaker, text, artwork, and artworkAlt`);
+  }
+  assertLocalAsset(route.artwork, `${event.id}.routes.${profile.id}.artwork`);
+  if (!Array.isArray(route.choices) || route.choices.length < 2) {
+    fail(`${event.id}.routes.${profile.id}.choices must contain at least two choices`);
+  }
+  assertUniqueIds(route.choices, `${event.id}.routes.${profile.id}.choices`);
+  for (const choice of route.choices) {
+    if (!choice.label || !choice.text) {
+      fail(`${event.id}.routes.${profile.id}.choices.${choice.id} must have label and text`);
+    }
+    assertEffectShape(choice.effects, `${event.id}.routes.${profile.id}.choices.${choice.id}`);
   }
 }
 
@@ -84,6 +116,10 @@ for (const event of seasonalEvents) {
   }
   if (!event.artwork || !event.artworkAlt) {
     fail(`${event.id} must have artwork and artworkAlt`);
+  }
+  assertLocalAsset(event.artwork, `${event.id}.artwork`);
+  for (const profile of protagonistProfiles) {
+    assertRouteSeasonalEvent(event, profile);
   }
 }
 

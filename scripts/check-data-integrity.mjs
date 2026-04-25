@@ -6,7 +6,10 @@ import {
   protagonistProfiles,
   seasonalEvents,
   statLabels,
+  studyQuizBaseQuestionCount,
   studyQuizQuestions,
+  studyQuizQuestionMultiplier,
+  studyQuizTotalQuestionCount,
   targetExamQuestions,
   targetSchools,
 } from "../web/data/game-data.js";
@@ -81,6 +84,19 @@ assertUniqueIds(cards, "cards");
 assertUniqueIds(events, "events");
 const allStudyQuestions = [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
 assertUniqueIds(allStudyQuestions, "allStudyQuestions");
+const allStudyQuestionPrompts = new Set(allStudyQuestions.map((question) => `${question.subject}:${question.area}:${question.prompt}`));
+if (allStudyQuestionPrompts.size !== allStudyQuestions.length) {
+  fail(`study question prompts must be unique: ${allStudyQuestions.length - allStudyQuestionPrompts.size} duplicates`);
+}
+if (studyQuizBaseQuestionCount !== 30) {
+  fail(`studyQuizBaseQuestionCount must be 30, got ${studyQuizBaseQuestionCount}`);
+}
+if (studyQuizQuestionMultiplier !== 1000) {
+  fail(`studyQuizQuestionMultiplier must be 1000, got ${studyQuizQuestionMultiplier}`);
+}
+if (studyQuizTotalQuestionCount !== allStudyQuestions.length || studyQuizTotalQuestionCount !== 30000) {
+  fail(`studyQuizTotalQuestionCount must be 30000, got ${studyQuizTotalQuestionCount}`);
+}
 
 for (const profile of protagonistProfiles) {
   for (const key of statKeys) {
@@ -185,6 +201,9 @@ for (const question of allStudyQuestions) {
   }
   if (!Array.isArray(question.choices) || question.choices.length < 3) {
     fail(`study question ${question.id}.choices must contain at least three choices`);
+  }
+  if (new Set(question.choices).size !== question.choices.length) {
+    fail(`study question ${question.id}.choices must be unique`);
   }
   if (!Number.isInteger(question.answerIndex) || question.answerIndex < 0 || question.answerIndex >= question.choices.length) {
     fail(`study question ${question.id}.answerIndex is out of range`);

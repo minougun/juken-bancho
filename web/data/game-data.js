@@ -885,6 +885,352 @@ export const targetExamQuestions = {
   ],
 };
 
+const STUDY_QUIZ_VARIANTS_PER_BASE = 1000;
+const baseStudyQuizQuestionCount = studyQuizQuestions.length;
+const baseTargetExamQuestionCount = Object.values(targetExamQuestions).reduce((total, questions) => total + questions.length, 0);
+
+function choice(seed, items) {
+  return items[Math.abs(seed) % items.length];
+}
+
+const variantScenes = [
+  "朝の教室",
+  "放課後の自習室",
+  "模試の休み時間",
+  "図書室の窓際",
+  "進路面談の前",
+  "文化祭準備の合間",
+  "冬休みの講習",
+  "雨の日の廊下",
+  "屋上での復習",
+  "通学電車の中",
+  "体育祭翌日",
+  "赤本を開いた夜",
+  "定期テスト前",
+  "購買前の行列",
+  "三者面談の帰り",
+  "早朝の教室",
+  "夏期講習の午後",
+  "模試返却の日",
+  "卒業式前の廊下",
+  "春休み前のHR",
+];
+
+const variantTopics = [
+  "進路",
+  "友情",
+  "努力",
+  "睡眠",
+  "校則",
+  "部活",
+  "文化祭",
+  "模試",
+  "赤本",
+  "スマホ",
+  "自習室",
+  "補習",
+  "面談",
+  "緊張",
+  "集中",
+  "復習",
+  "時間管理",
+  "答案",
+  "目標",
+  "卒業",
+];
+
+const variantAngles = ["要点を整理しながら", "根拠を探しながら", "答案方針を立てながら", "友だちに説明するつもりで", "見直しの観点から"];
+
+function variantContext(seed) {
+  const topicSeed = Math.floor(seed / variantScenes.length);
+  const angleSeed = Math.floor(seed / (variantScenes.length * variantTopics.length));
+  return `${choice(seed, variantScenes)}で${choice(topicSeed, variantTopics)}について${choice(angleSeed, variantAngles)}考える場面`;
+}
+
+function ensureDistinctChoices(question) {
+  const used = new Set();
+  const choices = question.choices.map((choiceText, index) => {
+    if (!used.has(choiceText)) {
+      used.add(choiceText);
+      return choiceText;
+    }
+    let candidate = index === question.answerIndex ? `${choiceText}（正答）` : `${choiceText}ではない`;
+    let suffix = 2;
+    while (used.has(candidate)) {
+      candidate = index === question.answerIndex ? `${choiceText}（正答${suffix}）` : `${choiceText}ではない${suffix}`;
+      suffix += 1;
+    }
+    used.add(candidate);
+    return candidate;
+  });
+  return { ...question, choices };
+}
+
+function shuffleQuestionChoices(question, seed) {
+  const normalizedQuestion = ensureDistinctChoices(question);
+  const order = normalizedQuestion.choices
+    .map((_, index) => index)
+    .sort((left, right) => variantNumber(seed, left) - variantNumber(seed, right));
+  return {
+    ...normalizedQuestion,
+    choices: order.map((index) => normalizedQuestion.choices[index]),
+    answerIndex: order.indexOf(normalizedQuestion.answerIndex),
+  };
+}
+
+function variantNumber(seed, offset) {
+  let value = (seed + 1) * 1103515245 + (offset + 3) * 12345;
+  value ^= value >>> 16;
+  return value >>> 0;
+}
+
+function withVariantId(base, variantIndex, patch) {
+  const question = {
+    ...base,
+    ...patch,
+    id: variantIndex === 0 ? base.id : `${base.id}__v${String(variantIndex).padStart(4, "0")}`,
+  };
+  return shuffleQuestionChoices(question, variantIndex);
+}
+
+function makeMathVariant(base, variantIndex) {
+  if (base.id.includes("linear")) {
+    const a = (variantIndex % 7) + 1;
+    const b = ((variantIndex * 3) % 17) - 8;
+    const x = ((variantIndex * 5) % 13) - 6;
+    const y = a * x + b;
+    return withVariantId(base, variantIndex, {
+      prompt: `${variantContext(variantIndex)}。一次関数 y = ${a}x ${b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`} について、x が ${x} のときの y の値はどれか。`,
+      choices: [String(y), String(y + a + 1), String(y - a - 1), String(y + 2 * a + 3)],
+      answerIndex: 0,
+      explanation: `x = ${x} を代入すると y = ${a}×${x} ${b >= 0 ? `+ ${b}` : `- ${Math.abs(b)}`} = ${y}。`,
+    });
+  }
+  if (base.id.includes("quadratic") || base.id.includes("function")) {
+    const h = (variantIndex % 11) - 5;
+    const k = ((Math.floor(variantIndex / 11) * 7) % 19) - 9;
+    const a = (Math.floor(variantIndex / (11 * 19)) % 5) + 1;
+    return withVariantId(base, variantIndex, {
+      prompt: `${variantContext(variantIndex)}。二次関数 y = ${a}(x ${h < 0 ? `+ ${Math.abs(h)}` : `- ${h}`})^2 ${k >= 0 ? `+ ${k}` : `- ${Math.abs(k)}`} の最小値はどれか。`,
+      choices: [String(k), String(k + a + 1), String(k - a - 1), String(k + 2 * a + 3)],
+      answerIndex: 0,
+      explanation: `平方の項は0以上なので、x = ${h} のとき最小値は ${k}。`,
+    });
+  }
+  if (base.id.includes("probability")) {
+    const red = (variantIndex % 50) + 3;
+    const white = (Math.floor(variantIndex / 50) % 40) + 2;
+    const total = red + white;
+    const numerator = (red * (red - 1)) / 2;
+    const denominator = (total * (total - 1)) / 2;
+    return withVariantId(base, variantIndex, {
+      prompt: `${variantContext(variantIndex)}。赤玉${red}個、白玉${white}個の袋から同時に2個取り出す。2個とも赤玉である確率はどれか。`,
+      choices: [`${numerator}/${denominator}`, `${red + 1}/${total}`, `${white}/${total + 1}`, `${red - 1}/${denominator}`],
+      answerIndex: 0,
+      explanation: `全体は${total}個から2個で${denominator}通り、赤2個は${red}個から2個で${numerator}通り。`,
+    });
+  }
+  const first = (variantIndex % 17) - 8;
+  const diff = (Math.floor(variantIndex / 17) % 10) + 2;
+  const term = (Math.floor(variantIndex / (17 * 10)) % 16) + 5;
+  const answer = first + (term - 1) * diff;
+  return withVariantId(base, variantIndex, {
+    prompt: `${variantContext(variantIndex)}。等差数列 ${first}, ${first + diff}, ${first + diff * 2}, ... の第${term}項はどれか。`,
+    choices: [String(answer), String(answer + diff), String(answer - diff), String(answer + diff + term + 1)],
+    answerIndex: 0,
+    explanation: `初項${first}、公差${diff}なので、第${term}項は ${first} + ${term - 1}×${diff} = ${answer}。`,
+  });
+}
+
+function makeEnglishVariant(base, variantIndex) {
+  const verbs = [
+    ["finish", "finished", "宿題を終えた"],
+    ["visit", "visited", "図書館を訪れた"],
+    ["watch", "watched", "その講義を見た"],
+    ["study", "studied", "英語を勉強した"],
+    ["practice", "practiced", "発音を練習した"],
+  ];
+  if (base.id.includes("tense") || base.id.includes("basic")) {
+    const [plain, past, meaning] = choice(variantIndex, verbs);
+    return withVariantId(base, variantIndex, {
+      prompt: `${variantContext(variantIndex)}。次の日本語に最も近い英文はどれか。「私は昨日、${meaning}。」`,
+      choices: [`I ${past} yesterday.`, `I ${plain} yesterday.`, `I will ${plain} yesterday.`, `I am ${plain} yesterday.`],
+      answerIndex: 0,
+      explanation: "yesterday があるので、過去を表す動詞の形を使う。",
+    });
+  }
+  const signals = [
+    ["however", "前文と対立する内容", "逆接"],
+    ["therefore", "前文から導かれる結論", "結論"],
+    ["for example", "前文を支える具体例", "例示"],
+    ["in contrast", "比較して違いを示す内容", "対比"],
+    ["because", "理由を説明する内容", "理由"],
+  ];
+  if (base.id.includes("reading") || base.id.includes("inference") || base.id.includes("argument")) {
+    const [word, answer, role] = choice(variantIndex, signals);
+    return withVariantId(base, variantIndex, {
+      prompt: `${variantContext(variantIndex)}。英文読解で ${word} の直後に置かれる内容として最も自然なのはどれか。`,
+      choices: [answer, "前文と無関係な話題", "本文の主張を消す内容", "時制だけを説明する語句"],
+      answerIndex: 0,
+      explanation: `${word} は${role}の合図になりやすい。`,
+    });
+  }
+  const phrases = [
+    ["not necessarily", "必ずしもそうではない"],
+    ["in other words", "言い換えると"],
+    ["on the other hand", "一方で"],
+    ["as a result", "結果として"],
+    ["in addition", "さらに"],
+  ];
+  const [phrase, meaning] = choice(variantIndex, phrases);
+  return withVariantId(base, variantIndex, {
+    prompt: `${variantContext(variantIndex)}。文中の “${phrase}” に最も近い意味はどれか。`,
+    choices: [meaning, "絶対にそうである", "本文と無関係である", "すでに必要ない"],
+    answerIndex: 0,
+    explanation: `${phrase} は文脈上「${meaning}」に近い働きをする。`,
+  });
+}
+
+function makeJapaneseVariant(base, variantIndex) {
+  const cues = [
+    ["しかし", "前の内容と逆の方向へ論を進める"],
+    ["つまり", "前の内容を言い換えてまとめる"],
+    ["たとえば", "主張を具体例で支える"],
+    ["一方", "前の内容と対比する"],
+    ["したがって", "前の内容から結論を導く"],
+  ];
+  if (base.id.includes("classical")) {
+    const auxiliaries = [
+      ["む", "推量・意志・勧誘", "過去"],
+      ["き", "直接経験の過去", "受身"],
+      ["べし", "推量・当然・可能・意志", "完了"],
+      ["ず", "打消", "尊敬"],
+      ["けり", "過去・詠嘆", "使役"],
+    ];
+    const [word, meaning, wrong] = choice(variantIndex, auxiliaries);
+    return withVariantId(base, variantIndex, {
+      prompt: `${variantContext(variantIndex)}。古文の助動詞「${word}」が文脈により表しやすい意味はどれか。`,
+      choices: [meaning, wrong, "比較", "限定"],
+      answerIndex: 0,
+      explanation: `「${word}」は主に${meaning}などを表す。`,
+    });
+  }
+  const [cue, answer] = choice(variantIndex, cues);
+  return withVariantId(base, variantIndex, {
+    prompt: `${variantContext(variantIndex)}。評論文で「${cue}」という表現が出たとき、読解上の手がかりとして最も適切なのはどれか。`,
+    choices: [answer, "文字数が多い段落だけを読む", "固有名詞をすべて無視する", "本文の結論を必ず撤回する"],
+    answerIndex: 0,
+    explanation: `「${cue}」は論理関係を読む重要な合図になる。`,
+  });
+}
+
+function makeScienceVariant(base, variantIndex) {
+  if (base.id.includes("density")) {
+    const mass = (variantIndex % 200) + 10;
+    const volume = (Math.floor(variantIndex / 200) % 20) + 1;
+    const density = mass / volume;
+    return withVariantId(base, variantIndex, {
+      prompt: `質量${mass}g、体積${volume}cm^3 の物体の密度はどれか。`,
+      choices: [`${density.toFixed(1)}g/cm^3`, `${(mass + volume).toFixed(1)}g/cm^3`, `${(volume / mass).toFixed(1)}g/cm^3`, `${(mass - volume).toFixed(1)}g/cm^3`],
+      answerIndex: 0,
+      explanation: `密度は質量÷体積なので ${mass}÷${volume} = ${density.toFixed(1)}g/cm^3。`,
+    });
+  }
+  if (base.id.includes("force") || base.id.includes("momentum")) {
+    const mass = (variantIndex % 50) + 2;
+    const velocity = (Math.floor(variantIndex / 50) % 20) + 1;
+    const momentum = mass * velocity;
+    return withVariantId(base, variantIndex, {
+      prompt: `質量${mass}kgの物体が秒速${velocity}mで動くとき、運動量の大きさはどれか。`,
+      choices: [
+        `${momentum}kg m/s`,
+        `${momentum + mass + velocity + 1}kg m/s`,
+        `${Math.max(0, momentum - mass - velocity - 1)}kg m/s`,
+        `${momentum + 2 * mass + 3 * velocity + 5}kg m/s`,
+      ],
+      answerIndex: 0,
+      explanation: `運動量は質量×速度なので ${mass}×${velocity} = ${momentum}。`,
+    });
+  }
+  const concepts = base.id.includes("photosynthesis") || base.id.includes("enzyme")
+    ? [
+        ["光合成", "光・二酸化炭素・水", "植物が有機物をつくる反応"],
+        ["酵素", "特定の反応を進める触媒", "生体内の反応を進める物質"],
+        ["基質特異性", "酵素が特定の基質に働きやすい性質", "酵素は特定の基質と結びつきやすい。"],
+        ["呼吸", "有機物からエネルギーを取り出す反応", "細胞は呼吸で生命活動に必要なエネルギーを得る。"],
+      ]
+    : [
+        ["化学平衡", "正反応と逆反応の速度が等しい", "見かけ上濃度が一定になる状態"],
+        ["中和", "酸と塩基が反応し水などを生じる", "酸性と塩基性が打ち消し合う反応"],
+        ["酸化", "物質が酸素と結びつく、または電子を失う変化", "酸化還元では電子の移動にも注目する。"],
+        ["電離", "物質が水溶液中でイオンに分かれること", "酸や塩基の性質を考える基礎になる。"],
+      ];
+  const [term, answer, explanation] = choice(variantIndex, concepts);
+  return withVariantId(base, variantIndex, {
+    prompt: `${variantContext(variantIndex)}。${term}について最も適切な説明はどれか。`,
+    choices: [answer, "必ず温度を0にする現象", "物質が存在できない状態", "電流だけで決まる制度"],
+    answerIndex: 0,
+    explanation,
+  });
+}
+
+function makeSocialVariant(base, variantIndex) {
+  const facts = base.id.includes("geography")
+    ? [
+        ["等高線", "間隔が狭いほど傾斜が急", "短い距離で高度差が大きいことを示す。"],
+        ["時差", "経度15度につき約1時間生じる", "地球は24時間で360度回転する。"],
+        ["扇状地", "山地から平地へ出た川が土砂を堆積してできる地形", "河川の働きで形成される地形。"],
+        ["季節風", "季節によって向きが変わる風", "大陸と海洋の温まり方の違いが関係する。"],
+      ]
+    : base.id.includes("modern")
+      ? [
+          ["殖産興業", "明治政府が近代産業を育成した政策", "明治期の近代化政策の一つ。"],
+          ["地租改正", "土地所有者に地価を基準として税を課した改革", "明治政府の財政基盤整備につながった。"],
+          ["版籍奉還", "大名が土地と人民を朝廷へ返した政策", "中央集権化への過程の一つ。"],
+          ["廃藩置県", "藩を廃止して府県を置いた政策", "中央政府による地方統治を強めた。"],
+        ]
+      : [
+          ["国会", "国の唯一の立法機関である", "日本国憲法は国会を唯一の立法機関と定める。"],
+          ["違憲立法審査権", "法令が憲法に反しないかを裁判所が審査する権限", "裁判所が憲法適合性を判断する権限。"],
+          ["権力分立", "権力を複数の機関に分け、相互に抑制させる", "権力集中を防ぐ考え方。"],
+          ["基本的人権", "人が生まれながらに持つ基本的な権利", "日本国憲法の三大原理の一つ。"],
+        ];
+  const [term, answer, explanation] = choice(variantIndex, facts);
+  return withVariantId(base, variantIndex, {
+    prompt: `${variantContext(variantIndex)}。${term}について最も適切な説明はどれか。`,
+    choices: [answer, "内閣が自由に廃止できる私的制度", "裁判だけを禁止する仕組み", "地方公共団体が条約を結ぶ権限"],
+    answerIndex: 0,
+    explanation,
+  });
+}
+
+function makeQuestionVariant(base, variantIndex) {
+  if (variantIndex === 0) {
+    return { ...base };
+  }
+  if (base.subject === "数学") return makeMathVariant(base, variantIndex);
+  if (base.subject === "英語") return makeEnglishVariant(base, variantIndex);
+  if (base.subject === "国語") return makeJapaneseVariant(base, variantIndex);
+  if (base.subject === "理科") return makeScienceVariant(base, variantIndex);
+  return makeSocialVariant(base, variantIndex);
+}
+
+function expandQuestionPool(questions) {
+  return questions.flatMap((question) =>
+    Array.from({ length: STUDY_QUIZ_VARIANTS_PER_BASE }, (_, variantIndex) => makeQuestionVariant(question, variantIndex)),
+  );
+}
+
+studyQuizQuestions.splice(0, studyQuizQuestions.length, ...expandQuestionPool(studyQuizQuestions));
+for (const schoolId of Object.keys(targetExamQuestions)) {
+  targetExamQuestions[schoolId].splice(0, targetExamQuestions[schoolId].length, ...expandQuestionPool(targetExamQuestions[schoolId]));
+}
+
+export const studyQuizBaseQuestionCount = baseStudyQuizQuestionCount + baseTargetExamQuestionCount;
+export const studyQuizTotalQuestionCount =
+  studyQuizQuestions.length + Object.values(targetExamQuestions).reduce((total, questions) => total + questions.length, 0);
+export const studyQuizQuestionMultiplier = studyQuizTotalQuestionCount / studyQuizBaseQuestionCount;
+
 export const events = [
   {
     id: "rival_school",

@@ -12,6 +12,7 @@ import {
   protagonistProfiles,
   seasonalEvents,
   statLabels,
+  studyQuizTotalQuestionCount,
   studyQuizQuestions,
   targetExamQuestions,
   targetSchools,
@@ -20,6 +21,7 @@ import {
 
 const schoolCalendar = createSchoolCalendar();
 const EFFECT_VARIANCE = 1;
+const studyQuestionCatalog = [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
 
 const state = {
   turn: 0,
@@ -450,7 +452,7 @@ function getTargetExamQuestions() {
 }
 
 function getStudyQuestionCatalog() {
-  return [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
+  return studyQuestionCatalog;
 }
 
 function applyStudyQuizResult(effects, card, correct) {
@@ -871,7 +873,7 @@ function renderEventGallery() {
 function renderStudyReview() {
   const isPage = state.screen === "studyReview";
   const records = getStudyReviewRecords();
-  const totalQuestions = getStudyQuestionCatalog().length;
+  const totalQuestions = studyQuizTotalQuestionCount;
   elements.studyReviewButton.textContent = `復習帳 ${records.length}/${totalQuestions}`;
   if (isPage) {
     elements.studyReviewButton.setAttribute("aria-current", "page");
@@ -1468,7 +1470,7 @@ function buildTurnText() {
   }
 
   if (state.screen === "studyReview") {
-    return `復習帳 / ${state.studyReviewRecords.size}/${getStudyQuestionCatalog().length}`;
+    return `復習帳 / ${state.studyReviewRecords.size}/${studyQuizTotalQuestionCount}`;
   }
 
   if (state.screen === "artworkViewer") {

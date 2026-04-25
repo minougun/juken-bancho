@@ -219,22 +219,22 @@ h1 {
 .ending-book {
   position: absolute;
   left: 18px;
-  top: 316px;
+  right: 18px;
+  top: 112px;
+  bottom: 18px;
   z-index: 4;
-  width: min(360px, calc(100% - 36px));
-  max-height: min(48svh, 430px);
+  width: auto;
+  max-height: none;
   overflow: auto;
   border-radius: 8px;
-  padding: 14px;
+  padding: 18px;
   background: var(--dialogue-bg);
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(14px);
 }
 
 .event-gallery {
-  left: auto;
-  right: 18px;
-  width: min(540px, calc(100% - 36px));
+  width: auto;
 }
 
 .ending-book__header {
@@ -243,6 +243,13 @@ h1 {
   align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 10px;
+}
+
+.collection-page__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
 }
 
 .ending-book__count {
@@ -254,28 +261,50 @@ h1 {
 
 .ending-book__list {
   display: grid;
-  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
 }
 
 .ending-record {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 100%;
   border-radius: 8px;
   padding: 10px;
   background: var(--paper);
   box-shadow: 0 0 0 1px rgb(235, 235, 235);
+  text-align: left;
+}
+
+button.ending-record:hover {
+  background: var(--soft);
+}
+
+.ending-record--locked,
+.cg-record--locked {
+  opacity: 0.72;
+}
+
+.ending-record__image {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 8px;
+  object-fit: cover;
+  box-shadow: 0 0 0 1px rgb(235, 235, 235);
 }
 
 .cg-gallery-list {
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 12px;
 }
 
 .cg-record {
   display: grid;
-  grid-template-columns: minmax(120px, 0.42fr) minmax(0, 1fr);
-  gap: 8px 10px;
+  gap: 8px;
 }
 
 .cg-record__image {
-  grid-row: 1 / 3;
   width: 100%;
   aspect-ratio: 16 / 9;
   border-radius: 8px;
@@ -285,6 +314,65 @@ h1 {
 
 .cg-record--locked {
   grid-template-columns: 1fr;
+}
+
+.artwork-viewer {
+  position: absolute;
+  inset: 0;
+  z-index: 8;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  min-height: 100%;
+  padding: max(18px, env(safe-area-inset-top)) 18px max(18px, env(safe-area-inset-bottom));
+  background: rgba(23, 23, 23, 0.96);
+  color: #fff;
+}
+
+.artwork-viewer__bar {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.artwork-viewer__bar .scene-tag {
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.artwork-viewer__title {
+  margin-top: 4px;
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.artwork-viewer__image {
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.16);
+}
+
+.artwork-viewer__body {
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.7;
+}
+
+.novel-stage--collection .scene-backdrop {
+  opacity: 0.28;
+}
+
+.novel-stage--collection .character-sprite {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .ending-record__title {
@@ -662,7 +750,7 @@ h1 {
   }
 
   .ending-book {
-    top: 354px;
+    top: 154px;
   }
 
   .character-sprite {
@@ -780,19 +868,50 @@ h1 {
 
   .ending-book {
     left: 8px;
-    right: auto;
-    top: 222px;
-    width: calc(100% - 16px);
-    max-height: min(38svh, 270px);
+    right: 8px;
+    top: 132px;
+    bottom: max(8px, env(safe-area-inset-bottom));
+    width: auto;
+    max-height: none;
     padding: 10px;
   }
 
   .ending-book__header {
+    align-items: flex-start;
+    flex-direction: column;
     gap: 8px;
+  }
+
+  .collection-page__actions {
+    width: 100%;
+    justify-content: stretch;
+  }
+
+  .collection-page__actions .hud-button {
+    flex: 1 1 0;
+  }
+
+  .ending-book__list,
+  .cg-gallery-list {
+    grid-template-columns: 1fr;
   }
 
   .ending-record {
     padding: 9px;
+  }
+
+  .artwork-viewer {
+    gap: 10px;
+    padding: max(10px, env(safe-area-inset-top)) 10px max(10px, env(safe-area-inset-bottom));
+  }
+
+  .artwork-viewer__bar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .artwork-viewer__title {
+    font-size: 18px;
   }
 
   .character-sprite {
@@ -968,8 +1087,8 @@ h1 {
   }
 
   .ending-book {
-    top: 214px;
-    max-height: 32svh;
+    top: 124px;
+    max-height: none;
   }
 
   .dialogue-box {
@@ -1031,9 +1150,11 @@ h1 {
 
   .ending-book {
     left: 10px;
-    top: 248px;
-    width: min(320px, 42vw);
-    max-height: calc(100svh - 258px);
+    right: 10px;
+    top: 72px;
+    bottom: 8px;
+    width: auto;
+    max-height: none;
   }
 
   .character-sprite {

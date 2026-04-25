@@ -16,8 +16,8 @@
           </div>
           <div class="system-controls" aria-label="システム操作">
             <button id="skipIntroButton" class="hud-button" type="button" hidden>導入スキップ</button>
-            <button id="endingBookButton" class="hud-button" type="button" aria-expanded="false">結末帳</button>
-            <button id="eventGalleryButton" class="hud-button" type="button" aria-expanded="false" hidden>回想帳</button>
+            <button id="endingBookButton" class="hud-button" type="button">結末帳</button>
+            <button id="eventGalleryButton" class="hud-button" type="button" hidden>回想帳</button>
             <button id="bgmButton" class="hud-button" type="button" aria-pressed="false">BGM</button>
             <button id="sfxButton" class="hud-button" type="button" aria-pressed="true">効果音ON</button>
             <label class="volume-control">
@@ -33,27 +33,45 @@
           <div id="statsGrid" class="stats-grid"></div>
         </aside>
 
-        <aside id="endingBookPanel" class="ending-book" aria-label="解放済みの結末" hidden>
+        <section id="endingBookPanel" class="ending-book collection-page" aria-label="解放済みの結末" hidden>
           <div class="ending-book__header">
             <div>
               <p class="scene-tag">結末帳</p>
               <p id="endingBookCount" class="ending-book__count"></p>
             </div>
-            <button id="endingBookClearButton" class="hud-button hud-button--compact" type="button">記録消去</button>
+            <div class="collection-page__actions">
+              <button id="endingBookBackButton" class="hud-button hud-button--compact" type="button">戻る</button>
+              <button id="endingBookClearButton" class="hud-button hud-button--compact" type="button">記録消去</button>
+            </div>
           </div>
           <div id="endingBookList" class="ending-book__list"></div>
-        </aside>
+        </section>
 
-        <aside id="eventGalleryPanel" class="ending-book event-gallery" aria-label="回収済みのイベント一枚絵" hidden>
+        <section id="eventGalleryPanel" class="ending-book event-gallery collection-page" aria-label="回収済みのイベント一枚絵" hidden>
           <div class="ending-book__header">
             <div>
               <p class="scene-tag">回想帳</p>
               <p id="eventGalleryCount" class="ending-book__count"></p>
             </div>
-            <button id="eventGalleryClearButton" class="hud-button hud-button--compact" type="button">回想消去</button>
+            <div class="collection-page__actions">
+              <button id="eventGalleryBackButton" class="hud-button hud-button--compact" type="button">戻る</button>
+              <button id="eventGalleryClearButton" class="hud-button hud-button--compact" type="button">回想消去</button>
+            </div>
           </div>
           <div id="eventGalleryList" class="ending-book__list cg-gallery-list"></div>
-        </aside>
+        </section>
+
+        <section id="artworkViewer" class="artwork-viewer" aria-label="一枚絵全画面表示" hidden>
+          <div class="artwork-viewer__bar">
+            <div>
+              <p id="artworkViewerLabel" class="scene-tag">一枚絵</p>
+              <p id="artworkViewerTitle" class="artwork-viewer__title"></p>
+            </div>
+            <button id="artworkBackButton" class="hud-button hud-button--compact" type="button">戻る</button>
+          </div>
+          <img id="artworkViewerImage" class="artwork-viewer__image" alt="" decoding="async" />
+          <p id="artworkViewerBody" class="artwork-viewer__body"></p>
+        </section>
 
         <div class="scene-backdrop" aria-hidden="true">
           <div class="school-building"></div>

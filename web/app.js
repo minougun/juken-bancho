@@ -29,8 +29,9 @@ const state = {
   profile: null,
   pendingProfile: null,
   targetSchool: null,
-  endingBookOpen: false,
-  eventGalleryOpen: false,
+  returnScreen: "choices",
+  artworkViewer: null,
+  artworkReturnScreen: "endingBook",
   unlockedEndingIds: loadUnlockedEndings(),
   unlockedEventCgIds: loadUnlockedEventCgs(),
   bgmEnabled: false,
@@ -57,11 +58,19 @@ const elements = {
   endingBookCount: document.querySelector("#endingBookCount"),
   endingBookList: document.querySelector("#endingBookList"),
   endingBookClearButton: document.querySelector("#endingBookClearButton"),
+  endingBookBackButton: document.querySelector("#endingBookBackButton"),
   eventGalleryButton: document.querySelector("#eventGalleryButton"),
   eventGalleryPanel: document.querySelector("#eventGalleryPanel"),
   eventGalleryCount: document.querySelector("#eventGalleryCount"),
   eventGalleryList: document.querySelector("#eventGalleryList"),
   eventGalleryClearButton: document.querySelector("#eventGalleryClearButton"),
+  eventGalleryBackButton: document.querySelector("#eventGalleryBackButton"),
+  artworkViewer: document.querySelector("#artworkViewer"),
+  artworkViewerLabel: document.querySelector("#artworkViewerLabel"),
+  artworkViewerTitle: document.querySelector("#artworkViewerTitle"),
+  artworkViewerImage: document.querySelector("#artworkViewerImage"),
+  artworkViewerBody: document.querySelector("#artworkViewerBody"),
+  artworkBackButton: document.querySelector("#artworkBackButton"),
   skipIntroButton: document.querySelector("#skipIntroButton"),
   endingArtwork: document.querySelector("#endingArtwork"),
   characterSprite: document.querySelector("#characterSprite"),
@@ -75,10 +84,13 @@ const elements = {
 
 document.addEventListener("click", playButtonClickSound, true);
 elements.skipIntroButton.addEventListener("click", skipIntro);
-elements.endingBookButton.addEventListener("click", toggleEndingBook);
+elements.endingBookButton.addEventListener("click", openEndingBookPage);
 elements.endingBookClearButton.addEventListener("click", clearEndingBook);
-elements.eventGalleryButton.addEventListener("click", toggleEventGallery);
+elements.endingBookBackButton.addEventListener("click", returnFromLibraryPage);
+elements.eventGalleryButton.addEventListener("click", openEventGalleryPage);
 elements.eventGalleryClearButton.addEventListener("click", clearEventGallery);
+elements.eventGalleryBackButton.addEventListener("click", returnFromLibraryPage);
+elements.artworkBackButton.addEventListener("click", returnFromArtworkViewer);
 elements.restartTopButton.addEventListener("click", startNewGame);
 elements.bgmButton.addEventListener("click", toggleBgm);
 elements.sfxButton.addEventListener("click", toggleSfx);
@@ -103,8 +115,9 @@ function startNewGame() {
   state.profile = null;
   state.pendingProfile = null;
   state.targetSchool = null;
-  state.endingBookOpen = false;
-  state.eventGalleryOpen = false;
+  state.returnScreen = "profile";
+  state.artworkViewer = null;
+  state.artworkReturnScreen = "endingBook";
   state.characterCentered = false;
   clearProfileSelectionAnimation();
   state.profileSelectionToken += 1;
@@ -402,26 +415,38 @@ function resolveEnding() {
 }
 
 function render() {
+  const isLibraryScreen = state.screen === "endingBook" || state.screen === "eventGallery";
+  const isArtworkViewer = state.screen === "artworkViewer";
+  const isFullPageScreen = isLibraryScreen || isArtworkViewer;
   elements.novelStage.dataset.screen = state.screen;
   elements.novelStage.classList.toggle("novel-stage--profile", state.screen === "profile");
   elements.novelStage.classList.toggle("novel-stage--playing", state.screen === "choices" || state.screen === "result");
   elements.novelStage.classList.toggle("novel-stage--ending", state.screen === "ending");
+  elements.novelStage.classList.toggle("novel-stage--collection", isFullPageScreen);
   elements.novelStage.classList.toggle(
     "novel-stage--route-centered",
-    state.characterCentered && state.screen !== "profile" && state.screen !== "ending",
+    state.characterCentered && state.screen !== "profile" && state.screen !== "ending" && !isFullPageScreen,
   );
-  elements.statsHud.hidden = state.screen === "profile" || state.screen === "intro" || state.screen === "target";
+  elements.statsHud.hidden = isFullPageScreen || state.screen === "profile" || state.screen === "intro" || state.screen === "target";
+  elements.dialogueBox.hidden = isFullPageScreen;
   if (state.screen !== "profile") {
     clearProfileSelectionAnimation();
   }
   elements.turnText.textContent = buildTurnText();
-  if (state.screen !== "ending") {
+  if (state.screen !== "ending" && !isFullPageScreen) {
     setBgmTrack(getSceneBgm());
   }
   renderStats();
   renderEndingBook();
   renderEventGallery();
+  renderArtworkViewer();
   renderSkipIntroButton();
+
+  if (isFullPageScreen) {
+    hideEndingArtwork();
+    resetDialogueScroll();
+    return;
+  }
 
   if (state.screen === "profile") {
     renderProfileSelect();
@@ -553,13 +578,10 @@ function resetDialogueScroll() {
   elements.dialogueBox.scrollTop = 0;
 }
 
-function toggleEndingBook() {
-  state.endingBookOpen = !state.endingBookOpen;
-  if (state.endingBookOpen) {
-    state.eventGalleryOpen = false;
-  }
-  renderEndingBook();
-  renderEventGallery();
+function openEndingBookPage() {
+  state.returnScreen = getReturnableScreen();
+  state.screen = "endingBook";
+  render();
 }
 
 function clearEndingBook() {
@@ -570,31 +592,32 @@ function clearEndingBook() {
 
   state.unlockedEndingIds = new Set();
   saveUnlockedEndings();
-  state.eventGalleryOpen = false;
   renderEndingBook();
   renderEventGallery();
 }
 
 function renderEndingBook() {
+  const isPage = state.screen === "endingBook";
   const unlockedCount = state.unlockedEndingIds.size;
   elements.endingBookButton.textContent = `結末帳 ${unlockedCount}/${endingCatalog.length}`;
-  elements.endingBookButton.setAttribute("aria-expanded", state.endingBookOpen ? "true" : "false");
+  if (isPage) {
+    elements.endingBookButton.setAttribute("aria-current", "page");
+  } else {
+    elements.endingBookButton.removeAttribute("aria-current");
+  }
   elements.endingBookCount.textContent = `${unlockedCount}/${endingCatalog.length} 解放`;
-  elements.endingBookPanel.hidden = !state.endingBookOpen;
+  elements.endingBookPanel.hidden = !isPage;
   elements.endingBookList.replaceChildren(...endingCatalog.map(createEndingRecord));
 }
 
-function toggleEventGallery() {
+function openEventGalleryPage() {
   if (!hasEventGalleryAccess()) {
     return;
   }
 
-  state.eventGalleryOpen = !state.eventGalleryOpen;
-  if (state.eventGalleryOpen) {
-    state.endingBookOpen = false;
-  }
-  renderEndingBook();
-  renderEventGallery();
+  state.returnScreen = getReturnableScreen();
+  state.screen = "eventGallery";
+  render();
 }
 
 function clearEventGallery() {
@@ -609,14 +632,68 @@ function clearEventGallery() {
 }
 
 function renderEventGallery() {
+  const isPage = state.screen === "eventGallery";
   const unlockedCount = state.unlockedEventCgIds.size;
   const hasAccess = hasEventGalleryAccess();
   elements.eventGalleryButton.hidden = !hasAccess;
   elements.eventGalleryButton.textContent = `回想帳 ${unlockedCount}/${seasonalEvents.length}`;
-  elements.eventGalleryButton.setAttribute("aria-expanded", state.eventGalleryOpen ? "true" : "false");
+  if (isPage) {
+    elements.eventGalleryButton.setAttribute("aria-current", "page");
+  } else {
+    elements.eventGalleryButton.removeAttribute("aria-current");
+  }
   elements.eventGalleryCount.textContent = `${unlockedCount}/${seasonalEvents.length} 回収`;
-  elements.eventGalleryPanel.hidden = !hasAccess || !state.eventGalleryOpen;
+  elements.eventGalleryPanel.hidden = !hasAccess || !isPage;
   elements.eventGalleryList.replaceChildren(...seasonalEvents.map(createEventGalleryRecord));
+}
+
+function returnFromLibraryPage() {
+  state.screen = state.returnScreen || "choices";
+  render();
+}
+
+function getReturnableScreen() {
+  if (state.screen === "artworkViewer") {
+    return state.artworkReturnScreen || "endingBook";
+  }
+
+  if (state.screen === "endingBook" || state.screen === "eventGallery") {
+    return state.returnScreen || "choices";
+  }
+
+  return state.screen;
+}
+
+function openArtworkViewer(item, returnScreen) {
+  state.artworkViewer = item;
+  state.artworkReturnScreen = returnScreen;
+  state.screen = "artworkViewer";
+  render();
+}
+
+function returnFromArtworkViewer() {
+  state.screen = state.artworkReturnScreen || "endingBook";
+  state.artworkViewer = null;
+  render();
+}
+
+function renderArtworkViewer() {
+  const item = state.artworkViewer;
+  const isVisible = state.screen === "artworkViewer" && item;
+  elements.artworkViewer.hidden = !isVisible;
+  if (!isVisible) {
+    elements.artworkViewerImage.removeAttribute("src");
+    elements.artworkViewerImage.alt = "";
+    elements.artworkViewerTitle.textContent = "";
+    elements.artworkViewerBody.textContent = "";
+    return;
+  }
+
+  elements.artworkViewerLabel.textContent = item.label;
+  elements.artworkViewerTitle.textContent = item.title;
+  elements.artworkViewerImage.src = item.src;
+  elements.artworkViewerImage.alt = item.alt;
+  elements.artworkViewerBody.textContent = item.body;
 }
 
 function hasEventGalleryAccess() {
@@ -637,8 +714,24 @@ function renderSkipIntroButton() {
 
 function createEventGalleryRecord(event, index) {
   const unlocked = state.unlockedEventCgIds.has(event.id);
-  const record = document.createElement("article");
+  const record = document.createElement(unlocked ? "button" : "article");
   record.className = unlocked ? "ending-record cg-record" : "ending-record cg-record cg-record--locked";
+  if (unlocked) {
+    record.type = "button";
+    record.setAttribute("aria-label", `${event.title}の一枚絵を全画面表示`);
+    record.addEventListener("click", () => {
+      openArtworkViewer(
+        {
+          label: "回想帳",
+          title: event.title,
+          body: event.hint,
+          src: event.artwork,
+          alt: event.artworkAlt,
+        },
+        "eventGallery",
+      );
+    });
+  }
 
   if (unlocked) {
     const image = document.createElement("img");
@@ -664,8 +757,32 @@ function createEventGalleryRecord(event, index) {
 
 function createEndingRecord(ending, index) {
   const unlocked = state.unlockedEndingIds.has(ending.id);
-  const record = document.createElement("article");
-  record.className = "ending-record";
+  const record = document.createElement(unlocked ? "button" : "article");
+  record.className = unlocked ? "ending-record ending-record--with-image" : "ending-record ending-record--locked";
+  if (unlocked) {
+    record.type = "button";
+    record.setAttribute("aria-label", `${ending.title}の一枚絵を全画面表示`);
+    record.addEventListener("click", () => {
+      openArtworkViewer(
+        {
+          label: "結末帳",
+          title: ending.title,
+          body: ending.hint,
+          src: ending.artwork,
+          alt: ending.artworkAlt,
+        },
+        "endingBook",
+      );
+    });
+
+    const image = document.createElement("img");
+    image.className = "ending-record__image";
+    image.src = ending.artwork;
+    image.alt = ending.artworkAlt;
+    image.loading = "lazy";
+    image.decoding = "async";
+    record.append(image);
+  }
 
   const title = document.createElement("p");
   title.className = "ending-record__title";
@@ -932,6 +1049,18 @@ function formatStatsForSpeech() {
 }
 
 function buildTurnText() {
+  if (state.screen === "endingBook") {
+    return `結末帳 / ${state.unlockedEndingIds.size}/${endingCatalog.length}`;
+  }
+
+  if (state.screen === "eventGallery") {
+    return `回想帳 / ${state.unlockedEventCgIds.size}/${seasonalEvents.length}`;
+  }
+
+  if (state.screen === "artworkViewer") {
+    return `一枚絵 / ${state.artworkViewer?.title ?? ""}`;
+  }
+
   if (state.screen === "profile") {
     return "主人公選択 / 入学式";
   }

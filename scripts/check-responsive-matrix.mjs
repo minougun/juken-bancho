@@ -16,6 +16,8 @@ const profiles = [
   { id: "bancho", label: /目指せ合格番長/ },
   { id: "gyaru", label: /目指せ優等生ギャル/ },
 ];
+const endingStorageKey = "jukenBancho.unlockedEndings.v1";
+const eventCgStorageKey = "jukenBancho.unlockedEventCgs.v1";
 
 function getFreePort() {
   return new Promise((resolvePort, reject) => {
@@ -143,6 +145,126 @@ async function screenshot(page, name) {
   await page.screenshot({ path: `${outputDir}/${name}.png`, fullPage: true });
 }
 
+async function assertVisibleArtwork(page, label, expectedPath) {
+  const data = await page.locator("#endingArtwork").evaluate((element) => ({
+    hidden: element.hidden,
+    src: element.getAttribute("src") || "",
+    width: element.getBoundingClientRect().width,
+    height: element.getBoundingClientRect().height,
+  }));
+  if (data.hidden || !data.src.includes(expectedPath) || data.width < 120 || data.height < 80) {
+    throw new Error(`${label}: artwork not visible ${JSON.stringify(data)}`);
+  }
+}
+
+async function assertBranchResultVisible(page, label) {
+  const data = await page.evaluate(() => {
+    const dialogue = document.querySelector(".dialogue-box");
+    return {
+      text: document.querySelector("#dialogueText").textContent,
+      scrollTop: dialogue.scrollTop,
+      scrollHeight: dialogue.scrollHeight,
+      clientHeight: dialogue.clientHeight,
+      advanceHidden: document.querySelector("#advanceButton").hidden,
+      choiceCount: document.querySelectorAll("#choiceList button").length,
+    };
+  });
+  if (!data.text.includes("選択:") || data.choiceCount !== 0 || data.advanceHidden) {
+    throw new Error(`${label}: branch result did not replace choices ${JSON.stringify(data)}`);
+  }
+  if (data.scrollHeight > data.clientHeight + 1 && data.scrollTop <= 0) {
+    throw new Error(`${label}: branch result did not scroll to the appended text ${JSON.stringify(data)}`);
+  }
+}
+
+async function playToFirstSeasonalEvent(page, label, profile) {
+  for (let week = 0; week < 10; week += 1) {
+    await page.getByRole("button", { name: /補習を受ける/ }).click();
+    if (week < 9) {
+      await page.getByRole("button", { name: "次の週へ" }).click();
+    }
+  }
+
+  const expectedArtwork = profile.id === "gyaru" ? "events/gyaru/spring-study-room-gyaru.png" : "events/bancho/spring-study-room-bancho.png";
+  await assertVisibleArtwork(page, `${label} first seasonal event`, expectedArtwork);
+  await assertNoHorizontalOverflow(page, `${label} first seasonal event`);
+  await screenshot(page, `${label}-seasonal-event`);
+
+  await page.locator("#choiceList button").first().click();
+  await page.waitForFunction(() => document.querySelector("#dialogueText").textContent.includes("選択:"));
+  await assertBranchResultVisible(page, `${label} seasonal branch`);
+  await assertNoHorizontalOverflow(page, `${label} seasonal branch`);
+  await screenshot(page, `${label}-seasonal-branch`);
+}
+
+async function assertArtworkViewer(page, label, expectedPath) {
+  await page.locator("#artworkViewer:not([hidden])").waitFor();
+  const data = await page.locator("#artworkViewerImage").evaluate((element) => ({
+    src: element.getAttribute("src") || "",
+    width: element.getBoundingClientRect().width,
+    height: element.getBoundingClientRect().height,
+  }));
+  if (!data.src.includes(expectedPath) || data.width < 180 || data.height < 100) {
+    throw new Error(`${label}: artwork viewer did not show expected image ${JSON.stringify(data)}`);
+  }
+}
+
+async function runCollectionCase(browser, baseUrl, viewport) {
+  const label = `${viewport.name}-collections`;
+  const page = await browser.newPage({ viewport, reducedMotion: "reduce" });
+  await page.addInitScript(
+    ({ endingKey, eventKey }) => {
+      window.localStorage.setItem(endingKey, JSON.stringify(["passed_bancho"]));
+      window.localStorage.setItem(eventKey, JSON.stringify(["spring_study_room:bancho"]));
+    },
+    { endingKey: endingStorageKey, eventKey: eventCgStorageKey },
+  );
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("#choiceList button");
+
+  await page.locator("#endingBookButton").click();
+  await page.locator("#endingBookPanel:not([hidden])").waitFor();
+  await assertNoHorizontalOverflow(page, `${label} ending book`);
+  await screenshot(page, `${label}-ending-book`);
+  await page.locator("#endingBookList button").first().click();
+  await assertArtworkViewer(page, `${label} ending artwork`, "endings/passed-bancho.png");
+  await screenshot(page, `${label}-ending-artwork`);
+  await page.locator("#artworkBackButton").click();
+  await page.locator("#endingBookBackButton").click();
+
+  await page.locator("#eventGalleryButton").click();
+  await page.locator("#eventGalleryPanel:not([hidden])").waitFor();
+  await assertNoHorizontalOverflow(page, `${label} event gallery`);
+  await screenshot(page, `${label}-event-gallery`);
+  await page.locator("#eventGalleryList button").first().click();
+  await assertArtworkViewer(page, `${label} event artwork`, "events/bancho/spring-study-room-bancho.png");
+  await screenshot(page, `${label}-event-artwork`);
+  await page.close();
+}
+
+async function assertNoAudioRequestsWhileBgmOff(browser, baseUrl) {
+  const page = await browser.newPage({ viewport: { width: 390, height: 844 }, reducedMotion: "reduce" });
+  const audioRequests = [];
+  page.on("request", (request) => {
+    const path = new URL(request.url()).pathname;
+    if (/\.(mp3|ogg)$/i.test(path)) {
+      audioRequests.push(request.url());
+    }
+  });
+  await page.goto(baseUrl, { waitUntil: "domcontentloaded" });
+  await page.waitForSelector("#choiceList button");
+  await page.getByRole("button", { name: /目指せ合格番長/ }).click();
+  for (let index = 0; index < 4; index += 1) {
+    await page.getByRole("button", { name: index === 3 ? "予定を決める" : "次へ" }).click();
+  }
+  await page.getByRole("button", { name: /城北実学大学/ }).click();
+  await page.waitForTimeout(500);
+  await page.close();
+  if (audioRequests.length) {
+    throw new Error(`BGM OFF loaded audio unexpectedly: ${audioRequests.join(", ")}`);
+  }
+}
+
 async function runCase(browser, baseUrl, viewport, profile) {
   const label = `${viewport.name}-${profile.id}`;
   const page = await browser.newPage({ viewport, reducedMotion: "reduce" });
@@ -173,6 +295,7 @@ async function runCase(browser, baseUrl, viewport, profile) {
   await assertCentered(page, `${label} choices`, viewport);
   await assertNoHorizontalOverflow(page, `${label} choices`);
   await screenshot(page, `${label}-choices`);
+  await playToFirstSeasonalEvent(page, label, profile);
   await page.close();
 }
 
@@ -185,7 +308,9 @@ try {
     for (const profile of profiles) {
       await runCase(browser, server.url, viewport, profile);
     }
+    await runCollectionCase(browser, server.url, viewport);
   }
+  await assertNoAudioRequestsWhileBgmOff(browser, server.url);
   console.log(`Responsive matrix ok. Screenshots: ${outputDir}`);
 } finally {
   await browser.close();

@@ -121,7 +121,60 @@ function tryApplyRandomEvent(stats, turn, rng) {
   return null;
 }
 
-function tryApplySeasonalEvent(stats, turn, profile, rng) {
+function scoreChoice(choice, stats, school, strategy) {
+  const effects = choice.effects;
+  if (strategy === "random") {
+    return 0;
+  }
+
+  const academicNeed = stats.academics < school.passAcademic ? 1 : 0.35;
+  const trustNeed = stats.trust < school.passTrust ? 1 : 0.45;
+  const faceNeed = stats.face < school.passFace ? 1 : 0.45;
+  const staminaNeed = stats.stamina < 32 ? 1 : 0.25;
+  const stressNeed = stats.stress > 60 ? 1 : 0.35;
+
+  if (strategy === "academic") {
+    return (
+      (effects.academics ?? 0) * 4 +
+      (effects.trust ?? 0) * trustNeed +
+      (effects.face ?? 0) * faceNeed +
+      (effects.stamina ?? 0) * staminaNeed -
+      (effects.stress ?? 0) * stressNeed
+    );
+  }
+
+  if (strategy === "social") {
+    return (
+      (effects.trust ?? 0) * 3 +
+      (effects.face ?? 0) * 3 +
+      (effects.looks ?? 0) * 1.2 +
+      (effects.academics ?? 0) * academicNeed +
+      (effects.stamina ?? 0) * staminaNeed -
+      (effects.stress ?? 0) * stressNeed
+    );
+  }
+
+  return (
+    (effects.academics ?? 0) * (2 * academicNeed) +
+    (effects.trust ?? 0) * (1.5 * trustNeed) +
+    (effects.face ?? 0) * (1.5 * faceNeed) +
+    (effects.looks ?? 0) +
+    (effects.stamina ?? 0) * staminaNeed -
+    (effects.stress ?? 0) * stressNeed
+  );
+}
+
+function chooseSeasonalChoice(choices, stats, school, strategy, rng) {
+  if (strategy === "random") {
+    return choices[Math.floor(rng() * choices.length)];
+  }
+
+  return choices
+    .map((choice) => ({ choice, score: scoreChoice(choice, stats, school, strategy) }))
+    .sort((a, b) => b.score - a.score)[0].choice;
+}
+
+function tryApplySeasonalEvent(stats, turn, profile, school, strategy, rng) {
   const event = seasonalEvents.find((candidate) => candidate.triggerTurn === turn);
   if (!event) {
     return null;
@@ -130,7 +183,7 @@ function tryApplySeasonalEvent(stats, turn, profile, rng) {
   applyEffects(stats, rollEffects(event.effects, rng));
   const choices = event.routes?.[profile.id]?.choices ?? [];
   if (choices.length) {
-    const choice = choices[Math.floor(rng() * choices.length)];
+    const choice = chooseSeasonalChoice(choices, stats, school, strategy, rng);
     applyEffects(stats, rollEffects(choice.effects, rng));
   }
   return event.id;
@@ -245,7 +298,7 @@ function runSimulation(profile, school, strategy, seed) {
       state.usedCardIds.add(card.id);
     }
     tryApplyRandomEvent(state.stats, state.turn, rng);
-    tryApplySeasonalEvent(state.stats, state.turn, profile, rng);
+    tryApplySeasonalEvent(state.stats, state.turn, profile, school, strategy, rng);
     applyTargetSchoolPressure(state.stats, school, state.turn, state.totalTurns);
     applyPressureRules(state.stats);
   }

@@ -37,10 +37,13 @@ const state = {
   unlockedEventCgIds: loadUnlockedEventCgs(),
   bgmEnabled: false,
   sfxEnabled: true,
+  pendingBgmSrc: GAMEPLAY_BGM_SRC,
   audioContext: null,
   profileSelectionLocked: false,
   profileSelectionToken: 0,
   characterCentered: false,
+  endingBookRenderKey: "",
+  eventGalleryRenderKey: "",
 };
 
 const elements = {
@@ -101,7 +104,7 @@ startNewGame();
 updateBgmVolume();
 updateBgmButton();
 updateSfxButton();
-scheduleEndingAssetPreload();
+scheduleLightAssetWarmup();
 
 function startNewGame() {
   state.turn = 0;
@@ -311,9 +314,10 @@ function chooseSeasonalEventChoice(choice) {
 
   const effects = rollEffects(choice.effects);
   applyEffects(effects);
-  state.pendingResult.text = `${state.pendingResult.text}\n\n${choice.text}${formatEffectSentence(effects)}`;
+  state.pendingResult.text = `${state.pendingResult.text}\n\n選択: ${choice.label}\n${choice.text}${formatEffectSentence(effects)}`;
   state.pendingResult.eventChoices = null;
-  state.log.push(`${choice.label}\n${choice.text}${formatEffectSentence(effects)}`);
+  state.pendingResult.shouldScrollToBranch = true;
+  state.log.push(`選択: ${choice.label}\n${choice.text}${formatEffectSentence(effects)}`);
   render();
 }
 
@@ -571,7 +575,10 @@ function renderResult() {
   } else {
     hideEndingArtwork();
   }
-  resetDialogueScroll();
+  const shouldScrollToBranch = state.pendingResult.shouldScrollToBranch;
+  if (!shouldScrollToBranch) {
+    resetDialogueScroll();
+  }
   elements.speakerName.textContent = state.pendingResult.speaker;
   elements.sceneTag.textContent = state.pendingResult.sceneTag;
   elements.dialogueText.textContent = state.pendingResult.text;
@@ -585,6 +592,13 @@ function renderResult() {
   elements.advanceButton.hidden = false;
   elements.advanceButton.textContent = state.complete ? "合格発表へ" : "次の週へ";
   elements.advanceButton.onclick = advanceScene;
+  if (shouldScrollToBranch) {
+    state.pendingResult.shouldScrollToBranch = false;
+    window.requestAnimationFrame(() => {
+      elements.dialogueBox.scrollTop = elements.dialogueBox.scrollHeight;
+      elements.advanceButton.focus({ preventScroll: true });
+    });
+  }
 }
 
 function renderEnding() {
@@ -654,7 +668,19 @@ function renderEndingBook() {
   }
   elements.endingBookCount.textContent = `${unlockedCount}/${endingCatalog.length} 解放`;
   elements.endingBookPanel.hidden = !isPage;
-  elements.endingBookList.replaceChildren(...endingCatalog.map(createEndingRecord));
+  if (!isPage) {
+    if (state.endingBookRenderKey) {
+      elements.endingBookList.replaceChildren();
+      state.endingBookRenderKey = "";
+    }
+    return;
+  }
+
+  const renderKey = `${[...state.unlockedEndingIds].sort().join("|")}:${endingCatalog.length}`;
+  if (renderKey !== state.endingBookRenderKey) {
+    elements.endingBookList.replaceChildren(...endingCatalog.map(createEndingRecord));
+    state.endingBookRenderKey = renderKey;
+  }
 }
 
 function openEventGalleryPage() {
@@ -692,7 +718,19 @@ function renderEventGallery() {
   }
   elements.eventGalleryCount.textContent = `${unlockedCount}/${galleryCatalog.length} 回収`;
   elements.eventGalleryPanel.hidden = !hasAccess || !isPage;
-  elements.eventGalleryList.replaceChildren(...galleryCatalog.map(createEventGalleryRecord));
+  if (!hasAccess || !isPage) {
+    if (state.eventGalleryRenderKey) {
+      elements.eventGalleryList.replaceChildren();
+      state.eventGalleryRenderKey = "";
+    }
+    return;
+  }
+
+  const renderKey = `${[...state.unlockedEventCgIds].sort().join("|")}:${galleryCatalog.length}`;
+  if (renderKey !== state.eventGalleryRenderKey) {
+    elements.eventGalleryList.replaceChildren(...galleryCatalog.map(createEventGalleryRecord));
+    state.eventGalleryRenderKey = renderKey;
+  }
 }
 
 function returnFromLibraryPage() {
@@ -1461,24 +1499,40 @@ function getAudioContext() {
 }
 
 function setBgmTrack(src) {
-  if (elements.bgmAudio.getAttribute("src") === src) {
+  if (state.pendingBgmSrc === src) {
     return;
   }
 
-  elements.bgmAudio.src = src;
-  elements.bgmAudio.load();
+  state.pendingBgmSrc = src;
   if (state.bgmEnabled) {
+    activateBgmTrack();
     void playBgm();
   }
 }
 
 async function playBgm() {
+  activateBgmTrack();
+  if (!elements.bgmAudio.getAttribute("src")) {
+    updateBgmButton();
+    return;
+  }
+
   try {
     await elements.bgmAudio.play();
   } catch {
     state.bgmEnabled = false;
   }
   updateBgmButton();
+}
+
+function activateBgmTrack() {
+  const src = state.pendingBgmSrc || getSceneBgm();
+  if (elements.bgmAudio.getAttribute("src") === src) {
+    return;
+  }
+
+  elements.bgmAudio.src = src;
+  elements.bgmAudio.load();
 }
 
 function updateBgmButton() {
@@ -1490,28 +1544,13 @@ function updateBgmVolume() {
   elements.bgmAudio.volume = Number(elements.volumeSlider.value) / 100;
 }
 
-function scheduleEndingAssetPreload() {
+function scheduleLightAssetWarmup() {
   const preload = () => {
-    for (const src of Object.values(termBgm)) {
-      const audio = document.createElement("audio");
-      audio.preload = "metadata";
-      audio.src = src;
-    }
-
-    for (const ending of endingCatalog) {
+    for (const profile of protagonistProfiles) {
       const image = new Image();
       image.decoding = "async";
-      image.src = ending.artwork;
-
-      const audio = document.createElement("audio");
-      audio.preload = "metadata";
-      audio.src = ending.bgm;
-    }
-
-    for (const entry of getEventGalleryCatalog()) {
-      const image = new Image();
-      image.decoding = "async";
-      image.src = entry.artwork;
+      image.fetchPriority = "low";
+      image.src = profile.sprite;
     }
   };
 

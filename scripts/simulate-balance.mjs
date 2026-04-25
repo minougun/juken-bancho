@@ -99,7 +99,7 @@ function applyStudyQuizResult(effects, card, strategy, rng) {
   const correct = rng() <= getQuizCorrectRate(strategy);
   return {
     ...effects,
-    academics: correct ? effects.academics + 1 : Math.floor(Math.max(effects.academics, 0) / 2),
+    academics: correct ? effects.academics + 1 : 0,
   };
 }
 

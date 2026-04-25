@@ -448,14 +448,14 @@ function applyStudyQuizResult(effects, card, correct) {
     return nextEffects;
   }
 
-  nextEffects.academics = correct ? clamp(academics + 1, 0, 100) : Math.floor(Math.max(academics, 0) / 2);
+  nextEffects.academics = correct ? clamp(academics + 1, 0, 100) : 0;
   return nextEffects;
 }
 
 function buildStudyQuizResultText(outcome, effects) {
   const { question, correct } = outcome;
   const result = correct ? "正解" : "不正解";
-  const bonusText = correct ? "学力の伸びに火がついた。" : "理解が浅い部分が残り、学力の伸びは鈍った。";
+  const bonusText = correct ? "学力の伸びに火がついた。" : "理解が浅い部分が残り、学力は伸びなかった。";
   return `\n\n五科目チェック: ${question.subject} / ${question.area}\n${result}。${bonusText}\n解説: ${question.explanation}\n調整後の学力変動: ${effects.academics > 0 ? `+${effects.academics}` : effects.academics}`;
 }
 
@@ -670,7 +670,7 @@ function renderStudyQuiz() {
   elements.speakerName.textContent = "五科目チェック";
   elements.sceneTag.textContent = `${question.subject}・${question.area}`;
   elements.dialogueText.textContent =
-    `${cardCopy.title}の前に一問。\n${question.prompt}\n\n正解なら学力上昇ボーナス。不正解ならこの予定の学力上昇が半分になる。`;
+    `${cardCopy.title}の前に一問。\n${question.prompt}\n\n正解なら学力上昇ボーナス。不正解ならこの予定の学力は上がらない。`;
   elements.choiceList.replaceChildren(...question.choices.map((choice, index) => createStudyQuizChoiceButton(choice, index, cardEffects)));
   elements.advanceButton.hidden = true;
 }
@@ -1072,7 +1072,7 @@ function createStudyQuizChoiceButton(choice, index, cardEffects) {
   const button = document.createElement("button");
   button.className = "choice-button choice-button--quiz";
   button.type = "button";
-  button.setAttribute("aria-label", `${choice}を選ぶ。正解なら学力ボーナス、不正解なら学力上昇が半分。現在の効果目安: ${formatEffectSummary(cardEffects)}`);
+  button.setAttribute("aria-label", `${choice}を選ぶ。正解なら学力ボーナス、不正解なら学力上昇なし。現在の効果目安: ${formatEffectSummary(cardEffects)}`);
   button.addEventListener("click", () => {
     answerStudyQuiz(index);
   });

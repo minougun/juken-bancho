@@ -1,4 +1,5 @@
 import {
+  academicMilestones,
   cards,
   endingCatalog,
   events,
@@ -106,6 +107,23 @@ const targetSchoolIds = new Set(targetSchools.map((school) => school.id));
 for (const schoolId of Object.keys(targetExamQuestions)) {
   if (!targetSchoolIds.has(schoolId)) {
     fail(`targetExamQuestions.${schoolId} does not match a target school`);
+  }
+}
+for (const schoolId of Object.keys(academicMilestones)) {
+  if (!targetSchoolIds.has(schoolId)) {
+    fail(`academicMilestones.${schoolId} does not match a target school`);
+  }
+  for (const milestone of academicMilestones[schoolId]) {
+    if (!Number.isInteger(milestone.turn) || milestone.turn <= 0) {
+      fail(`academicMilestones.${schoolId} has invalid turn`);
+    }
+    if (!Number.isInteger(milestone.requiredAcademics) || milestone.requiredAcademics < 0 || milestone.requiredAcademics > 100) {
+      fail(`academicMilestones.${schoolId}.${milestone.turn}.requiredAcademics must be between 0 and 100`);
+    }
+    if (!milestone.message) {
+      fail(`academicMilestones.${schoolId}.${milestone.turn} must have message`);
+    }
+    assertEffectShape(milestone.effects, `academicMilestones.${schoolId}.${milestone.turn}`);
   }
 }
 

@@ -5,6 +5,7 @@ import {
   PROFILE_SELECT_ANIMATION_MS,
   STUDY_REVIEW_STORAGE_KEY,
   TOTAL_TURNS,
+  academicMilestones,
   cards,
   endingCatalog,
   events,
@@ -243,7 +244,7 @@ function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
 
   const event = tryApplyRandomEvent();
   const seasonalEvent = tryApplySeasonalEvent();
-  const pressureMessages = [...applyTargetSchoolPressure(), ...applyPressureRules()];
+  const pressureMessages = [...applyTargetSchoolPressure(), ...applyAcademicMilestonePressure(), ...applyPressureRules()];
   const effectText = formatEffectSentence(cardEffects);
   const studyQuizText = studyQuizOutcome ? buildStudyQuizResultText(studyQuizOutcome, cardEffects) : "";
   const eventText = event ? `\n\n${event.speaker}「${event.message}」${formatEffectSentence(event.effects)}` : "";
@@ -412,6 +413,17 @@ function applyTargetSchoolPressure() {
   const effects = { academics: 0, trust: 0, face: 0, looks: 0, stamina, stress };
   applyEffects(effects);
   return [`進路指導室の赤線が濃くなる。${school.name}の偏差値${school.deviation}は、今週の疲れにも容赦しない。${formatEffectSentence(effects)}`];
+}
+
+function applyAcademicMilestonePressure() {
+  const school = getTargetSchool();
+  const milestone = academicMilestones[school?.id]?.find((candidate) => candidate.turn === state.turn);
+  if (!milestone || state.stats.academics >= milestone.requiredAcademics) {
+    return [];
+  }
+
+  applyEffects(milestone.effects);
+  return [`${milestone.message}${formatEffectSentence(milestone.effects)}`];
 }
 
 function applyEffects(effects) {

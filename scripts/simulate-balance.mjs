@@ -2,6 +2,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import {
   cards,
+  academicMilestones,
   events,
   protagonistProfiles,
   seasonalEvents,
@@ -132,6 +133,15 @@ function applyTargetSchoolPressure(stats, school, turn, totalTurns) {
   const stress = school.weeklyStress + (isLateStage(turn, totalTurns) ? school.lateStress : 0);
   const stamina = isLateStage(turn, totalTurns) ? -school.staminaDrain : 0;
   applyEffects(stats, { academics: 0, trust: 0, face: 0, looks: 0, stamina, stress });
+}
+
+function applyAcademicMilestonePressure(stats, school, turn) {
+  const milestone = academicMilestones[school.id]?.find((candidate) => candidate.turn === turn);
+  if (!milestone || stats.academics >= milestone.requiredAcademics) {
+    return;
+  }
+
+  applyEffects(stats, milestone.effects);
 }
 
 function tryApplyRandomEvent(stats, turn, rng) {
@@ -330,6 +340,7 @@ function runSimulation(profile, school, strategy, seed) {
     tryApplyRandomEvent(state.stats, state.turn, rng);
     tryApplySeasonalEvent(state.stats, state.turn, profile, school, strategy, rng);
     applyTargetSchoolPressure(state.stats, school, state.turn, state.totalTurns);
+    applyAcademicMilestonePressure(state.stats, school, state.turn);
     applyPressureRules(state.stats);
   }
 

@@ -156,6 +156,29 @@ export const targetSchools = [
   },
 ];
 
+export const academicMilestones = {
+  tenrei: [
+    {
+      turn: 48,
+      requiredAcademics: 70,
+      effects: { academics: 0, trust: 0, face: 0, looks: 0, stamina: 0, stress: 8 },
+      message: "1年の締めで答案が重い。国立天嶺の背中は、序盤の遅れにも容赦しない。",
+    },
+    {
+      turn: 96,
+      requiredAcademics: 95,
+      effects: { academics: 0, trust: 0, face: -3, looks: 0, stamina: 0, stress: 10 },
+      message: "2年の終わり、進路面談の空気が固まる。学力の遅れがメンツにも響いた。",
+    },
+    {
+      turn: 120,
+      requiredAcademics: 98,
+      effects: { academics: 0, trust: 0, face: 0, looks: 0, stamina: 0, stress: 12 },
+      message: "3年秋、赤本の厚みが急に牙をむく。国立天嶺はここから一気に詰めてくる。",
+    },
+  ],
+};
+
 export const endingCatalog = [
   {
     id: "passed_bancho",

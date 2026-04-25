@@ -12,6 +12,7 @@ import {
   seasonalEvents,
   statLabels,
   studyQuizQuestions,
+  targetExamQuestions,
   targetSchools,
   termBgm,
 } from "./data/game-data.js";
@@ -214,7 +215,7 @@ function startStudyQuiz(card) {
   state.pendingStudyQuiz = {
     card,
     cardEffects: rollEffects(card.effects),
-    question: pickStudyQuestion(),
+    question: pickStudyQuestion(card),
   };
   state.screen = "studyQuiz";
   render();
@@ -423,8 +424,21 @@ function isLearningCard(card) {
   return card.tag === "study" || card.tag === "teacher" || card.tag === "exam";
 }
 
-function pickStudyQuestion() {
-  return studyQuizQuestions[randomInt(0, studyQuizQuestions.length - 1)];
+function pickStudyQuestion(card) {
+  const questions = isTargetExamCard(card) ? getTargetExamQuestions() : studyQuizQuestions;
+  return questions[randomInt(0, questions.length - 1)];
+}
+
+function isTargetExamCard(card) {
+  return card.id === "mock_exam" || card.id === "final_sprint";
+}
+
+function getTargetExamQuestions() {
+  return targetExamQuestions[state.targetSchool?.id] ?? studyQuizQuestions;
+}
+
+function getStudyQuestionCatalog() {
+  return [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
 }
 
 function applyStudyQuizResult(effects, card, correct) {
@@ -845,13 +859,14 @@ function renderEventGallery() {
 function renderStudyReview() {
   const isPage = state.screen === "studyReview";
   const records = getStudyReviewRecords();
-  elements.studyReviewButton.textContent = `復習帳 ${records.length}/${studyQuizQuestions.length}`;
+  const totalQuestions = getStudyQuestionCatalog().length;
+  elements.studyReviewButton.textContent = `復習帳 ${records.length}/${totalQuestions}`;
   if (isPage) {
     elements.studyReviewButton.setAttribute("aria-current", "page");
   } else {
     elements.studyReviewButton.removeAttribute("aria-current");
   }
-  elements.studyReviewCount.textContent = `${records.length}/${studyQuizQuestions.length} 問`;
+  elements.studyReviewCount.textContent = `${records.length}/${totalQuestions} 問`;
   elements.studyReviewPanel.hidden = !isPage;
   if (!isPage) {
     if (state.studyReviewRenderKey) {
@@ -1002,7 +1017,7 @@ function createSeasonalEventChoiceButton(choice) {
 }
 
 function createStudyReviewRecord(record, index) {
-  const question = studyQuizQuestions.find((item) => item.id === record.id);
+  const question = getStudyQuestionCatalog().find((item) => item.id === record.id);
   const article = document.createElement("article");
   article.className = "ending-record study-review-record";
   if (!question) {
@@ -1230,7 +1245,7 @@ function loadStudyReviewRecords() {
   try {
     const raw = window.localStorage.getItem(STUDY_REVIEW_STORAGE_KEY);
     const values = raw ? JSON.parse(raw) : [];
-    const knownIds = new Set(studyQuizQuestions.map((question) => question.id));
+    const knownIds = new Set(getStudyQuestionCatalog().map((question) => question.id));
     const records = values
       .filter((record) => knownIds.has(record.id))
       .map((record) => [
@@ -1441,7 +1456,7 @@ function buildTurnText() {
   }
 
   if (state.screen === "studyReview") {
-    return `復習帳 / ${state.studyReviewRecords.size}/${studyQuizQuestions.length}`;
+    return `復習帳 / ${state.studyReviewRecords.size}/${getStudyQuestionCatalog().length}`;
   }
 
   if (state.screen === "artworkViewer") {

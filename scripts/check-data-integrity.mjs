@@ -6,6 +6,7 @@ import {
   seasonalEvents,
   statLabels,
   studyQuizQuestions,
+  targetExamQuestions,
   targetSchools,
 } from "../web/data/game-data.js";
 import { existsSync } from "node:fs";
@@ -77,7 +78,8 @@ assertUniqueIds(endingCatalog, "endingCatalog");
 assertUniqueIds(seasonalEvents, "seasonalEvents");
 assertUniqueIds(cards, "cards");
 assertUniqueIds(events, "events");
-assertUniqueIds(studyQuizQuestions, "studyQuizQuestions");
+const allStudyQuestions = [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
+assertUniqueIds(allStudyQuestions, "allStudyQuestions");
 
 for (const profile of protagonistProfiles) {
   for (const key of statKeys) {
@@ -98,6 +100,12 @@ for (const school of targetSchools) {
   }
   if (school.waitlistAcademic > school.passAcademic) {
     fail(`${school.id}.waitlistAcademic must not exceed passAcademic`);
+  }
+}
+const targetSchoolIds = new Set(targetSchools.map((school) => school.id));
+for (const schoolId of Object.keys(targetExamQuestions)) {
+  if (!targetSchoolIds.has(schoolId)) {
+    fail(`targetExamQuestions.${schoolId} does not match a target school`);
   }
 }
 
@@ -137,27 +145,39 @@ for (const event of events) {
 
 const requiredQuizSubjects = new Set(["国語", "数学", "英語", "理科", "社会"]);
 const seenQuizSubjects = new Set();
-for (const question of studyQuizQuestions) {
+for (const school of targetSchools) {
+  if (!Array.isArray(targetExamQuestions[school.id]) || targetExamQuestions[school.id].length === 0) {
+    fail(`targetExamQuestions.${school.id} must contain at least one question`);
+  }
+  const schoolSubjects = new Set(targetExamQuestions[school.id].map((question) => question.subject));
+  for (const subject of requiredQuizSubjects) {
+    if (!schoolSubjects.has(subject)) {
+      fail(`targetExamQuestions.${school.id} must include ${subject}`);
+    }
+  }
+}
+
+for (const question of allStudyQuestions) {
   seenQuizSubjects.add(question.subject);
   if (!requiredQuizSubjects.has(question.subject)) {
-    fail(`studyQuizQuestions.${question.id}.subject is not one of the five core subjects`);
+    fail(`study question ${question.id}.subject is not one of the five core subjects`);
   }
   if (!question.area || !question.prompt || !question.explanation) {
-    fail(`studyQuizQuestions.${question.id} must have area, prompt, and explanation`);
+    fail(`study question ${question.id} must have area, prompt, and explanation`);
   }
   if (!Array.isArray(question.choices) || question.choices.length < 3) {
-    fail(`studyQuizQuestions.${question.id}.choices must contain at least three choices`);
+    fail(`study question ${question.id}.choices must contain at least three choices`);
   }
   if (!Number.isInteger(question.answerIndex) || question.answerIndex < 0 || question.answerIndex >= question.choices.length) {
-    fail(`studyQuizQuestions.${question.id}.answerIndex is out of range`);
+    fail(`study question ${question.id}.answerIndex is out of range`);
   }
 }
 for (const subject of requiredQuizSubjects) {
   if (!seenQuizSubjects.has(subject)) {
-    fail(`studyQuizQuestions must include ${subject}`);
+    fail(`study questions must include ${subject}`);
   }
 }
 
 console.log(
-  `Data integrity ok: ${protagonistProfiles.length} profiles, ${targetSchools.length} schools, ${cards.length} cards, ${seasonalEvents.length} seasonal events, ${events.length} random events, ${studyQuizQuestions.length} study questions.`,
+  `Data integrity ok: ${protagonistProfiles.length} profiles, ${targetSchools.length} schools, ${cards.length} cards, ${seasonalEvents.length} seasonal events, ${events.length} random events, ${allStudyQuestions.length} study questions.`,
 );

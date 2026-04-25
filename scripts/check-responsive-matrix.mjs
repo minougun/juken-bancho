@@ -180,6 +180,9 @@ async function assertBranchResultVisible(page, label) {
 async function playToFirstSeasonalEvent(page, label, profile) {
   for (let week = 0; week < 10; week += 1) {
     await page.getByRole("button", { name: /補習を受ける/ }).click();
+    await page.waitForFunction(() => document.querySelector(".novel-stage").dataset.screen === "studyQuiz");
+    await assertNoHorizontalOverflow(page, `${label} study quiz ${week + 1}`);
+    await page.locator("#choiceList button").first().click();
     if (week < 9) {
       await page.getByRole("button", { name: "次の週へ" }).click();
     }

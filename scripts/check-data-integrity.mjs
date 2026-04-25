@@ -5,6 +5,7 @@ import {
   protagonistProfiles,
   seasonalEvents,
   statLabels,
+  studyQuizQuestions,
   targetSchools,
 } from "../web/data/game-data.js";
 import { existsSync } from "node:fs";
@@ -76,6 +77,7 @@ assertUniqueIds(endingCatalog, "endingCatalog");
 assertUniqueIds(seasonalEvents, "seasonalEvents");
 assertUniqueIds(cards, "cards");
 assertUniqueIds(events, "events");
+assertUniqueIds(studyQuizQuestions, "studyQuizQuestions");
 
 for (const profile of protagonistProfiles) {
   for (const key of statKeys) {
@@ -133,6 +135,29 @@ for (const event of events) {
   }
 }
 
+const requiredQuizSubjects = new Set(["国語", "数学", "英語", "理科", "社会"]);
+const seenQuizSubjects = new Set();
+for (const question of studyQuizQuestions) {
+  seenQuizSubjects.add(question.subject);
+  if (!requiredQuizSubjects.has(question.subject)) {
+    fail(`studyQuizQuestions.${question.id}.subject is not one of the five core subjects`);
+  }
+  if (!question.area || !question.prompt || !question.explanation) {
+    fail(`studyQuizQuestions.${question.id} must have area, prompt, and explanation`);
+  }
+  if (!Array.isArray(question.choices) || question.choices.length < 3) {
+    fail(`studyQuizQuestions.${question.id}.choices must contain at least three choices`);
+  }
+  if (!Number.isInteger(question.answerIndex) || question.answerIndex < 0 || question.answerIndex >= question.choices.length) {
+    fail(`studyQuizQuestions.${question.id}.answerIndex is out of range`);
+  }
+}
+for (const subject of requiredQuizSubjects) {
+  if (!seenQuizSubjects.has(subject)) {
+    fail(`studyQuizQuestions must include ${subject}`);
+  }
+}
+
 console.log(
-  `Data integrity ok: ${protagonistProfiles.length} profiles, ${targetSchools.length} schools, ${cards.length} cards, ${seasonalEvents.length} seasonal events, ${events.length} random events.`,
+  `Data integrity ok: ${protagonistProfiles.length} profiles, ${targetSchools.length} schools, ${cards.length} cards, ${seasonalEvents.length} seasonal events, ${events.length} random events, ${studyQuizQuestions.length} study questions.`,
 );

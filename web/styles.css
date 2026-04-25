@@ -621,6 +621,26 @@ button.ending-record:hover {
   background: var(--soft);
 }
 
+.choice-button--quiz {
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  min-height: 68px;
+}
+
+.quiz-choice-marker {
+  display: inline-grid;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-items: center;
+  border-radius: 8px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
 .choice-button--school {
   align-content: start;
   min-height: 118px;
@@ -1022,6 +1042,10 @@ button.ending-record:hover {
   .choice-button {
     min-height: 72px;
     padding: 10px;
+  }
+
+  .choice-button--quiz {
+    min-height: 58px;
   }
 
   .choice-button--school {

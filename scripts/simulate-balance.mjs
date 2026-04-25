@@ -74,6 +74,35 @@ function rollEffects(effects, rng, variance = effectVariance) {
   return rolled;
 }
 
+function isLearningCard(card) {
+  return card.tag === "study" || card.tag === "teacher" || card.tag === "exam";
+}
+
+function getQuizCorrectRate(strategy) {
+  if (strategy === "academic") {
+    return 0.82;
+  }
+  if (strategy === "balanced") {
+    return 0.68;
+  }
+  if (strategy === "social") {
+    return 0.56;
+  }
+  return 0.5;
+}
+
+function applyStudyQuizResult(effects, card, strategy, rng) {
+  if (!isLearningCard(card) || (card.effects.academics ?? 0) <= 0) {
+    return effects;
+  }
+
+  const correct = rng() <= getQuizCorrectRate(strategy);
+  return {
+    ...effects,
+    academics: correct ? effects.academics + 1 : Math.floor(Math.max(effects.academics, 0) / 2),
+  };
+}
+
 function isLateStage(turn, totalTurns) {
   return turn >= totalTurns - 24;
 }
@@ -292,7 +321,8 @@ function runSimulation(profile, school, strategy, seed) {
   while (state.turn < state.totalTurns) {
     const card = chooseCard(state, school, strategy, rng);
     state.turn += 1;
-    applyEffects(state.stats, rollEffects(card.effects, rng));
+    const cardEffects = applyStudyQuizResult(rollEffects(card.effects, rng), card, strategy, rng);
+    applyEffects(state.stats, cardEffects);
     state.cardUse.set(card.id, (state.cardUse.get(card.id) ?? 0) + 1);
     if (card.oneShot) {
       state.usedCardIds.add(card.id);

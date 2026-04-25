@@ -10,6 +10,7 @@ import {
   protagonistProfiles,
   seasonalEvents,
   statLabels,
+  studyQuizQuestions,
   targetSchools,
   termBgm,
 } from "./data/game-data.js";
@@ -27,6 +28,7 @@ const state = {
   screen: "choices",
   introIndex: 0,
   pendingResult: null,
+  pendingStudyQuiz: null,
   profile: null,
   pendingProfile: null,
   targetSchool: null,
@@ -116,6 +118,7 @@ function startNewGame() {
   state.screen = "profile";
   state.introIndex = 0;
   state.pendingResult = null;
+  state.pendingStudyQuiz = null;
   state.profile = null;
   state.pendingProfile = null;
   state.targetSchool = null;
@@ -187,8 +190,38 @@ function chooseCard(card) {
     return;
   }
 
+  if (isLearningCard(card)) {
+    startStudyQuiz(card);
+    return;
+  }
+
+  completeCardChoice(card, rollEffects(card.effects));
+}
+
+function startStudyQuiz(card) {
+  state.pendingStudyQuiz = {
+    card,
+    cardEffects: rollEffects(card.effects),
+    question: pickStudyQuestion(),
+  };
+  state.screen = "studyQuiz";
+  render();
+}
+
+function answerStudyQuiz(answerIndex) {
+  if (!state.pendingStudyQuiz) {
+    return;
+  }
+
+  const { card, cardEffects, question } = state.pendingStudyQuiz;
+  const correct = answerIndex === question.answerIndex;
+  const adjustedEffects = applyStudyQuizResult(cardEffects, card, correct);
+  state.pendingStudyQuiz = null;
+  completeCardChoice(card, adjustedEffects, { question, correct });
+}
+
+function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
   state.turn += 1;
-  const cardEffects = rollEffects(card.effects);
   applyEffects(cardEffects);
   if (card.oneShot) {
     state.usedCardIds.add(card.id);
@@ -198,6 +231,7 @@ function chooseCard(card) {
   const seasonalEvent = tryApplySeasonalEvent();
   const pressureMessages = [...applyTargetSchoolPressure(), ...applyPressureRules()];
   const effectText = formatEffectSentence(cardEffects);
+  const studyQuizText = studyQuizOutcome ? buildStudyQuizResultText(studyQuizOutcome, cardEffects) : "";
   const eventText = event ? `\n\n${event.speaker}「${event.message}」${formatEffectSentence(event.effects)}` : "";
   const seasonalText = seasonalEvent
     ? `\n\n${seasonalEvent.title}\n${seasonalEvent.text}${formatEffectSentence(seasonalEvent.effects)}${
@@ -212,7 +246,7 @@ function chooseCard(card) {
 
   const cardCopy = getRouteCardCopy(card);
   const reactionText = buildCardReaction(card);
-  const resultText = `${cardCopy.resultLead}\n${cardCopy.flavor}${reactionText}${effectText}${eventText}${seasonalText}${pressureText}`;
+  const resultText = `${cardCopy.resultLead}\n${cardCopy.flavor}${reactionText}${studyQuizText}${effectText}${eventText}${seasonalText}${pressureText}`;
   state.pendingResult = {
     speaker: seasonalEvent?.speaker ?? getCardSpeaker(card),
     sceneTag: seasonalEvent?.sceneTag ?? (event ? event.title : sceneNameForTurn()),
@@ -372,6 +406,32 @@ function applyEffects(effects) {
   }
 }
 
+function isLearningCard(card) {
+  return card.tag === "study" || card.tag === "teacher" || card.tag === "exam";
+}
+
+function pickStudyQuestion() {
+  return studyQuizQuestions[randomInt(0, studyQuizQuestions.length - 1)];
+}
+
+function applyStudyQuizResult(effects, card, correct) {
+  const nextEffects = { ...effects };
+  const academics = effects.academics ?? 0;
+  if ((card.effects.academics ?? 0) <= 0) {
+    return nextEffects;
+  }
+
+  nextEffects.academics = correct ? clamp(academics + 1, 0, 100) : Math.floor(Math.max(academics, 0) / 2);
+  return nextEffects;
+}
+
+function buildStudyQuizResultText(outcome, effects) {
+  const { question, correct } = outcome;
+  const result = correct ? "正解" : "不正解";
+  const bonusText = correct ? "学力の伸びに火がついた。" : "理解が浅い部分が残り、学力の伸びは鈍った。";
+  return `\n\n五科目チェック: ${question.subject} / ${question.area}\n${result}。${bonusText}\n解説: ${question.explanation}\n調整後の学力変動: ${effects.academics > 0 ? `+${effects.academics}` : effects.academics}`;
+}
+
 function rollEffects(effects, variance = EFFECT_VARIANCE) {
   const rolled = {};
   for (const key of Object.keys(statLabels)) {
@@ -465,7 +525,7 @@ function render() {
   const isFullPageScreen = isLibraryScreen || isArtworkViewer;
   elements.novelStage.dataset.screen = state.screen;
   elements.novelStage.classList.toggle("novel-stage--profile", state.screen === "profile");
-  elements.novelStage.classList.toggle("novel-stage--playing", state.screen === "choices" || state.screen === "result");
+  elements.novelStage.classList.toggle("novel-stage--playing", state.screen === "choices" || state.screen === "result" || state.screen === "studyQuiz");
   elements.novelStage.classList.toggle("novel-stage--ending", state.screen === "ending");
   elements.novelStage.classList.toggle("novel-stage--collection", isFullPageScreen);
   elements.novelStage.classList.toggle(
@@ -510,6 +570,11 @@ function render() {
 
   if (state.screen === "ending") {
     renderEnding();
+    return;
+  }
+
+  if (state.screen === "studyQuiz" && state.pendingStudyQuiz) {
+    renderStudyQuiz();
     return;
   }
 
@@ -567,6 +632,19 @@ function renderChoices() {
 
   const availableCards = cards.filter(isCardAvailable);
   elements.choiceList.replaceChildren(...availableCards.map(createChoiceButton));
+}
+
+function renderStudyQuiz() {
+  hideEndingArtwork();
+  resetDialogueScroll();
+  const { card, cardEffects, question } = state.pendingStudyQuiz;
+  const cardCopy = getRouteCardCopy(card);
+  elements.speakerName.textContent = "五科目チェック";
+  elements.sceneTag.textContent = `${question.subject}・${question.area}`;
+  elements.dialogueText.textContent =
+    `${cardCopy.title}の前に一問。\n${question.prompt}\n\n正解なら学力上昇ボーナス。不正解ならこの予定の学力上昇が半分になる。`;
+  elements.choiceList.replaceChildren(...question.choices.map((choice, index) => createStudyQuizChoiceButton(choice, index, cardEffects)));
+  elements.advanceButton.hidden = true;
 }
 
 function renderResult() {
@@ -863,6 +941,27 @@ function createSeasonalEventChoiceButton(choice) {
   effects.append(...createEffectPills(choice.effects));
 
   button.append(title, subtitle, effects);
+  return button;
+}
+
+function createStudyQuizChoiceButton(choice, index, cardEffects) {
+  const button = document.createElement("button");
+  button.className = "choice-button choice-button--quiz";
+  button.type = "button";
+  button.setAttribute("aria-label", `${choice}を選ぶ。正解なら学力ボーナス、不正解なら学力上昇が半分。現在の効果目安: ${formatEffectSummary(cardEffects)}`);
+  button.addEventListener("click", () => {
+    answerStudyQuiz(index);
+  });
+
+  const marker = document.createElement("span");
+  marker.className = "quiz-choice-marker";
+  marker.textContent = String.fromCharCode(65 + index);
+
+  const text = document.createElement("span");
+  text.className = "choice-title";
+  text.textContent = choice;
+
+  button.append(marker, text);
   return button;
 }
 
@@ -1189,6 +1288,11 @@ function buildTurnText() {
 
   if (state.screen === "target" || !state.targetSchool) {
     return `${getProfile().title} / 志望校選択`;
+  }
+
+  if (state.screen === "studyQuiz") {
+    const question = state.pendingStudyQuiz?.question;
+    return `五科目チェック / ${question?.subject ?? "学習"} / ${state.targetSchool.name}`;
   }
 
   const entry = getCalendarEntry();

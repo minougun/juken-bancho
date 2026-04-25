@@ -190,8 +190,9 @@ function chooseCard(card) {
     state.complete = true;
   }
 
+  const cardCopy = getRouteCardCopy(card);
   const reactionText = buildCardReaction(card);
-  const resultText = `${card.resultLead}\n${card.flavor}${reactionText}${effectText}${eventText}${seasonalText}${pressureText}`;
+  const resultText = `${cardCopy.resultLead}\n${cardCopy.flavor}${reactionText}${effectText}${eventText}${seasonalText}${pressureText}`;
   state.pendingResult = {
     speaker: seasonalEvent?.speaker ?? getCardSpeaker(card),
     sceneTag: seasonalEvent?.sceneTag ?? (event ? event.title : sceneNameForTurn()),
@@ -799,22 +800,22 @@ function saveUnlockedEventCgs() {
 }
 
 function createChoiceButton(card) {
-  const cardTitle = getCardTitle(card);
+  const cardCopy = getRouteCardCopy(card);
   const button = document.createElement("button");
   button.className = "choice-button";
   button.type = "button";
-  button.setAttribute("aria-label", `${cardTitle}。${card.subtitle}。効果: ${formatEffectSummary(card.effects)}`);
+  button.setAttribute("aria-label", `${cardCopy.title}。${cardCopy.subtitle}。効果: ${formatEffectSummary(card.effects)}`);
   button.addEventListener("click", () => {
     chooseCard(card);
   });
 
   const title = document.createElement("span");
   title.className = "choice-title";
-  title.textContent = cardTitle;
+  title.textContent = cardCopy.title;
 
   const subtitle = document.createElement("span");
   subtitle.className = "choice-subtitle";
-  subtitle.textContent = card.subtitle;
+  subtitle.textContent = cardCopy.subtitle;
 
   const effects = document.createElement("span");
   effects.className = "choice-effects";
@@ -824,12 +825,22 @@ function createChoiceButton(card) {
   return button;
 }
 
-function getCardTitle(card) {
+function getRouteCardCopy(card) {
   if (card.id === "ramen_meeting" && getProfile().id === "gyaru") {
-    return "仲間とマクド会議";
+    return {
+      title: "仲間とマクド会議",
+      subtitle: "ポテトより厚い友情",
+      flavor: "ポテトの塩気で進路相談と恋バナを聞く。参考書は、今日はちょっと薄味だ。",
+      resultLead: "紙袋の底に、マヂで熱い団結が残った。",
+    };
   }
 
-  return card.title;
+  return {
+    title: card.title,
+    subtitle: card.subtitle,
+    flavor: card.flavor,
+    resultLead: card.resultLead,
+  };
 }
 
 function renderStats() {

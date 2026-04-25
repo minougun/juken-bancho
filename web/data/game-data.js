@@ -339,7 +339,7 @@ export const cards = [
     title: "仲間とラーメン会議",
     subtitle: "替え玉より厚い信頼",
     flavor: "湯気の向こうで進路相談と近況報告を聞く。",
-    effects: { academics: 0, trust: 2, face: 1, looks: 1, stamina: 2, stress: -2 },
+    effects: { academics: -1, trust: 2, face: 1, looks: 1, stamina: 2, stress: -2 },
     minStamina: 0,
     unlockTurn: 0,
     oneShot: false,

@@ -3,10 +3,13 @@ import {
   cards,
   endingCatalog,
   events,
+  getStudyQuestionById,
   protagonistProfiles,
   seasonalEvents,
   statLabels,
+  STUDY_QUIZ_VARIANTS_PER_BASE,
   studyQuizBaseQuestionCount,
+  makeQuestionVariant,
   studyQuizQuestions,
   studyQuizQuestionMultiplier,
   studyQuizTotalQuestionCount,
@@ -82,19 +85,15 @@ assertUniqueIds(endingCatalog, "endingCatalog");
 assertUniqueIds(seasonalEvents, "seasonalEvents");
 assertUniqueIds(cards, "cards");
 assertUniqueIds(events, "events");
-const allStudyQuestions = [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
-assertUniqueIds(allStudyQuestions, "allStudyQuestions");
-const allStudyQuestionPrompts = new Set(allStudyQuestions.map((question) => `${question.subject}:${question.area}:${question.prompt}`));
-if (allStudyQuestionPrompts.size !== allStudyQuestions.length) {
-  fail(`study question prompts must be unique: ${allStudyQuestions.length - allStudyQuestionPrompts.size} duplicates`);
-}
+const baseStudyQuestions = [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
+assertUniqueIds(baseStudyQuestions, "baseStudyQuestions");
 if (studyQuizBaseQuestionCount !== 30) {
   fail(`studyQuizBaseQuestionCount must be 30, got ${studyQuizBaseQuestionCount}`);
 }
-if (studyQuizQuestionMultiplier !== 1000) {
+if (STUDY_QUIZ_VARIANTS_PER_BASE !== 1000 || studyQuizQuestionMultiplier !== 1000) {
   fail(`studyQuizQuestionMultiplier must be 1000, got ${studyQuizQuestionMultiplier}`);
 }
-if (studyQuizTotalQuestionCount !== allStudyQuestions.length || studyQuizTotalQuestionCount !== 30000) {
+if (studyQuizTotalQuestionCount !== baseStudyQuestions.length * STUDY_QUIZ_VARIANTS_PER_BASE || studyQuizTotalQuestionCount !== 30000) {
   fail(`studyQuizTotalQuestionCount must be 30000, got ${studyQuizTotalQuestionCount}`);
 }
 
@@ -191,23 +190,59 @@ for (const school of targetSchools) {
   }
 }
 
-for (const question of allStudyQuestions) {
+function assertStudyQuestionShape(question, label) {
   seenQuizSubjects.add(question.subject);
   if (!requiredQuizSubjects.has(question.subject)) {
-    fail(`study question ${question.id}.subject is not one of the five core subjects`);
+    fail(`${label}.subject is not one of the five core subjects`);
   }
   if (!question.area || !question.prompt || !question.explanation) {
-    fail(`study question ${question.id} must have area, prompt, and explanation`);
+    fail(`${label} must have area, prompt, and explanation`);
   }
   if (!Array.isArray(question.choices) || question.choices.length < 3) {
-    fail(`study question ${question.id}.choices must contain at least three choices`);
+    fail(`${label}.choices must contain at least three choices`);
   }
   if (new Set(question.choices).size !== question.choices.length) {
-    fail(`study question ${question.id}.choices must be unique`);
+    fail(`${label}.choices must be unique`);
   }
   if (!Number.isInteger(question.answerIndex) || question.answerIndex < 0 || question.answerIndex >= question.choices.length) {
-    fail(`study question ${question.id}.answerIndex is out of range`);
+    fail(`${label}.answerIndex is out of range`);
   }
+}
+
+const generatedStudyQuestionPrompts = new Set();
+const generatedRuleCounts = new Map();
+let generatedStudyQuestionCount = 0;
+
+for (const baseQuestion of baseStudyQuestions) {
+  for (let variantIndex = 0; variantIndex < STUDY_QUIZ_VARIANTS_PER_BASE; variantIndex += 1) {
+    const question = makeQuestionVariant(baseQuestion, variantIndex);
+    const label = `study question ${question.id}`;
+    assertStudyQuestionShape(question, label);
+    generatedStudyQuestionCount += 1;
+
+    const restoredQuestion = getStudyQuestionById(question.id);
+    if (!restoredQuestion || restoredQuestion.prompt !== question.prompt) {
+      fail(`${label} must be restorable from id`);
+    }
+
+    const promptKey = `${question.subject}:${question.area}:${question.prompt}`;
+    if (generatedStudyQuestionPrompts.has(promptKey)) {
+      fail(`${label} has duplicate prompt in the same subject/area`);
+    }
+    generatedStudyQuestionPrompts.add(promptKey);
+
+    const answerText = question.choices[question.answerIndex];
+    const choiceSet = [...question.choices].sort().join("\x1f");
+    const ruleKey = `${question.subject}:${question.area}:${answerText}:${choiceSet}`;
+    generatedRuleCounts.set(ruleKey, (generatedRuleCounts.get(ruleKey) ?? 0) + 1);
+  }
+}
+if (generatedStudyQuestionCount !== studyQuizTotalQuestionCount) {
+  fail(`generated study question count must be ${studyQuizTotalQuestionCount}, got ${generatedStudyQuestionCount}`);
+}
+const excessiveRuleReuse = [...generatedRuleCounts.entries()].find(([, count]) => count > 100);
+if (excessiveRuleReuse) {
+  fail(`study question rule/choice set is reused too often (${excessiveRuleReuse[1]}): ${excessiveRuleReuse[0]}`);
 }
 for (const subject of requiredQuizSubjects) {
   if (!seenQuizSubjects.has(subject)) {
@@ -216,5 +251,5 @@ for (const subject of requiredQuizSubjects) {
 }
 
 console.log(
-  `Data integrity ok: ${protagonistProfiles.length} profiles, ${targetSchools.length} schools, ${cards.length} cards, ${seasonalEvents.length} seasonal events, ${events.length} random events, ${allStudyQuestions.length} study questions.`,
+  `Data integrity ok: ${protagonistProfiles.length} profiles, ${targetSchools.length} schools, ${cards.length} cards, ${seasonalEvents.length} seasonal events, ${events.length} random events, ${generatedStudyQuestionCount} study questions.`,
 );

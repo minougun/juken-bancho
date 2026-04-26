@@ -4,6 +4,27 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>受験番長</title>
+    <meta
+      name="description"
+      content="高校三年間144週を走り抜ける、受験×番長のカード選択式スケジュールゲーム。仁義、メンツ、学力を守って志望校合格を目指すブラウザ試遊版。"
+    />
+    <link rel="canonical" href="https://minougun.github.io/juken-bancho/" />
+    <meta property="og:site_name" content="受験番長" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="受験番長 | 受験×番長スケジュールゲーム" />
+    <meta
+      property="og:description"
+      content="仁義もメンツも捨てずに志望校へ。高校三年間144週をカード選択で走り抜けるブラウザ試遊版。"
+    />
+    <meta property="og:url" content="https://minougun.github.io/juken-bancho/" />
+    <meta property="og:image" content="https://minougun.github.io/juken-bancho/assets/images/protagonist-bancho.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="受験番長 | 受験×番長スケジュールゲーム" />
+    <meta
+      name="twitter:description"
+      content="仁義、メンツ、学力を守りながら志望校合格を目指すカード選択式ブラウザゲーム。"
+    />
+    <meta name="twitter:image" content="https://minougun.github.io/juken-bancho/assets/images/protagonist-bancho.png" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -13,8 +34,10 @@
           <div class="title-lockup">
             <p class="eyebrow">JUKEN BANCHO / AFTER SCHOOL</p>
             <h1 id="game-title">受験番長</h1>
+            <p class="brand-lead">仁義も偏差値も捨てない、144週の受験スケジュールゲーム。</p>
           </div>
           <div class="system-controls" aria-label="システム操作">
+            <button id="continueButton" class="hud-button hud-button--primary" type="button" hidden>続きから</button>
             <button id="skipIntroButton" class="hud-button" type="button" hidden>導入スキップ</button>
             <button id="endingBookButton" class="hud-button" type="button">結末帳</button>
             <button id="eventGalleryButton" class="hud-button" type="button" hidden>回想帳</button>
@@ -32,6 +55,7 @@
         <aside id="statsHud" class="stats-hud" aria-label="現在のステータス">
           <p id="turnText" class="turn-text"></p>
           <div id="statsGrid" class="stats-grid"></div>
+          <div id="forecastPanel" class="forecast-panel" aria-live="polite"></div>
         </aside>
 
         <section id="endingBookPanel" class="ending-book collection-page" aria-label="解放済みの結末" hidden>

@@ -13,6 +13,7 @@ export const statLabels = {
 export const ENDING_STORAGE_KEY = "jukenBancho.unlockedEndings.v1";
 export const EVENT_CG_STORAGE_KEY = "jukenBancho.unlockedEventCgs.v1";
 export const STUDY_REVIEW_STORAGE_KEY = "jukenBancho.studyReview.v1";
+export const CURRENT_RUN_STORAGE_KEY = "jukenBancho.currentRun.v1";
 export const GAMEPLAY_BGM_SRC = "./assets/audio/flesh-and-blood.mp3";
 
 export const termBgm = {
@@ -166,13 +167,13 @@ export const academicMilestones = {
     },
     {
       turn: 96,
-      requiredAcademics: 95,
+      requiredAcademics: 92,
       effects: { academics: 0, trust: 0, face: -3, looks: 0, stamina: 0, stress: 10 },
       message: "2年の終わり、進路面談の空気が固まる。学力の遅れがメンツにも響いた。",
     },
     {
       turn: 120,
-      requiredAcademics: 98,
+      requiredAcademics: 96,
       effects: { academics: 0, trust: 0, face: 0, looks: 0, stamina: 0, stress: 12 },
       message: "3年秋、赤本の厚みが急に牙をむく。国立天嶺はここから一気に詰めてくる。",
     },
@@ -885,9 +886,11 @@ export const targetExamQuestions = {
   ],
 };
 
-const STUDY_QUIZ_VARIANTS_PER_BASE = 1000;
+export const STUDY_QUIZ_VARIANTS_PER_BASE = 1000;
 const baseStudyQuizQuestionCount = studyQuizQuestions.length;
 const baseTargetExamQuestionCount = Object.values(targetExamQuestions).reduce((total, questions) => total + questions.length, 0);
+const allBaseStudyQuestions = [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
+const baseStudyQuestionById = new Map(allBaseStudyQuestions.map((question) => [question.id, question]));
 
 function choice(seed, items) {
   return items[Math.abs(seed) % items.length];
@@ -948,22 +951,10 @@ function variantContext(seed) {
 }
 
 function ensureDistinctChoices(question) {
-  const used = new Set();
-  const choices = question.choices.map((choiceText, index) => {
-    if (!used.has(choiceText)) {
-      used.add(choiceText);
-      return choiceText;
-    }
-    let candidate = index === question.answerIndex ? `${choiceText}（正答）` : `${choiceText}ではない`;
-    let suffix = 2;
-    while (used.has(candidate)) {
-      candidate = index === question.answerIndex ? `${choiceText}（正答${suffix}）` : `${choiceText}ではない${suffix}`;
-      suffix += 1;
-    }
-    used.add(candidate);
-    return candidate;
-  });
-  return { ...question, choices };
+  if (new Set(question.choices).size !== question.choices.length) {
+    throw new Error(`study question choices must be unique: ${question.id}`);
+  }
+  return question;
 }
 
 function shuffleQuestionChoices(question, seed) {
@@ -1049,6 +1040,16 @@ function makeEnglishVariant(base, variantIndex) {
     ["watch", "watched", "その講義を見た"],
     ["study", "studied", "英語を勉強した"],
     ["practice", "practiced", "発音を練習した"],
+    ["join", "joined", "補習に参加した"],
+    ["clean", "cleaned", "教室を掃除した"],
+    ["answer", "answered", "質問に答えた"],
+    ["carry", "carried", "重い辞書を運んだ"],
+    ["try", "tried", "難問に挑戦した"],
+    ["write", "wrote", "感想を書いた"],
+    ["take", "took", "ノートを取った"],
+    ["buy", "bought", "参考書を買った"],
+    ["teach", "taught", "友だちに文法を教えた"],
+    ["choose", "chose", "進路を選んだ"],
   ];
   if (base.id.includes("tense") || base.id.includes("basic")) {
     const [plain, past, meaning] = choice(variantIndex, verbs);
@@ -1065,6 +1066,13 @@ function makeEnglishVariant(base, variantIndex) {
     ["for example", "前文を支える具体例", "例示"],
     ["in contrast", "比較して違いを示す内容", "対比"],
     ["because", "理由を説明する内容", "理由"],
+    ["although", "譲歩した上で主節へつなぐ内容", "譲歩"],
+    ["meanwhile", "同時期に別で進む内容", "同時進行"],
+    ["instead", "前案と別の選択を示す内容", "代替"],
+    ["moreover", "前文に情報を追加する内容", "追加"],
+    ["nevertheless", "不利な条件に反して続く内容", "逆接"],
+    ["in short", "前文を短くまとめる内容", "要約"],
+    ["unless", "条件が満たされない場合の内容", "条件"],
   ];
   if (base.id.includes("reading") || base.id.includes("inference") || base.id.includes("argument")) {
     const [word, answer, role] = choice(variantIndex, signals);
@@ -1081,6 +1089,16 @@ function makeEnglishVariant(base, variantIndex) {
     ["on the other hand", "一方で"],
     ["as a result", "結果として"],
     ["in addition", "さらに"],
+    ["to some extent", "ある程度は"],
+    ["take account of", "考慮に入れる"],
+    ["be likely to", "しそうである"],
+    ["rather than", "よりむしろ"],
+    ["in terms of", "の観点から"],
+    ["be aware of", "に気づいている"],
+    ["as long as", "する限りは"],
+    ["no longer", "もはやない"],
+    ["by contrast", "それとは対照的に"],
+    ["in spite of", "にもかかわらず"],
   ];
   const [phrase, meaning] = choice(variantIndex, phrases);
   return withVariantId(base, variantIndex, {
@@ -1098,6 +1116,16 @@ function makeJapaneseVariant(base, variantIndex) {
     ["たとえば", "主張を具体例で支える"],
     ["一方", "前の内容と対比する"],
     ["したがって", "前の内容から結論を導く"],
+    ["なぜなら", "直前の主張の理由を示す"],
+    ["さらに", "同じ方向の根拠や情報を加える"],
+    ["むしろ", "一般的な見方を退けて別の見方を強める"],
+    ["ただし", "前の内容に条件や制限を加える"],
+    ["要するに", "議論の要点を短くまとめる"],
+    ["にもかかわらず", "予想される流れと逆の結果を示す"],
+    ["このように", "前の説明を受けてまとめへ進む"],
+    ["まず", "複数の論点の最初を示す"],
+    ["また", "並列する情報を追加する"],
+    ["とはいえ", "前の内容を認めつつ修正する"],
   ];
   if (base.id.includes("classical")) {
     const auxiliaries = [
@@ -1106,6 +1134,16 @@ function makeJapaneseVariant(base, variantIndex) {
       ["べし", "推量・当然・可能・意志", "完了"],
       ["ず", "打消", "尊敬"],
       ["けり", "過去・詠嘆", "使役"],
+      ["たり", "完了・存続", "願望"],
+      ["り", "完了・存続", "尊敬"],
+      ["る", "受身・尊敬・自発・可能", "断定"],
+      ["らむ", "現在推量・現在の原因推量", "過去の伝聞"],
+      ["めり", "推定・婉曲", "禁止"],
+      ["まじ", "打消推量・打消意志", "過去"],
+      ["なり", "断定・存在", "使役"],
+      ["じ", "打消推量・打消意志", "完了"],
+      ["まほし", "願望", "受身"],
+      ["らし", "推定", "命令"],
     ];
     const [word, meaning, wrong] = choice(variantIndex, auxiliaries);
     return withVariantId(base, variantIndex, {
@@ -1158,12 +1196,34 @@ function makeScienceVariant(base, variantIndex) {
         ["酵素", "特定の反応を進める触媒", "生体内の反応を進める物質"],
         ["基質特異性", "酵素が特定の基質に働きやすい性質", "酵素は特定の基質と結びつきやすい。"],
         ["呼吸", "有機物からエネルギーを取り出す反応", "細胞は呼吸で生命活動に必要なエネルギーを得る。"],
+        ["DNA", "遺伝情報を担う物質", "DNAの塩基配列が遺伝情報を担う。"],
+        ["細胞膜", "細胞の内外を仕切り物質の出入りを調整する膜", "細胞膜は細胞内外の境界として働く。"],
+        ["ミトコンドリア", "呼吸に関わりエネルギーを取り出す細胞小器官", "ミトコンドリアは呼吸によるエネルギー変換に関わる。"],
+        ["葉緑体", "光合成を行う細胞小器官", "葉緑体には光合成に関わる色素などが含まれる。"],
+        ["恒常性", "体内環境を一定に保とうとする性質", "体温や血糖値などは調節されている。"],
+        ["免疫", "異物を認識し排除しようとするしくみ", "免疫は病原体などから体を守る。"],
+        ["遺伝子", "形質に関わる情報の単位", "遺伝子はDNA上にある情報の単位として扱う。"],
+        ["発酵", "微生物が有機物を分解してエネルギーを得る反応", "発酵は食品づくりにも利用される。"],
+        ["消化", "食物を吸収しやすい小さな物質に分解すること", "消化酵素などが栄養分の分解に関わる。"],
+        ["神経", "刺激や情報をすばやく伝えるしくみ", "神経系は刺激への反応を支える。"],
+        ["進化", "世代を重ねる中で生物集団の性質が変化すること", "進化は個体ではなく集団の変化として捉える。"],
       ]
     : [
         ["化学平衡", "正反応と逆反応の速度が等しい", "見かけ上濃度が一定になる状態"],
         ["中和", "酸と塩基が反応し水などを生じる", "酸性と塩基性が打ち消し合う反応"],
         ["酸化", "物質が酸素と結びつく、または電子を失う変化", "酸化還元では電子の移動にも注目する。"],
         ["電離", "物質が水溶液中でイオンに分かれること", "酸や塩基の性質を考える基礎になる。"],
+        ["還元", "物質が酸素を失う、または電子を受け取る変化", "酸化と還元は同時に起こる。"],
+        ["モル", "粒子数を扱う物質量の単位", "1 mol は多数の粒子をまとめて扱う単位。"],
+        ["溶解度", "一定量の溶媒に溶ける物質の限度量", "温度によって溶解度が変わる物質もある。"],
+        ["共有結合", "原子どうしが電子を共有する結合", "非金属元素どうしで見られやすい結合。"],
+        ["イオン結合", "陽イオンと陰イオンの静電気的な引力による結合", "金属元素と非金属元素の組み合わせで考えやすい。"],
+        ["pH", "水溶液の酸性・塩基性の程度を表す値", "pHが小さいほど酸性が強い。"],
+        ["触媒", "反応の前後で自身は消費されず反応を進める物質", "触媒は反応経路に影響する。"],
+        ["熱運動", "粒子が温度に応じて不規則に運動すること", "温度が高いほど粒子の運動は激しくなる。"],
+        ["慣性", "物体が運動状態を保とうとする性質", "外力がなければ運動状態は変わらない。"],
+        ["仕事", "力と力の向きに動いた距離の積で表す量", "物理の仕事は日常語の努力とは意味が異なる。"],
+        ["電力", "単位時間あたりに消費または変換される電気エネルギー", "電力は電圧と電流の積で表せる。"],
       ];
   const [term, answer, explanation] = choice(variantIndex, concepts);
   return withVariantId(base, variantIndex, {
@@ -1181,6 +1241,17 @@ function makeSocialVariant(base, variantIndex) {
         ["時差", "経度15度につき約1時間生じる", "地球は24時間で360度回転する。"],
         ["扇状地", "山地から平地へ出た川が土砂を堆積してできる地形", "河川の働きで形成される地形。"],
         ["季節風", "季節によって向きが変わる風", "大陸と海洋の温まり方の違いが関係する。"],
+        ["偏西風", "中緯度上空を西から東へ吹く風", "日本付近の天気の移動にも関係する。"],
+        ["モンスーンアジア", "季節風の影響が大きいアジア地域", "雨季と乾季、稲作などを考える手がかりになる。"],
+        ["三角州", "河口付近に土砂が堆積してできる地形", "川の流れが海や湖に入る場所で発達しやすい。"],
+        ["リアス海岸", "谷が沈水して入り組んだ海岸", "入り江が多く、漁港に適する場合がある。"],
+        ["ヒートアイランド", "都市部の気温が周辺より高くなる現象", "人工排熱や地表面の変化が関係する。"],
+        ["プランテーション", "単一作物を大規模に栽培する農園", "輸出向け作物の生産で見られる。"],
+        ["人口ピラミッド", "年齢別・男女別の人口構成を表す図", "少子高齢化など人口構造を読む手がかりになる。"],
+        ["扇状地の土地利用", "水はけがよく果樹園に使われやすい", "扇状地は地下に水がしみ込みやすい。"],
+        ["海流", "海水が一定方向へ流れる大きな動き", "漁場や気候に影響する。"],
+        ["工業地域", "原料・交通・市場などの条件で発達する地域", "立地条件を組み合わせて考える。"],
+        ["再生可能エネルギー", "太陽光・風力など自然由来で更新されるエネルギー", "資源枯渇や温室効果ガス削減の文脈で扱う。"],
       ]
     : base.id.includes("modern")
       ? [
@@ -1188,12 +1259,34 @@ function makeSocialVariant(base, variantIndex) {
           ["地租改正", "土地所有者に地価を基準として税を課した改革", "明治政府の財政基盤整備につながった。"],
           ["版籍奉還", "大名が土地と人民を朝廷へ返した政策", "中央集権化への過程の一つ。"],
           ["廃藩置県", "藩を廃止して府県を置いた政策", "中央政府による地方統治を強めた。"],
+          ["大日本帝国憲法", "天皇主権を基本に欽定憲法として発布された憲法", "1889年に発布された近代国家形成の制度。"],
+          ["自由民権運動", "国会開設や憲法制定を求めた政治運動", "板垣退助らの活動と関連する。"],
+          ["日清戦争", "朝鮮をめぐる対立などを背景に起きた日本と清の戦争", "下関条約へつながった。"],
+          ["日露戦争", "満州・朝鮮をめぐる対立を背景に起きた日本とロシアの戦争", "ポーツマス条約で講和した。"],
+          ["普通選挙法", "一定年齢以上の男子に選挙権を広げた法律", "1925年に成立した。"],
+          ["治安維持法", "国体変革などを取り締まるために制定された法律", "思想統制と結びつけて理解する。"],
+          ["高度経済成長", "1950年代半ばから1970年代初めの急速な経済成長", "生活様式や産業構造が大きく変化した。"],
+          ["サンフランシスコ平和条約", "日本が主権を回復した講和条約", "1951年調印、1952年発効。"],
+          ["農地改革", "戦後に地主制を改め自作農を増やした改革", "戦後改革の一つとして重要。"],
+          ["財閥解体", "戦後に巨大企業集団の経済力集中を改めた政策", "民主化政策の一環として行われた。"],
+          ["公害問題", "高度経済成長期に深刻化した環境・健康被害", "四大公害病などと関連する。"],
         ]
       : [
           ["国会", "国の唯一の立法機関である", "日本国憲法は国会を唯一の立法機関と定める。"],
           ["違憲立法審査権", "法令が憲法に反しないかを裁判所が審査する権限", "裁判所が憲法適合性を判断する権限。"],
           ["権力分立", "権力を複数の機関に分け、相互に抑制させる", "権力集中を防ぐ考え方。"],
           ["基本的人権", "人が生まれながらに持つ基本的な権利", "日本国憲法の三大原理の一つ。"],
+          ["国民主権", "政治の最終的な決定権が国民にあるという原理", "日本国憲法の基本原理の一つ。"],
+          ["平和主義", "戦争放棄などを掲げる日本国憲法の原理", "憲法9条と関連して扱う。"],
+          ["内閣", "行政権を担い国会に対して連帯して責任を負う機関", "議院内閣制の中心となる。"],
+          ["地方自治", "地域のことを住民の意思に基づいて処理するしくみ", "住民自治と団体自治の観点がある。"],
+          ["三権分立", "立法・行政・司法を分けて相互に抑制させるしくみ", "権力集中を防ぐ制度設計。"],
+          ["比例代表制", "得票に応じて議席を配分する選挙制度", "死票を減らしやすい一方で小政党が増えやすい。"],
+          ["公共の福祉", "人権相互の衝突を調整する考え方", "人権が無制限ではないことを示す。"],
+          ["社会権", "人間らしい生活を国に求める権利", "生存権や教育を受ける権利などが含まれる。"],
+          ["司法権の独立", "裁判所が他機関から独立して判断する原則", "公正な裁判を支える。"],
+          ["財政民主主義", "国の財政は国会の議決に基づくという原則", "予算や租税法律主義と関係する。"],
+          ["直接請求権", "住民が条例制定や解職などを請求できる権利", "地方自治で住民参加を支える制度。"],
         ];
   const [term, answer, explanation] = choice(variantIndex, facts);
   return withVariantId(base, variantIndex, {
@@ -1204,7 +1297,7 @@ function makeSocialVariant(base, variantIndex) {
   });
 }
 
-function makeQuestionVariant(base, variantIndex) {
+export function makeQuestionVariant(base, variantIndex) {
   if (variantIndex === 0) {
     return { ...base };
   }
@@ -1215,20 +1308,38 @@ function makeQuestionVariant(base, variantIndex) {
   return makeSocialVariant(base, variantIndex);
 }
 
-function expandQuestionPool(questions) {
-  return questions.flatMap((question) =>
-    Array.from({ length: STUDY_QUIZ_VARIANTS_PER_BASE }, (_, variantIndex) => makeQuestionVariant(question, variantIndex)),
-  );
+export function getStudyQuestionPoolSize(questions) {
+  return questions.length * STUDY_QUIZ_VARIANTS_PER_BASE;
 }
 
-studyQuizQuestions.splice(0, studyQuizQuestions.length, ...expandQuestionPool(studyQuizQuestions));
-for (const schoolId of Object.keys(targetExamQuestions)) {
-  targetExamQuestions[schoolId].splice(0, targetExamQuestions[schoolId].length, ...expandQuestionPool(targetExamQuestions[schoolId]));
+export function getStudyQuestionFromPool(questions, flatIndex) {
+  if (!questions.length) {
+    return null;
+  }
+  const poolSize = getStudyQuestionPoolSize(questions);
+  const normalizedIndex = ((flatIndex % poolSize) + poolSize) % poolSize;
+  const baseIndex = Math.floor(normalizedIndex / STUDY_QUIZ_VARIANTS_PER_BASE);
+  const variantIndex = normalizedIndex % STUDY_QUIZ_VARIANTS_PER_BASE;
+  return makeQuestionVariant(questions[baseIndex], variantIndex);
+}
+
+export function getStudyQuestionById(id) {
+  const match = /^(.+)__v(\d{4})$/.exec(id);
+  const baseId = match ? match[1] : id;
+  const variantIndex = match ? Number(match[2]) : 0;
+  const base = baseStudyQuestionById.get(baseId);
+  if (!base || !Number.isInteger(variantIndex) || variantIndex < 0 || variantIndex >= STUDY_QUIZ_VARIANTS_PER_BASE) {
+    return null;
+  }
+  return makeQuestionVariant(base, variantIndex);
+}
+
+export function isStudyQuestionId(id) {
+  return Boolean(getStudyQuestionById(id));
 }
 
 export const studyQuizBaseQuestionCount = baseStudyQuizQuestionCount + baseTargetExamQuestionCount;
-export const studyQuizTotalQuestionCount =
-  studyQuizQuestions.length + Object.values(targetExamQuestions).reduce((total, questions) => total + questions.length, 0);
+export const studyQuizTotalQuestionCount = studyQuizBaseQuestionCount * STUDY_QUIZ_VARIANTS_PER_BASE;
 export const studyQuizQuestionMultiplier = studyQuizTotalQuestionCount / studyQuizBaseQuestionCount;
 
 export const events = [

@@ -1,4 +1,5 @@
 import {
+  CURRENT_RUN_STORAGE_KEY,
   ENDING_STORAGE_KEY,
   EVENT_CG_STORAGE_KEY,
   GAMEPLAY_BGM_SRC,
@@ -9,6 +10,10 @@ import {
   cards,
   endingCatalog,
   events,
+  getStudyQuestionById,
+  getStudyQuestionFromPool,
+  getStudyQuestionPoolSize,
+  isStudyQuestionId,
   protagonistProfiles,
   seasonalEvents,
   statLabels,
@@ -21,7 +26,6 @@ import {
 
 const schoolCalendar = createSchoolCalendar();
 const EFFECT_VARIANCE = 1;
-const studyQuestionCatalog = [...studyQuizQuestions, ...Object.values(targetExamQuestions).flat()];
 
 const state = {
   turn: 0,
@@ -43,6 +47,7 @@ const state = {
   unlockedEndingIds: loadUnlockedEndings(),
   unlockedEventCgIds: loadUnlockedEventCgs(),
   studyReviewRecords: loadStudyReviewRecords(),
+  savedRunSummary: loadCurrentRunSummary(),
   bgmEnabled: false,
   sfxEnabled: true,
   pendingBgmSrc: GAMEPLAY_BGM_SRC,
@@ -60,6 +65,7 @@ const elements = {
   statsHud: document.querySelector("#statsHud"),
   turnText: document.querySelector("#turnText"),
   statsGrid: document.querySelector("#statsGrid"),
+  forecastPanel: document.querySelector("#forecastPanel"),
   speakerName: document.querySelector("#speakerName"),
   sceneTag: document.querySelector("#sceneTag"),
   dialogueBox: document.querySelector(".dialogue-box"),
@@ -84,6 +90,7 @@ const elements = {
   studyReviewList: document.querySelector("#studyReviewList"),
   studyReviewClearButton: document.querySelector("#studyReviewClearButton"),
   studyReviewBackButton: document.querySelector("#studyReviewBackButton"),
+  continueButton: document.querySelector("#continueButton"),
   artworkViewer: document.querySelector("#artworkViewer"),
   artworkViewerLabel: document.querySelector("#artworkViewerLabel"),
   artworkViewerTitle: document.querySelector("#artworkViewerTitle"),
@@ -113,7 +120,8 @@ elements.studyReviewButton.addEventListener("click", openStudyReviewPage);
 elements.studyReviewClearButton.addEventListener("click", clearStudyReview);
 elements.studyReviewBackButton.addEventListener("click", returnFromLibraryPage);
 elements.artworkBackButton.addEventListener("click", returnFromArtworkViewer);
-elements.restartTopButton.addEventListener("click", startNewGame);
+elements.continueButton.addEventListener("click", continueCurrentRun);
+elements.restartTopButton.addEventListener("click", restartGame);
 elements.bgmButton.addEventListener("click", toggleBgm);
 elements.sfxButton.addEventListener("click", toggleSfx);
 elements.volumeSlider.addEventListener("input", updateBgmVolume);
@@ -148,6 +156,17 @@ function startNewGame() {
   setBgmTrack(getSceneBgm());
   elements.advanceButton.onclick = advanceScene;
   render();
+}
+
+function restartGame() {
+  const hasSave = Boolean(loadCurrentRun());
+  const shouldRestart = !hasSave || window.confirm("保存中の進行を破棄して最初から始めますか？");
+  if (!shouldRestart) {
+    return;
+  }
+
+  clearCurrentRun();
+  startNewGame();
 }
 
 function startProfileSelection(profile) {
@@ -190,6 +209,7 @@ function selectProfile(profile) {
   state.introIndex = 0;
   state.characterCentered = true;
   setCharacterSprite(profile);
+  saveCurrentRun();
   render();
 }
 
@@ -198,6 +218,7 @@ function selectTargetSchool(school) {
   state.totalTurns = school.totalTurns;
   state.log.push(`${school.name}を志望校に決めた。偏差値${school.deviation}の門が待っている。`);
   state.screen = "choices";
+  saveCurrentRun();
   render();
 }
 
@@ -221,6 +242,7 @@ function startStudyQuiz(card) {
     question: pickStudyQuestion(card),
   };
   state.screen = "studyQuiz";
+  saveCurrentRun();
   render();
 }
 
@@ -274,6 +296,7 @@ function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
   };
   state.log.push(resultText);
   state.screen = "result";
+  saveCurrentRun();
   render();
 }
 
@@ -283,18 +306,21 @@ function advanceScene() {
     if (state.introIndex >= getProfile().intro.length) {
       state.screen = "target";
     }
+    saveCurrentRun();
     render();
     return;
   }
 
   if (state.complete) {
     state.screen = "ending";
+    saveCurrentRun();
     render();
     return;
   }
 
   state.screen = "choices";
   state.pendingResult = null;
+  saveCurrentRun();
   render();
 }
 
@@ -310,6 +336,7 @@ function skipIntro() {
 
   state.screen = "target";
   state.introIndex = getProfile().intro.length - 1;
+  saveCurrentRun();
   render();
 }
 
@@ -369,6 +396,7 @@ function chooseSeasonalEventChoice(choice) {
   state.pendingResult.eventChoices = null;
   state.pendingResult.shouldScrollToBranch = true;
   state.log.push(`選択: ${choice.label}\n${choice.text}${formatEffectSentence(effects)}`);
+  saveCurrentRun();
   render();
 }
 
@@ -440,7 +468,7 @@ function isLearningCard(card) {
 
 function pickStudyQuestion(card) {
   const questions = isTargetExamCard(card) ? getTargetExamQuestions() : studyQuizQuestions;
-  return questions[randomInt(0, questions.length - 1)];
+  return getStudyQuestionFromPool(questions, randomInt(0, getStudyQuestionPoolSize(questions) - 1));
 }
 
 function isTargetExamCard(card) {
@@ -449,10 +477,6 @@ function isTargetExamCard(card) {
 
 function getTargetExamQuestions() {
   return targetExamQuestions[state.targetSchool?.id] ?? studyQuizQuestions;
-}
-
-function getStudyQuestionCatalog() {
-  return studyQuestionCatalog;
 }
 
 function applyStudyQuizResult(effects, card, correct) {
@@ -588,6 +612,7 @@ function render() {
   renderStudyReview();
   renderArtworkViewer();
   renderSkipIntroButton();
+  renderHudControls();
 
   if (isFullPageScreen) {
     hideEndingArtwork();
@@ -724,6 +749,7 @@ function renderResult() {
 function renderEnding() {
   const ending = attachEndingAssets(resolveEnding());
   unlockEnding(ending.id);
+  clearCurrentRun();
   renderEndingBook();
   renderEventGallery();
   showArtwork(ending.artwork, ending.artworkAlt);
@@ -780,7 +806,8 @@ function clearEndingBook() {
 function renderEndingBook() {
   const isPage = state.screen === "endingBook";
   const unlockedCount = state.unlockedEndingIds.size;
-  elements.endingBookButton.textContent = `結末帳 ${unlockedCount}/${endingCatalog.length}`;
+  elements.endingBookButton.textContent =
+    state.screen === "profile" && unlockedCount === 0 ? "結末帳" : `結末帳 ${unlockedCount}/${endingCatalog.length}`;
   if (isPage) {
     elements.endingBookButton.setAttribute("aria-current", "page");
   } else {
@@ -874,7 +901,7 @@ function renderStudyReview() {
   const isPage = state.screen === "studyReview";
   const records = getStudyReviewRecords();
   const totalQuestions = studyQuizTotalQuestionCount;
-  elements.studyReviewButton.textContent = `復習帳 ${records.length}/${totalQuestions}`;
+  elements.studyReviewButton.textContent = records.length ? `復習帳 ${records.length}問` : "復習帳";
   if (isPage) {
     elements.studyReviewButton.setAttribute("aria-current", "page");
   } else {
@@ -962,6 +989,16 @@ function renderSkipIntroButton() {
   elements.skipIntroButton.textContent = state.screen === "profile" ? "演出スキップ" : "導入スキップ";
 }
 
+function renderHudControls() {
+  const summary = state.savedRunSummary;
+  elements.continueButton.hidden = !summary || state.screen !== "profile";
+  elements.continueButton.textContent = summary ? `続きから ${summary.turn}/${summary.totalTurns}` : "続きから";
+
+  const isFirstScreen = state.screen === "profile";
+  const hasStudyRecords = state.studyReviewRecords.size > 0;
+  elements.studyReviewButton.hidden = isFirstScreen && !hasStudyRecords;
+}
+
 function createEventGalleryRecord(event, index) {
   const unlocked = state.unlockedEventCgIds.has(event.id);
   const record = document.createElement(unlocked ? "button" : "article");
@@ -1031,7 +1068,7 @@ function createSeasonalEventChoiceButton(choice) {
 }
 
 function createStudyReviewRecord(record, index) {
-  const question = getStudyQuestionCatalog().find((item) => item.id === record.id);
+  const question = getStudyQuestionById(record.id);
   const article = document.createElement("article");
   article.className = "ending-record study-review-record";
   if (!question) {
@@ -1202,7 +1239,7 @@ function createTargetSchoolButton(school) {
 
   const line = document.createElement("span");
   line.className = "school-requirements";
-  line.textContent = `偏差値${school.deviation} / 必要学力${school.passAcademic} / 仁義${school.passTrust}+ / メンツ${school.passFace}+ / 3年間144週`;
+  line.textContent = `勝ち筋: 学力${school.passAcademic}+ / 人望${school.passTrust}+ / メンツ${school.passFace}+ / 補欠は人望${school.waitlistTrust}+`;
 
   button.append(title, subtitle, line);
   return button;
@@ -1259,9 +1296,8 @@ function loadStudyReviewRecords() {
   try {
     const raw = window.localStorage.getItem(STUDY_REVIEW_STORAGE_KEY);
     const values = raw ? JSON.parse(raw) : [];
-    const knownIds = new Set(getStudyQuestionCatalog().map((question) => question.id));
     const records = values
-      .filter((record) => knownIds.has(record.id))
+      .filter((record) => isStudyQuestionId(record.id))
       .map((record) => [
         record.id,
         {
@@ -1277,6 +1313,218 @@ function loadStudyReviewRecords() {
   } catch {
     return new Map();
   }
+}
+
+function loadCurrentRunSummary() {
+  const saved = loadCurrentRun();
+  if (!saved) {
+    return null;
+  }
+
+  return {
+    turn: Math.min(saved.totalTurns, saved.turn + 1),
+    totalTurns: saved.totalTurns,
+    profileTitle: saved.profile?.title ?? "受験生",
+    schoolName: saved.targetSchool?.name ?? "志望校未定",
+    savedAt: saved.savedAt,
+  };
+}
+
+function loadCurrentRun() {
+  try {
+    const raw = window.localStorage.getItem(CURRENT_RUN_STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    return hydrateCurrentRun(JSON.parse(raw));
+  } catch {
+    return null;
+  }
+}
+
+function continueCurrentRun() {
+  const saved = loadCurrentRun();
+  if (!saved) {
+    state.savedRunSummary = null;
+    render();
+    return;
+  }
+
+  Object.assign(state, saved);
+  setCharacterSprite(getProfile());
+  render();
+}
+
+function saveCurrentRun() {
+  if (!state.profile || state.screen === "profile" || state.screen === "ending") {
+    return;
+  }
+
+  try {
+    window.localStorage.setItem(CURRENT_RUN_STORAGE_KEY, JSON.stringify(serializeCurrentRun()));
+    state.savedRunSummary = loadCurrentRunSummary();
+  } catch {
+    // Current-run save is a convenience feature; the turn should continue even when storage is unavailable.
+  }
+}
+
+function clearCurrentRun() {
+  try {
+    window.localStorage.removeItem(CURRENT_RUN_STORAGE_KEY);
+  } catch {
+    // Ignore unavailable storage.
+  }
+  state.savedRunSummary = null;
+}
+
+function serializeCurrentRun() {
+  return {
+    version: 1,
+    savedAt: new Date().toISOString(),
+    turn: state.turn,
+    totalTurns: state.totalTurns,
+    stats: state.stats,
+    usedCardIds: [...state.usedCardIds],
+    log: state.log.slice(-40),
+    complete: state.complete,
+    screen: getSavableScreen(),
+    introIndex: state.introIndex,
+    pendingResult: state.pendingResult,
+    pendingStudyQuiz: state.pendingStudyQuiz
+      ? {
+          cardId: state.pendingStudyQuiz.card.id,
+          cardEffects: state.pendingStudyQuiz.cardEffects,
+          question: state.pendingStudyQuiz.question,
+        }
+      : null,
+    profileId: state.profile?.id ?? null,
+    targetSchoolId: state.targetSchool?.id ?? null,
+    characterCentered: state.characterCentered,
+  };
+}
+
+function hydrateCurrentRun(saved) {
+  if (!saved || saved.version !== 1) {
+    return null;
+  }
+
+  const profile = protagonistProfiles.find((candidate) => candidate.id === saved.profileId);
+  if (!profile) {
+    return null;
+  }
+
+  const targetSchool = targetSchools.find((candidate) => candidate.id === saved.targetSchoolId) ?? null;
+  const screen = getValidSavedScreen(saved.screen, targetSchool);
+  const pendingCard = cards.find((card) => card.id === saved.pendingStudyQuiz?.cardId);
+  const pendingQuestion = getStudyQuestionById(saved.pendingStudyQuiz?.question?.id);
+  const pendingResult = sanitizeSavedPendingResult(saved.pendingResult);
+
+  return {
+    turn: clamp(Number(saved.turn) || 0, 0, Number(saved.totalTurns) || TOTAL_TURNS),
+    totalTurns: Number(saved.totalTurns) || targetSchool?.totalTurns || TOTAL_TURNS,
+    stats: sanitizeSavedStats(saved.stats, profile),
+    usedCardIds: new Set(Array.isArray(saved.usedCardIds) ? saved.usedCardIds.filter((id) => cards.some((card) => card.id === id)) : []),
+    log: Array.isArray(saved.log) ? saved.log.filter((entry) => typeof entry === "string").slice(-40) : [],
+    complete: Boolean(saved.complete),
+    screen,
+    introIndex: clamp(Number(saved.introIndex) || 0, 0, profile.intro.length),
+    pendingResult: screen === "result" && pendingResult ? pendingResult : null,
+    pendingStudyQuiz:
+      screen === "studyQuiz" && pendingCard && pendingQuestion
+        ? {
+            card: pendingCard,
+            cardEffects: sanitizeSavedEffects(saved.pendingStudyQuiz.cardEffects),
+            question: pendingQuestion,
+          }
+        : null,
+    profile,
+    pendingProfile: null,
+    targetSchool,
+    returnScreen: screen,
+    artworkViewer: null,
+    artworkReturnScreen: "endingBook",
+    characterCentered: Boolean(saved.characterCentered),
+    profileSelectionLocked: false,
+    profileSelectionToken: 0,
+    endingBookRenderKey: "",
+    eventGalleryRenderKey: "",
+    studyReviewRenderKey: "",
+    savedRunSummary: null,
+  };
+}
+
+function getSavableScreen() {
+  if (state.screen === "endingBook" || state.screen === "eventGallery" || state.screen === "studyReview" || state.screen === "artworkViewer") {
+    return state.returnScreen || "choices";
+  }
+
+  return state.screen;
+}
+
+function getValidSavedScreen(screen, targetSchool) {
+  const allowed = new Set(["intro", "target", "choices", "result", "studyQuiz"]);
+  if (!allowed.has(screen)) {
+    return targetSchool ? "choices" : "target";
+  }
+
+  if ((screen === "choices" || screen === "result" || screen === "studyQuiz") && !targetSchool) {
+    return "target";
+  }
+
+  return screen;
+}
+
+function sanitizeSavedStats(stats, profile) {
+  const base = { ...profile.initialStats };
+  for (const key of Object.keys(statLabels)) {
+    base[key] = clamp(Number(stats?.[key]) || 0, 0, 100);
+  }
+  return base;
+}
+
+function sanitizeSavedEffects(effects) {
+  const sanitized = {};
+  for (const key of Object.keys(statLabels)) {
+    sanitized[key] = Number(effects?.[key]) || 0;
+  }
+  return sanitized;
+}
+
+function sanitizeSavedPendingResult(result) {
+  if (!result || typeof result !== "object") {
+    return null;
+  }
+
+  const seasonalRoute = findSeasonalRouteByArtwork(result.artwork);
+  const canRestoreEventChoices = seasonalRoute && Array.isArray(result.eventChoices) && result.eventChoices.length > 0;
+
+  return {
+    speaker: typeof result.speaker === "string" ? result.speaker.slice(0, 80) : getProfile().title,
+    sceneTag: typeof result.sceneTag === "string" ? result.sceneTag.slice(0, 80) : sceneNameForTurn(),
+    text: typeof result.text === "string" ? result.text.slice(0, 4000) : "",
+    artwork: seasonalRoute ? seasonalRoute.artwork : null,
+    artworkAlt: seasonalRoute ? seasonalRoute.artworkAlt : "",
+    eventChoices: canRestoreEventChoices ? seasonalRoute.choices : null,
+    shouldScrollToBranch: false,
+  };
+}
+
+function findSeasonalRouteByArtwork(artwork) {
+  if (typeof artwork !== "string") {
+    return null;
+  }
+
+  for (const event of seasonalEvents) {
+    for (const profile of protagonistProfiles) {
+      const route = getSeasonalEventRoute(event, profile.id);
+      if (route.artwork === artwork) {
+        return route;
+      }
+    }
+  }
+
+  return null;
 }
 
 function saveUnlockedEndings() {
@@ -1373,7 +1621,11 @@ function getRouteCardCopy(card) {
 }
 
 function renderStats() {
-  elements.statsHud.setAttribute("aria-label", `現在のステータス。${formatStatsForSpeech()}。${buildTargetSchoolSpeech()}。${elements.turnText.textContent}`);
+  const forecast = getOutcomeForecast();
+  elements.statsHud.setAttribute(
+    "aria-label",
+    `現在のステータス。${formatStatsForSpeech()}。${buildTargetSchoolSpeech()}。${forecast?.speech ?? ""}。${elements.turnText.textContent}`,
+  );
   elements.statsGrid.replaceChildren(
     ...Object.entries(statLabels).map(([key, label]) => {
       const row = document.createElement("div");
@@ -1401,6 +1653,97 @@ function renderStats() {
       return row;
     }),
   );
+
+  renderForecastPanel(forecast);
+}
+
+function renderForecastPanel(forecast) {
+  elements.forecastPanel.replaceChildren();
+  elements.forecastPanel.hidden = !forecast;
+  if (!forecast) {
+    return;
+  }
+
+  const badge = document.createElement("p");
+  badge.className = `forecast-badge forecast-badge--${forecast.tone}`;
+  badge.textContent = forecast.label;
+
+  const body = document.createElement("p");
+  body.className = "forecast-body";
+  body.textContent = forecast.body;
+
+  const detail = document.createElement("p");
+  detail.className = "forecast-detail";
+  detail.textContent = forecast.detail;
+
+  elements.forecastPanel.append(badge, body, detail);
+}
+
+function getOutcomeForecast() {
+  const school = getTargetSchool();
+  if (!school || state.screen === "profile" || state.screen === "intro" || state.screen === "target") {
+    return null;
+  }
+
+  const s = state.stats;
+  const profile = getProfile();
+  const isGyaru = profile.id === "gyaru";
+  const academicGap = Math.max(0, school.passAcademic - s.academics);
+  const trustGap = Math.max(0, school.passTrust - s.trust);
+  const faceGap = Math.max(0, school.passFace - s.face);
+  const waitlistAcademicGap = Math.max(0, school.waitlistAcademic - s.academics);
+  const waitlistTrustGap = Math.max(0, school.waitlistTrust - s.trust);
+  const waitlistFaceGap = Math.max(0, school.waitlistFace - s.face);
+  const risks = getImmediateRiskLabels();
+  const weeksLeft = Math.max(0, state.totalTurns - state.turn);
+
+  let label = isGyaru ? "優等生ギャル合格圏" : "合格番長圏";
+  let tone = "success";
+  let body = "学力、人望、メンツは志望校の主ルート条件を満たしている。";
+
+  if (academicGap === 0 && (trustGap > 0 || faceGap > 0)) {
+    label = "孤独な合格圏";
+    tone = "warning";
+    body = `学力は届いているが、仲間との条件が不足。人望あと${trustGap}、メンツあと${faceGap}。`;
+  } else if (academicGap > 0 && waitlistAcademicGap === 0 && waitlistTrustGap === 0 && waitlistFaceGap === 0) {
+    label = isGyaru ? "補欠ギャル伝説圏" : "補欠の伝説圏";
+    tone = "warning";
+    body = "補欠ラインと仲間条件は見えている。主ルートには学力の積み増しが必要。";
+  } else if (academicGap > 0 || trustGap > 0 || faceGap > 0) {
+    const stillEarly = weeksLeft > 72;
+    label = stillEarly ? "準備圏" : "危険圏";
+    tone = stillEarly ? "warning" : "danger";
+    body = `主ルート不足: 学力あと${academicGap}、人望あと${trustGap}、メンツあと${faceGap}。`;
+  }
+
+  if (risks.length) {
+    tone = tone === "success" ? "warning" : tone;
+    body = `${body} 直近リスク: ${risks.join("、")}。`;
+  }
+
+  const detail = `${school.name} 偏差値${school.deviation} / 残り${weeksLeft}週 / 補欠不足: 学力${waitlistAcademicGap}, 人望${waitlistTrustGap}, メンツ${waitlistFaceGap}`;
+
+  return {
+    label,
+    tone,
+    body,
+    detail,
+    speech: `${label}。${body}。${detail}`,
+  };
+}
+
+function getImmediateRiskLabels() {
+  const risks = [];
+  if (state.stats.stress >= 72) {
+    risks.push("ストレス過多");
+  }
+  if (state.stats.stamina <= 12) {
+    risks.push("体力不足");
+  }
+  if (state.stats.looks <= 35) {
+    risks.push("ルックス低下");
+  }
+  return risks;
 }
 
 function createEffectPills(effects) {

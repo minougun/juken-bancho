@@ -60,6 +60,8 @@ Ending presentation:
 - Seasonal BGM directory: `/mnt/c/Users/minou/juken-bancho/web/assets/audio/seasons/`
 - Asset notices: `/mnt/c/Users/minou/juken-bancho/docs/third-party-notices.md`
 - Ending CG prompts: `/mnt/c/Users/minou/juken-bancho/docs/ending-cg-prompts-2026-04-25.md`
+- Dialogue voice: メニューの `VOICE` でON/OFF。ローカルの VOICEVOX Engine が `127.0.0.1:50021` で起動中ならキャラ別 speaker と速度/ピッチ/抑揚で読み上げ、未起動ならブラウザ/OSの日本語音声へフォールバックします。代替音声は動作確認用で、キャラ別の声質差はVOICEVOX接続時に優先されます。VOICEVOX proxy is local-only and should not be exposed publicly.
+- VOICEVOX credit: `音声合成: VOICEVOX`。候補speaker: 雀松朱司、春日部つむぎ、四国めたん、満別花丸、白上虎太郎、ずんだもん、雨晴はう、青山龍星、玄野武宏、九州そら。公開時は実際に使用したspeakerごとの音声ライブラリ規約を確認してください。
 
 Persona review:
 
@@ -82,7 +84,8 @@ Target school difficulty:
 
 - Web版はプロローグ後に志望校を選びます。
 - 志望校の偏差値が高いほど、合格に必要な学力、人望/メンツ条件、毎週の受験圧が上がります。
-- ストレスが高いとルックスが下がり、ルックス低下は人望/メンツにも波及します。
+- ストレスが高いとルックスが下がり、ルックス低下は人望/メンツにも波及します。ここでのルックスは、顔立ち、睡眠、清潔感、表情、声の張り、肌や髪の調子まで含めた対人コンディションです。
+- 8週ごとにルックスとメンツの高低を見て、学校内での見られ方イベントが発生します。
 - 進行中のプレイはブラウザの `localStorage` に保存され、`続きから` で再開できます。保存対象はターン、ステータス、主人公、志望校、現在画面などのゲーム進行データのみです。
 
 ## Verification

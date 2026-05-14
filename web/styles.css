@@ -167,11 +167,39 @@ h1 {
 }
 
 .system-controls {
+  position: relative;
   display: flex;
   flex: 0 0 auto;
   flex-wrap: wrap;
   gap: 8px;
   justify-content: flex-end;
+}
+
+.hud-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 12;
+  display: flex;
+  width: min(340px, calc(100vw - 36px));
+  max-height: min(440px, calc(100vh - 120px));
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  overflow-y: auto;
+  border-radius: 8px;
+  padding: 10px;
+  background: var(--dialogue-bg);
+  box-shadow: var(--shadow-card);
+  backdrop-filter: blur(14px);
+}
+
+.menu-note {
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.6;
 }
 
 .hud-button,
@@ -641,7 +669,18 @@ button.ending-record:hover {
   pointer-events: none;
 }
 
+.novel-stage:has(.ending-artwork:not([hidden])) .ending-artwork {
+  top: 0;
+  bottom: auto;
+  height: calc(100% - 300px);
+  object-fit: contain;
+  background: #111;
+}
+
 .ending-artwork:not([hidden]) + .dialogue-box {
+  min-height: 0;
+  max-height: 280px;
+  overflow: auto;
   background: rgba(255, 255, 255, 0.92);
 }
 
@@ -654,7 +693,8 @@ button.ending-record:hover {
 }
 
 .novel-stage:has(.ending-artwork:not([hidden])) .stats-hud {
-  opacity: 0.18;
+  opacity: 0;
+  pointer-events: none;
 }
 
 .dialogue-box {
@@ -1119,6 +1159,10 @@ button.ending-record:hover {
     width: min(252px, 68vw);
   }
 
+  .novel-stage:has(.ending-artwork:not([hidden])) .ending-artwork {
+    height: calc(100% - min(53svh, 410px) - 24px);
+  }
+
   .dialogue-box {
     left: 8px;
     right: 8px;
@@ -1259,6 +1303,10 @@ button.ending-record:hover {
     max-height: 310px;
     opacity: 0.92;
   }
+
+  .novel-stage:has(.ending-artwork:not([hidden])) .ending-artwork {
+    height: calc(100% - 50svh - 20px);
+  }
 }
 
 @media (orientation: landscape) and (max-height: 520px) {
@@ -1285,6 +1333,11 @@ button.ending-record:hover {
 
   .system-controls {
     gap: 6px;
+  }
+
+  .hud-menu {
+    left: 0;
+    right: auto;
   }
 
   .hud-button,
@@ -1341,6 +1394,15 @@ button.ending-record:hover {
 
   .character-sprite--profile-gyaru {
     right: 12px;
+  }
+
+  .novel-stage:has(.ending-artwork:not([hidden])) .ending-artwork {
+    left: 10px;
+    top: 72px;
+    right: auto;
+    bottom: auto;
+    width: min(300px, 38vw);
+    height: calc(100svh - 88px);
   }
 
   .dialogue-box {

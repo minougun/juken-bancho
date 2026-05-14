@@ -10,6 +10,16 @@
 
 The author notes that attribution is appreciated but not required. The Web test UI includes a visible credit line anyway.
 
+## Dialogue Voice
+
+- Synthesis engine: VOICEVOX
+- Credit text shown in UI: `音声合成: VOICEVOX`
+- Official terms: `https://voicevox.hiroshiba.jp/term/`
+- Candidate speakers in the local cast table: 雀松朱司、春日部つむぎ、四国めたん、満別花丸、白上虎太郎、ずんだもん、雨晴はう、青山龍星、玄野武宏、九州そら
+- Public release requirement: confirm the terms for each actually used voice library and list the exact `VOICEVOX: speaker name` credits before shipping generated audio.
+
+No synthesized VOICEVOX audio files are embedded in the repository at this stage. The Web build requests a locally running VOICEVOX Engine when the user turns VOICE on.
+
 ## Ending BGM
 
 All ending tracks below are embedded from OpenGameArt.org pages that list the license as CC0.

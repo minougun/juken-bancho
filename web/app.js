@@ -26,6 +26,168 @@ import {
 
 const schoolCalendar = createSchoolCalendar();
 const EFFECT_VARIANCE = 1;
+const VOICE_STORAGE_KEY = "jukenBancho.voiceEnabled.v1";
+const VOICEVOX_PROXY_PATH = "/voicevox";
+const VOICEVOX_DIRECT_URLS = navigator.webdriver ? [] : ["http://127.0.0.1:50021", "http://localhost:50021"];
+const VOICE_ACTING_VERSION = "2026-05-14-juken-bancho-cast-3";
+const VOICE_START_DELAY_MS = 220;
+const statHelpText = {
+  face: "メンツ: 怖さではなく、約束を守る信用",
+  looks: "ルックス: 顔立ち、清潔感、表情、声、疲れが外に出た対人コンディション",
+};
+const voiceCast = {
+  narrator: {
+    speakerPreferences: ["九州そら"],
+    defaults: { speed: 0.98, pitch: -0.02, intonation: 1.02, volume: 0.82, pre: 0.12, post: 0.14, maxRate: 1.04 },
+    fallback: { pitch: 0.92, rate: 0.98, volume: 0.78, gender: "female" },
+    pausePolicy: { intra: 90, final: 170 },
+  },
+  bancho: {
+    speakerPreferences: ["雀松朱司"],
+    strictSpeakerPreference: true,
+    defaults: { speed: 0.95, pitch: -0.03, intonation: 0.98, volume: 0.93, pre: 0.13, post: 0.17, maxRate: 0.99 },
+    fallback: { pitch: 0.9, rate: 0.95, volume: 0.93, gender: "male" },
+    pausePolicy: { intra: 110, final: 210 },
+  },
+  gyaru: {
+    speakerPreferences: ["春日部つむぎ", "四国めたん", "満別花丸"],
+    strictSpeakerPreference: true,
+    defaults: { speed: 1.08, pitch: 0.045, intonation: 1.28, volume: 0.91, pre: 0.07, post: 0.12, maxRate: 1.12 },
+    fallback: { pitch: 1.12, rate: 1.08, volume: 0.91, gender: "female" },
+    pausePolicy: { intra: 80, final: 160 },
+  },
+  teppei: {
+    speakerPreferences: ["白上虎太郎", "ずんだもん"],
+    defaults: { speed: 1.12, pitch: 0.045, intonation: 1.34, volume: 0.9, pre: 0.06, post: 0.1, maxRate: 1.16 },
+    fallback: { pitch: 1.08, rate: 1.12, volume: 0.88, gender: "male" },
+    pausePolicy: { intra: 70, final: 150 },
+  },
+  mina: {
+    speakerPreferences: ["雨晴はう", "春日部つむぎ", "四国めたん"],
+    defaults: { speed: 0.96, pitch: 0.02, intonation: 1.06, volume: 0.84, pre: 0.14, post: 0.18, maxRate: 1.02 },
+    fallback: { pitch: 1.03, rate: 0.96, volume: 0.84, gender: "female" },
+    pausePolicy: { intra: 120, final: 230 },
+  },
+  teacher: {
+    speakerPreferences: ["青山龍星", "玄野武宏"],
+    defaults: { speed: 0.9, pitch: -0.04, intonation: 0.92, volume: 0.95, pre: 0.16, post: 0.2, maxRate: 0.94 },
+    fallback: { pitch: 0.82, rate: 0.88, volume: 0.95, gender: "male" },
+    pausePolicy: { intra: 130, final: 240 },
+  },
+  ren: {
+    speakerPreferences: ["冥鳴ひまり", "四国めたん", "九州そら"],
+    strictSpeakerPreference: true,
+    defaults: { speed: 0.95, pitch: -0.015, intonation: 0.96, volume: 0.88, pre: 0.12, post: 0.16, maxRate: 0.99 },
+    fallback: { pitch: 0.96, rate: 0.94, volume: 0.88, gender: "female" },
+    pausePolicy: { intra: 110, final: 210 },
+  },
+};
+const voicePronunciationLexicon = [
+  ["VOICEVOX", "ボイスボックス"],
+  ["VOICE", "ボイス"],
+  ["BGM", "ビージーエム"],
+  ["LINE", "ライン"],
+  ["黒羽レン", "くろば レン"],
+  ["国立天嶺大学", "こくりつ てんれい だいがく"],
+  ["天嶺大学", "てんれい だいがく"],
+  ["天嶺", "てんれい"],
+  ["受験番長", "じゅけんばんちょう"],
+  ["鬼塚先生", "おにづか先生"],
+  ["進路希望票", "しんろ きぼうひょう"],
+  ["赤本", "あかほん"],
+  ["五科目", "ごかもく"],
+  ["三者面談", "さんしゃ めんだん"],
+  ["メンツ", "めんつ"],
+  ["ルックス", "るっくす"],
+  ["3連続", "さんれんぞく"],
+  ["144週", "ひゃくよんじゅうよんしゅう"],
+];
+const speakerCastAliases = [
+  { pattern: /受験番長|番田長生/, castId: "bancho" },
+  { pattern: /優等生ギャル|優谷生/, castId: "gyaru" },
+  { pattern: /鉄平|舎弟/, castId: "teppei" },
+  { pattern: /ミナ|友だち/, castId: "mina" },
+  { pattern: /鬼塚|先生|生活指導|進路指導|模試監督|校長/, castId: "teacher" },
+  { pattern: /黒羽レン|ライバル/, castId: "ren" },
+];
+const openingIncidentChoices = {
+  bancho: [
+    {
+      id: "help_teppei",
+      title: "鉄平の赤点を拾う",
+      subtitle: "舎弟を見捨てず、補習の机へ連れていく",
+      text:
+        "鉄平「番長、数学9点っす。進路希望票、親に見せたら終わるっす」\n受験番長は願書の下書きを畳み、鉄平の答案を机に広げた。\n自分の計画は少し遅れた。だが、見捨てない背中は教室に残った。",
+      voiceText: "鉄平「番長、数学9点っす。進路希望票、親に見せたら終わるっす」",
+      gained: "鉄平は救えた。逃げ癖のある舎弟が、初めて答案を自分の手で直し始めた。",
+      lost: "ただし、願書の下書きは白紙のまま残った。最初の勉強時間は削れた。",
+      effects: { academics: 1, trust: 4, face: 2, looks: 0, stamina: -3, stress: 1 },
+      speaker: "鉄平",
+    },
+    {
+      id: "face_ren",
+      title: "黒羽レンの模試勝負を受ける",
+      subtitle: "挑発を点数で返す",
+      text:
+        "黒羽レン「その願書、名前だけ書いて記念にするのか。舎弟も志望校も、まとめて中途半端だな」\n受験番長は笑わず、模試の申込書にペンを走らせた。\n鉄平の通知は未読のまま光っている。だが、逃げない姿勢は校門前に伝わった。",
+      voiceText: "黒羽レン「点数は、見栄を助けない」",
+      gained: "黒羽レンの名前を、倒したい相手として覚えた。校門前の空気は少し締まった。",
+      lost: "鉄平の通知は未読のまま残った。救えるはずの不安を、最初から一つ積み残した。",
+      effects: { academics: 3, trust: -1, face: 3, looks: 0, stamina: -4, stress: 3 },
+      speaker: "黒羽レン",
+    },
+    {
+      id: "sleep_first",
+      title: "今日は寝て明日に備える",
+      subtitle: "初日から潰れない",
+      text:
+        "鬼塚先生「初日から全部背負うな。寝不足の番長ほど話が通じないものはない」\n受験番長はスマホを伏せ、明日の朝に鉄平へ返す言葉だけメモした。\n逃げたわけじゃない。続けるために、今日は寝る。",
+      voiceText: "鬼塚先生「初日から全部背負うな。寝不足の番長ほど話が通じないものはない」",
+      gained: "顔色と声の余裕は守れた。明日も机に向かえる体力が残った。",
+      lost: "鉄平は一晩だけ、不安を一人で抱えた。番長の返事は朝まで遅れた。",
+      effects: { academics: 0, trust: -1, face: 0, looks: 3, stamina: 6, stress: -4 },
+      speaker: "鬼塚先生",
+    },
+  ],
+  gyaru: [
+    {
+      id: "listen_mina",
+      title: "ミナの通知に返す",
+      subtitle: "親友の進路未定を聞く",
+      text:
+        "ミナ「進路希望票、何も書けなくて返された。もう詰んだかも」\n優等生ギャルはリップを閉じ、ミナの隣に座った。\n勉強時間は少し減った。でも、泣きそうな通知を既読スルーする自分にはなりたくない。",
+      voiceText: "ミナ「進路希望票、何も書けなくて返された。もう詰んだかも」",
+      gained: "ミナは少しだけ本音を出した。まだ大学受験を自分の話だと思えないことを、初めて口にした。",
+      lost: "自分の課題は後回しになった。置いていかれる不安は、ミナの中に小さく残った。",
+      effects: { academics: 1, trust: 4, face: 0, looks: 1, stamina: -2, stress: -1 },
+      speaker: "ミナ",
+    },
+    {
+      id: "prove_score",
+      title: "黒羽レンに点で返す",
+      subtitle: "見た目で判断された分、答案で黙らせる",
+      text:
+        "黒羽レン「その爪で国立志望？答案よりデコってんじゃん。友だちの面倒を見る余裕まで点数に出るの？」\n優等生ギャルは笑って、模試の申込欄を埋めた。\nミナの通知は気になる。けど、点で返したい日もある。",
+      voiceText: "黒羽レン「その志望校、見栄だけで通ると思うな」",
+      gained: "黒羽レンを、点で黙らせたい相手として刻んだ。見た目も答案も隠さず出す覚悟ができた。",
+      lost: "ミナへの返事は短くなった。親友の不安より、自分の証明を先に選んだ。",
+      effects: { academics: 3, trust: -1, face: 1, looks: 1, stamina: -4, stress: 3 },
+      speaker: "黒羽レン",
+    },
+    {
+      id: "condition_first",
+      title: "今日は寝て顔を立て直す",
+      subtitle: "明日の答案と表情を崩さない",
+      text:
+        "鬼塚先生「疲れは顔にも声にも出る。勝負するなら寝ろ」\n優等生ギャルは通知に短く返して、明日の朝に会う約束を入れた。\n友だちも答案も、余裕がない顔では守りきれない。",
+      voiceText: "鬼塚先生「疲れは顔にも声にも出る。勝負するなら寝ろ」",
+      gained: "肌も声も、明日の余裕も守れた。焦りを顔に出したまま戦わずに済んだ。",
+      lost: "ミナは今夜だけ、一人で進路希望票の空欄を見つめることになった。",
+      effects: { academics: 0, trust: 0, face: 0, looks: 4, stamina: 6, stress: -4 },
+      speaker: "鬼塚先生",
+    },
+  ],
+};
 
 const state = {
   turn: 0,
@@ -38,6 +200,9 @@ const state = {
   introIndex: 0,
   pendingResult: null,
   pendingStudyQuiz: null,
+  studyQuizStreak: 0,
+  studyQuizSkipCount: 0,
+  openingChoiceId: null,
   profile: null,
   pendingProfile: null,
   targetSchool: null,
@@ -50,6 +215,20 @@ const state = {
   savedRunSummary: loadCurrentRunSummary(),
   bgmEnabled: false,
   sfxEnabled: true,
+  voiceEnabled: localStorage.getItem(VOICE_STORAGE_KEY) === "true",
+  voicePrimed: false,
+  voiceSpeaking: false,
+  voiceBackend: "idle",
+  voiceTimer: 0,
+  voiceToken: 0,
+  activeVoiceAudio: null,
+  voicevoxAvailable: null,
+  voicevoxSpeakersPromise: null,
+  voiceRenderKey: "",
+  voiceDebugLog: [],
+  voicevoxAudioCache: new Map(),
+  voicevoxSynthesisPromises: new Map(),
+  voiceAbortController: null,
   pendingBgmSrc: GAMEPLAY_BGM_SRC,
   audioContext: null,
   profileSelectionLocked: false,
@@ -58,6 +237,7 @@ const state = {
   endingBookRenderKey: "",
   eventGalleryRenderKey: "",
   studyReviewRenderKey: "",
+  menuOpen: false,
 };
 
 const elements = {
@@ -90,7 +270,10 @@ const elements = {
   studyReviewList: document.querySelector("#studyReviewList"),
   studyReviewClearButton: document.querySelector("#studyReviewClearButton"),
   studyReviewBackButton: document.querySelector("#studyReviewBackButton"),
+  startTopButton: document.querySelector("#startTopButton"),
   continueButton: document.querySelector("#continueButton"),
+  menuButton: document.querySelector("#menuButton"),
+  menuPanel: document.querySelector("#menuPanel"),
   artworkViewer: document.querySelector("#artworkViewer"),
   artworkViewerLabel: document.querySelector("#artworkViewerLabel"),
   artworkViewerTitle: document.querySelector("#artworkViewerTitle"),
@@ -105,10 +288,13 @@ const elements = {
   bgmAudio: document.querySelector("#bgmAudio"),
   bgmButton: document.querySelector("#bgmButton"),
   sfxButton: document.querySelector("#sfxButton"),
+  voiceButton: document.querySelector("#voiceButton"),
   volumeSlider: document.querySelector("#volumeSlider"),
 };
 
 document.addEventListener("click", playButtonClickSound, true);
+document.addEventListener("click", stopVoiceForButtonInteraction, true);
+document.addEventListener("click", primeVoiceFromUserGesture, true);
 elements.skipIntroButton.addEventListener("click", skipIntro);
 elements.endingBookButton.addEventListener("click", openEndingBookPage);
 elements.endingBookClearButton.addEventListener("click", clearEndingBook);
@@ -120,17 +306,28 @@ elements.studyReviewButton.addEventListener("click", openStudyReviewPage);
 elements.studyReviewClearButton.addEventListener("click", clearStudyReview);
 elements.studyReviewBackButton.addEventListener("click", returnFromLibraryPage);
 elements.artworkBackButton.addEventListener("click", returnFromArtworkViewer);
+elements.startTopButton.addEventListener("click", focusStartChoice);
 elements.continueButton.addEventListener("click", continueCurrentRun);
+elements.menuButton.addEventListener("click", toggleMenu);
 elements.restartTopButton.addEventListener("click", restartGame);
 elements.bgmButton.addEventListener("click", toggleBgm);
 elements.sfxButton.addEventListener("click", toggleSfx);
+elements.voiceButton.addEventListener("click", toggleVoice);
 elements.volumeSlider.addEventListener("input", updateBgmVolume);
 
 startNewGame();
 updateBgmVolume();
 updateBgmButton();
 updateSfxButton();
+updateVoiceButton();
 scheduleLightAssetWarmup();
+window.JUKEN_BANCHO_AUDIO = {
+  voiceCast,
+  resolveCastId,
+  buildVoiceLines,
+  voiceStatusLabel,
+  voiceDebugLog: state.voiceDebugLog,
+};
 
 function startNewGame() {
   state.turn = 0;
@@ -139,10 +336,13 @@ function startNewGame() {
   state.usedCardIds = new Set();
   state.log = ["1年春。高校生活の三年間が始まった。"];
   state.complete = false;
-  state.screen = "profile";
+  setScreen("profile");
   state.introIndex = 0;
   state.pendingResult = null;
   state.pendingStudyQuiz = null;
+  state.studyQuizStreak = 0;
+  state.studyQuizSkipCount = 0;
+  state.openingChoiceId = null;
   state.profile = null;
   state.pendingProfile = null;
   state.targetSchool = null;
@@ -150,6 +350,7 @@ function startNewGame() {
   state.artworkViewer = null;
   state.artworkReturnScreen = "endingBook";
   state.characterCentered = false;
+  state.menuOpen = false;
   clearProfileSelectionAnimation();
   state.profileSelectionToken += 1;
   setCharacterSprite(protagonistProfiles[0]);
@@ -166,7 +367,45 @@ function restartGame() {
   }
 
   clearCurrentRun();
+  cancelVoice();
+  state.menuOpen = false;
   startNewGame();
+}
+
+function focusStartChoice() {
+  state.menuOpen = false;
+  renderHudControls();
+  elements.choiceList.querySelector("button")?.focus();
+}
+
+function toggleMenu() {
+  cancelVoice();
+  state.menuOpen = !state.menuOpen;
+  renderHudControls();
+}
+
+function setScreen(screen, options = {}) {
+  if (state.screen !== screen && options.cancelVoice !== false) {
+    cancelVoice();
+  }
+  state.screen = screen;
+}
+
+function setDialogueText(text, voiceText = "") {
+  elements.dialogueText.textContent = text;
+  if (voiceText) {
+    elements.dialogueText.dataset.voiceText = voiceText;
+    return;
+  }
+  delete elements.dialogueText.dataset.voiceText;
+}
+
+function stopVoiceForButtonInteraction(event) {
+  const button = event.target?.closest?.("button");
+  if (!button || button === elements.voiceButton || !state.voiceEnabled) {
+    return;
+  }
+  cancelVoice();
 }
 
 function startProfileSelection(profile) {
@@ -185,7 +424,7 @@ function startProfileSelection(profile) {
   state.pendingProfile = profile;
   elements.novelStage.dataset.selectedProfile = profile.id;
   elements.novelStage.classList.add("novel-stage--profile-selecting", `novel-stage--selected-${profile.id}`);
-  elements.dialogueText.textContent = `${profile.title}で走り抜ける。\n三年間の予定表が、静かに開く。`;
+  setDialogueText(`${profile.title}で走り抜ける。\n三年間の予定表が、静かに開く。`);
   elements.choiceList.querySelectorAll("button").forEach((button) => {
     button.disabled = true;
   });
@@ -205,19 +444,82 @@ function selectProfile(profile) {
   state.pendingProfile = null;
   state.stats = { ...profile.initialStats };
   state.log = [`1年春。${profile.title}の三年間が始まった。`];
-  state.screen = "intro";
-  state.introIndex = 0;
+  setScreen("intro");
+  state.introIndex = getPlayableIntroStartIndex(profile);
+  state.openingChoiceId = null;
   state.characterCentered = true;
+  state.menuOpen = false;
   setCharacterSprite(profile);
   saveCurrentRun();
   render();
+}
+
+function chooseOpeningIncidentChoice(choice) {
+  if (!state.profile || state.openingChoiceId) {
+    return;
+  }
+
+  const effects = { ...choice.effects };
+  const resultText = buildOpeningIncidentResultText(choice, effects);
+  applyEffects(effects);
+  state.openingChoiceId = choice.id;
+  state.pendingResult = {
+    speaker: choice.speaker,
+    sceneTag: "入学式の最初の選択",
+    text: resultText,
+    artwork: null,
+    artworkAlt: "",
+    eventChoices: null,
+    voiceText: choice.voiceText ?? "",
+  };
+  state.log.push(`最初の選択: ${choice.title}\n${resultText}`);
+  setScreen("openingResult");
+  saveCurrentRun();
+  render();
+}
+
+function buildOpeningIncidentResultText(choice, effects) {
+  return `${choice.text}\n\n得たもの: ${choice.gained}\n取りこぼしたもの: ${choice.lost}${formatEffectSentence(effects)}`;
+}
+
+function buildResultVoiceText(reactionText, event, seasonalEvent, studyQuizOutcome, card, pressureMessages = []) {
+  const voiceParts = [];
+  if (reactionText) {
+    voiceParts.push(reactionText.trim());
+  }
+  const studyQuizVoiceText = buildStudyQuizVoiceText(studyQuizOutcome, card);
+  if (studyQuizVoiceText) {
+    voiceParts.push(studyQuizVoiceText);
+  }
+  if (event) {
+    voiceParts.push(`${event.speaker}「${event.message}」`);
+  }
+  if (seasonalEvent?.voiceText) {
+    voiceParts.push(seasonalEvent.voiceText);
+  } else if (seasonalEvent?.speaker && seasonalEvent?.text) {
+    voiceParts.push(`${seasonalEvent.speaker}「${seasonalEvent.text.split("\n")[0]}」`);
+  }
+  const pressureVoiceText = pressureMessages.map(getPressureVoiceText).filter(Boolean).join("\n");
+  if (pressureVoiceText) {
+    voiceParts.push(pressureVoiceText);
+  }
+  return voiceParts.join("\n");
+}
+
+function getPressureText(message) {
+  return typeof message === "string" ? message : message.text;
+}
+
+function getPressureVoiceText(message) {
+  return typeof message === "string" ? "" : message.voiceText ?? "";
 }
 
 function selectTargetSchool(school) {
   state.targetSchool = school;
   state.totalTurns = school.totalTurns;
   state.log.push(`${school.name}を志望校に決めた。偏差値${school.deviation}の門が待っている。`);
-  state.screen = "choices";
+  setScreen("choices");
+  state.menuOpen = false;
   saveCurrentRun();
   render();
 }
@@ -241,7 +543,7 @@ function startStudyQuiz(card) {
     cardEffects: rollEffects(card.effects),
     question: pickStudyQuestion(card),
   };
-  state.screen = "studyQuiz";
+  setScreen("studyQuiz");
   saveCurrentRun();
   render();
 }
@@ -255,8 +557,21 @@ function answerStudyQuiz(answerIndex) {
   const correct = answerIndex === question.answerIndex;
   const adjustedEffects = applyStudyQuizResult(cardEffects, card, correct);
   recordStudyQuestion(question, answerIndex, correct);
+  state.studyQuizStreak = correct ? state.studyQuizStreak + 1 : 0;
   state.pendingStudyQuiz = null;
-  completeCardChoice(card, adjustedEffects, { question, correct });
+  completeCardChoice(card, adjustedEffects, { question, correct, streak: state.studyQuizStreak });
+}
+
+function skipStudyQuiz() {
+  if (!state.pendingStudyQuiz) {
+    return;
+  }
+
+  const { card, cardEffects, question } = state.pendingStudyQuiz;
+  state.studyQuizStreak = 0;
+  state.studyQuizSkipCount += 1;
+  state.pendingStudyQuiz = null;
+  completeCardChoice(card, cardEffects, { question, skipped: true, skipCount: state.studyQuizSkipCount });
 }
 
 function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
@@ -268,16 +583,22 @@ function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
 
   const event = tryApplyRandomEvent();
   const seasonalEvent = tryApplySeasonalEvent();
-  const pressureMessages = [...applyTargetSchoolPressure(), ...applyAcademicMilestonePressure(), ...applyPressureRules()];
+  const pressureMessages = [
+    ...applyTargetSchoolPressure(),
+    ...applyAcademicMilestonePressure(),
+    ...buildProgressReportMessages(),
+    ...applyLooksMentsQuadrantEvent(),
+    ...applyPressureRules(),
+  ];
   const effectText = formatEffectSentence(cardEffects);
-  const studyQuizText = studyQuizOutcome ? buildStudyQuizResultText(studyQuizOutcome, cardEffects) : "";
+  const studyQuizText = studyQuizOutcome ? buildStudyQuizResultText(studyQuizOutcome, cardEffects, card) : "";
   const eventText = event ? `\n\n${event.speaker}「${event.message}」${formatEffectSentence(event.effects)}` : "";
   const seasonalText = seasonalEvent
     ? `\n\n${seasonalEvent.title}\n${seasonalEvent.text}${formatEffectSentence(seasonalEvent.effects)}${
         seasonalEvent.choices?.length ? "\n\nどう返す？" : ""
       }`
     : "";
-  const pressureText = pressureMessages.length ? `\n\n${pressureMessages.join("\n")}` : "";
+  const pressureText = pressureMessages.length ? `\n\n${pressureMessages.map(getPressureText).join("\n")}` : "";
 
   if (state.turn >= state.totalTurns) {
     state.complete = true;
@@ -293,18 +614,27 @@ function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
     artwork: seasonalEvent?.artwork,
     artworkAlt: seasonalEvent?.artworkAlt,
     eventChoices: seasonalEvent?.choices ?? null,
+    voiceText: buildResultVoiceText(reactionText, event, seasonalEvent, studyQuizOutcome, card, pressureMessages),
   };
   state.log.push(resultText);
-  state.screen = "result";
+  setScreen("result");
   saveCurrentRun();
   render();
 }
 
 function advanceScene() {
+  if (state.screen === "openingResult") {
+    setScreen("target");
+    state.pendingResult = null;
+    saveCurrentRun();
+    render();
+    return;
+  }
+
   if (state.screen === "intro") {
     state.introIndex += 1;
     if (state.introIndex >= getProfile().intro.length) {
-      state.screen = "target";
+      setScreen("opening");
     }
     saveCurrentRun();
     render();
@@ -312,13 +642,13 @@ function advanceScene() {
   }
 
   if (state.complete) {
-    state.screen = "ending";
+    setScreen("ending");
     saveCurrentRun();
     render();
     return;
   }
 
-  state.screen = "choices";
+  setScreen("choices");
   state.pendingResult = null;
   saveCurrentRun();
   render();
@@ -334,7 +664,9 @@ function skipIntro() {
     return;
   }
 
-  state.screen = "target";
+  setScreen("target");
+  state.pendingResult = null;
+  state.openingChoiceId = state.openingChoiceId ?? "skipped";
   state.introIndex = getProfile().intro.length - 1;
   saveCurrentRun();
   render();
@@ -365,7 +697,7 @@ function tryApplyRandomEvent() {
     if (Math.random() <= event.chance) {
       const effects = rollEffects(event.effects);
       applyEffects(effects);
-      return { ...event, effects };
+      return { ...getRouteRandomEventCopy(event), effects };
     }
   }
 
@@ -383,6 +715,93 @@ function tryApplySeasonalEvent() {
   applyEffects(effects);
   unlockEventCg(getEventGalleryId(event.id, getProfile().id));
   return { ...event, ...routeEvent, effects };
+}
+
+function getRouteRandomEventCopy(event) {
+  const route = getProfile().id;
+  if (route === "gyaru") {
+    if (event.id === "rival_school") {
+      return {
+        ...event,
+        speaker: "黒羽レン",
+        message: "ライバル校の黒羽レンが点数表をひらひら振る。言い返すより先に、次の模試で黙らせると決めた。",
+      };
+    }
+
+    if (event.id === "friend_panic") {
+      return {
+        ...event,
+        speaker: "ミナ",
+        message: "親友のミナが進路希望票を握ったまま固まっていた。話を聞くうちに、自分の焦りも少し言葉になった。",
+      };
+    }
+
+    if (event.id === "teacher_warning") {
+      return {
+        ...event,
+        speaker: "鬼塚先生",
+        message: "鬼塚先生に呼び止められた。小言は長いが、願書の締切と面談予約は逃さず拾った。",
+      };
+    }
+
+    if (event.id === "burnout_hint") {
+      return {
+        ...event,
+        speaker: "優等生ギャル",
+        message: "目が滑る。メイクより先に睡眠を盛る日だと、今日は単語帳を閉じた。",
+      };
+    }
+
+    if (event.id === "exam_ticket_panic") {
+      return {
+        ...event,
+        speaker: "ミナ",
+        message: "受験票がないとミナから泣きLINEが来た。机も鞄も総ざらいして、最後は単語帳の間から見つかった。",
+      };
+    }
+
+    if (event.id === "principal_truce") {
+      return {
+        ...event,
+        speaker: "校長",
+        message: "友だち同士の揉め事を収め、受験生として自習室の鍵も預かった。なぜか校内が静かになった。",
+      };
+    }
+  }
+
+  if (event.id === "friend_panic") {
+    return {
+      ...event,
+      speaker: "鉄平",
+      message: "舎弟の鉄平が進路希望票を握ったまま固まっていた。話を聞くうちに、自分の焦りも少し言葉になった。",
+    };
+  }
+
+  if (event.id === "teacher_warning") {
+    return {
+      ...event,
+      speaker: "鬼塚先生",
+      message: "鬼塚先生に呼び止められた。廊下の説教は長いが、願書の締切も教えてもらった。",
+    };
+  }
+
+  if (event.id === "rival_school") {
+    return {
+      ...event,
+      speaker: "黒羽レン",
+      message: "ライバル校の黒羽レンが点数表をひらひら振る。挑発は買わず、次の模試で黙らせると決めた。",
+    };
+  }
+
+  if (event.id === "exam_ticket_panic") {
+    return {
+      ...event,
+      speaker: "鉄平",
+      message: "受験票がないと鉄平が大騒ぎになった。机も鞄も総ざらいして、最後は単語帳の間から見つかった。",
+    };
+  }
+
+  return event;
 }
 
 function chooseSeasonalEventChoice(choice) {
@@ -404,15 +823,15 @@ function applyPressureRules() {
   const messages = [];
   if (state.stats.stress >= 88) {
     applyEffects({ academics: -6, trust: -3, face: -1, looks: -5, stamina: 0, stress: -10 });
-    messages.push("鏡の前で顔色の悪さに気づく。焦りでルックスも人望も削れていく。");
+    messages.push("鏡の前で顔立ちへの自信まで揺らぐ。寝不足、焦り、荒れた身だしなみが重なって、ルックスも人望も削れていく。");
   } else if (state.stats.stress >= 72) {
     applyEffects({ academics: 0, trust: -1, face: 0, looks: -2, stamina: 0, stress: 0 });
-    messages.push("寝不足の顔が隠せない。妙な空気が流れて、人望も少し冷える。");
+    messages.push("寝不足で顔つきと声の余裕が崩れる。妙な空気が流れて、人望も少し冷える。");
   }
 
   if (state.stats.looks <= 35) {
     applyEffects({ academics: 0, trust: -2, face: -2, looks: 0, stamina: 0, stress: 2 });
-    messages.push("髪も肌も荒れている。異性の視線は遠のき、仲間にも少しナメられる。");
+    messages.push("顔立ちへの自信、髪、肌、返事の短さがまとめて表に出る。悪気はなくても雑に見られ、人望とメンツを取りこぼす。");
   }
 
   if (state.stats.stamina <= 6) {
@@ -421,6 +840,283 @@ function applyPressureRules() {
   }
 
   return messages;
+}
+
+function applyLooksMentsQuadrantEvent() {
+  if (!state.targetSchool || state.turn <= 0 || state.turn >= state.totalTurns || state.turn % 8 !== 0) {
+    return [];
+  }
+
+  const looksHigh = state.stats.looks >= 62;
+  const looksLow = state.stats.looks <= 38;
+  const faceHigh = state.stats.face >= 62;
+  const faceLow = state.stats.face <= 38;
+  if ((!looksHigh && !looksLow) || (!faceHigh && !faceLow)) {
+    return [];
+  }
+
+  const route = getProfile().id;
+  let title = "";
+  let text = "";
+  let effects = null;
+  let voiceText = "";
+
+  if (looksHigh && faceHigh) {
+    title = "学校の見られ方: ルックス高 / メンツ高";
+    text =
+      route === "gyaru"
+        ? "顔立ち、表情、声の張り、約束を守る姿勢がそろい、廊下の空気が少し変わる。見た目だけではない存在感で、話しかけられる前から場を制した。"
+        : "顔立ち、制服の整い、逃げない姿勢がそろい、校門前の空気が少し変わる。怖さではなく、任せられる存在感で場を制した。";
+    effects = { academics: 0, trust: 1, face: 1, looks: 0, stamina: 0, stress: -1 };
+    voiceText =
+      route === "gyaru"
+        ? "ミナ「今日、声に余裕ある。ちゃんと前に出てる」"
+        : "鉄平「番長、今日の背中なら任せられるっす」";
+  } else if (looksHigh && faceLow) {
+    title = "学校の見られ方: ルックス高 / メンツ低";
+    text =
+      route === "gyaru"
+        ? "見た目は整っている。だからこそ、約束を曖昧にした日の空白が目立つ。黒羽レンの視線は、答案より先にそこを刺してきた。"
+        : "顔つきと制服は決まっている。だからこそ、逃げた約束が余計に目立つ。鉄平は笑ってごまかしたが、少しだけ距離を置いた。";
+    effects = { academics: 0, trust: -1, face: -1, looks: 0, stamina: 0, stress: 1 };
+    voiceText =
+      route === "gyaru"
+        ? "黒羽レン「見た目は整ってる。約束の空白の方が目立つな」"
+        : "鉄平「番長、決まってるのに、約束だけ置いてったんすね」";
+  } else if (looksLow && faceHigh) {
+    title = "学校の見られ方: ルックス低 / メンツ高";
+    text =
+      route === "gyaru"
+        ? "顔色も髪も万全ではない。それでも約束を守って席に着いた姿を、ミナは見ていた。派手さではなく、泥臭い信用が残る日だった。"
+        : "顔色も制服も荒れている。それでも逃げずに机へ戻る姿を、鉄平は見ていた。派手さではなく、泥臭い信用が残る日だった。";
+    effects = { academics: 0, trust: 1, face: 0, looks: 0, stamina: 0, stress: 1 };
+    voiceText =
+      route === "gyaru"
+        ? "ミナ「顔は疲れてる。でも逃げてないの、見てた」"
+        : "鉄平「顔は疲れてる。でも逃げてないの、見てたっす」";
+  } else {
+    title = "学校の見られ方: ルックス低 / メンツ低";
+    text =
+      route === "gyaru"
+        ? "顔立ちへの自信、表情、声、約束の積み残しがまとめて沈む。学校は残酷で、説明しない不調まで印象として数えてくる。"
+        : "顔つき、声、制服、約束の積み残しがまとめて沈む。学校は残酷で、説明しない不調まで印象として数えてくる。";
+    effects = { academics: 0, trust: -2, face: -1, looks: 0, stamina: 0, stress: 3 };
+    voiceText = "鬼塚先生「不調を説明しないなら、印象だけが先に残るぞ」";
+  }
+
+  applyEffects(effects);
+  return [{ text: `${title}\n${text}${formatEffectSentence(effects)}`, voiceText }];
+}
+
+function buildProgressReportMessages() {
+  if (!state.targetSchool || state.turn <= 0 || state.turn >= state.totalTurns || state.turn % 12 !== 0) {
+    return [];
+  }
+
+  const profile = getProfile();
+  const school = getTargetSchool();
+  const weeksLeft = Math.max(0, state.totalTurns - state.turn);
+  const academicGap = Math.max(0, school.passAcademic - state.stats.academics);
+  const milestoneIndex = Math.max(0, Math.floor(state.turn / 12) - 1);
+  const milestone = getProgressMilestone(profile.id, state.turn);
+  const shortGoal = getChapterShortGoal(profile.id, milestoneIndex);
+  const relationshipReport = getChapterRelationshipReport(profile.id, milestoneIndex);
+  const statusLine = academicGap
+    ? `${school.name}まで学力あと${academicGap}。今学期のズレが見えてきた。`
+    : `${school.name}の学力ラインは射程内。ここからは人望とメンツも落とせない。`;
+
+  return [
+    {
+      text: `第${milestoneIndex + 1}章: ${milestone.title.replace(/^固定事件: /, "")}\n短期目標: ${shortGoal}\n関係レポート: ${relationshipReport}\n${milestone.text}\n残り${weeksLeft}週。${statusLine}`,
+      voiceText: buildProgressMilestoneVoiceText(profile.id, milestone),
+    },
+  ];
+}
+
+function buildProgressMilestoneVoiceText(profileId, milestone) {
+  const quotedLines = milestone.text.match(/[^「」\n:：]{1,24}「[^」]+」/g);
+  if (quotedLines?.length) {
+    return quotedLines.slice(0, 2).join("\n");
+  }
+
+  const speaker = profileId === "gyaru" ? "優等生ギャル" : "受験番長";
+  const line = milestone.text.split(/[。\n]/)[0]?.trim();
+  if (!line) {
+    return "";
+  }
+  return `${speaker}「${line.slice(0, 54)}」`;
+}
+
+function getChapterShortGoal(profileId, milestoneIndex) {
+  const banchoGoals = [
+    "鉄平の赤点を拾いつつ、最初の学力ラインを落とさない。",
+    "黒羽レンに点数で返す準備をする。",
+    "文化祭の火種を消し、仲間の信用を守る。",
+    "三者面談までに数字と生活リズムを整える。",
+    "夏休みの補習と赤本時間を両立する。",
+    "公開された点数表を、次の答案で塗り替える。",
+    "進路から逃げる仲間に、自分で選ばせる。",
+    "受験票事件を片づけ、終盤の集中を切らさない。",
+    "秋模試の順位で、黒羽レンに追いつく。",
+    "願書写真に残る顔と姿勢を整える。",
+    "最後の補習願いを拾うか、赤本へ切るか決める。",
+    "卒業式前に、守ったものを校門で示す。",
+  ];
+  const gyaruGoals = [
+    "ミナの進路未定を聞きつつ、自分の基礎も積む。",
+    "黒羽レンの見た目煽りを答案で返す。",
+    "文化祭で茶化すミナの本音を聞き逃さない。",
+    "面談までに点数、表情、声の余裕を整える。",
+    "夏休みの小テストと課題を、ミナの前で続ける。",
+    "点数表の前で、見た目も答案も隠さない。",
+    "ミナが大学受験を考え始めた瞬間を逃さない。",
+    "ミナの反発を受け止め、初めての受験準備を支える。",
+    "秋模試で黒羽レンに追いつき、ミナの志望校探しも支える。",
+    "願書写真に残る自分を、逃げずに整える。",
+    "最後の受験準備で、憧れではなく並走へ変える。",
+    "卒業式前に、点数も見た目も友情も答えにする。",
+  ];
+  const goals = profileId === "gyaru" ? gyaruGoals : banchoGoals;
+  return goals[Math.min(milestoneIndex, goals.length - 1)];
+}
+
+function getChapterRelationshipReport(profileId, milestoneIndex) {
+  const banchoReports = [
+    "鉄平はまだ逃げ腰。鬼塚先生は、怒鳴るだけの番長かどうかを見ている。",
+    "黒羽レンはこちらを舐めている。鉄平は番長が逃げないかを見ている。",
+    "仲間は拳より約束を見ている。メンツの意味が少し変わる。",
+    "鬼塚先生は小言より進路資料を出し始めた。",
+    "鉄平は暗記カードだけは作れると分かってきた。",
+    "黒羽レンは煽っているが、答案の伸びを警戒し始めた。",
+    "鉄平は進路から逃げたい。でも一人で逃げるのも怖い。",
+    "鉄平は助けを求める前に、自分で机を探し始めた。",
+    "黒羽レンは点数でしか測れない自分を隠している。",
+    "鬼塚先生は顔つきまで含めて、受験生として見ている。",
+    "鉄平は最後だけ、逃げない側へ足を出している。",
+    "黒羽レンは勝ち負けより、三年間の筋を見に来ている。",
+  ];
+  const gyaruReports = [
+    "ミナはまだ大学受験を自分ごとにしていない。主人公が少し遠く見えている。",
+    "黒羽レンはこちらを見た目で煽るが、答案の伸びを見始めている。",
+    "ミナは勉強を茶化すが、主人公が机に戻る理由を気にしている。",
+    "鬼塚先生は点数だけでなく、声と顔の余裕を見ている。",
+    "ミナは進路の空白を、笑ってごまかす癖をやめられない。",
+    "黒羽レンは見た目を煽るが、自分も順位表から逃げられない。",
+    "ミナは主人公の背中を見て、自分も大学受験を考え始めている。",
+    "ミナは置いていかれるだけと決めつけられ、初めて反発した。",
+    "黒羽レンは順位で上にいるが、こちらを無視できなくなった。",
+    "主人公は見た目で判断される現実を、逃げずに使い返す。",
+    "ミナは置いていかれたくないだけではなく、自分の受験として走ろうとしている。",
+    "黒羽レンは煽りではなく、本気の確認をしに来ている。",
+  ];
+  const reports = profileId === "gyaru" ? gyaruReports : banchoReports;
+  return reports[Math.min(milestoneIndex, reports.length - 1)];
+}
+
+function getProgressMilestone(profileId, turn) {
+  const milestoneIndex = Math.max(0, Math.floor(turn / 12) - 1);
+  const banchoMilestones = [
+    {
+      title: "固定事件: 鉄平の赤点答案が拡散寸前",
+      text: "鉄平「数学9点、拡散されたら親より先に学校に詰むっす」\n鬼塚先生「救うなら答案も生活も見ろ。怒鳴るだけじゃ進路は戻らん」",
+    },
+    {
+      title: "固定事件: 模試会場で黒羽レンが隣席",
+      text: "黒羽レン「番長の答案、隣で見届けてやるよ」\n鉄平「番長、ここで逃げたら俺も逃げ癖つくっす」",
+    },
+    {
+      title: "固定事件: 文化祭会議の火種",
+      text: "体育館裏の空気が固まる。拳ではなく、約束を守れるかでメンツが測られる日だ。",
+    },
+    {
+      title: "固定事件: 鬼塚先生の三者面談前倒し",
+      text: "鬼塚先生「点も仲間も睡眠も、全部ごまかせない顔で出る。今日だけは数字を見ろ」",
+    },
+    {
+      title: "固定事件: 夏休みの補習名簿",
+      text: "鉄平の名前が補習名簿の一番上にあった。自分の赤本を開くか、隣で暗記カードを切るか、机の上で義理が割れる。",
+    },
+    {
+      title: "固定事件: 黒羽レンが点数表を校門に貼る",
+      text: "黒羽レン「隠す点なら、最初から受けるなよ」\n笑い声が校門に広がる。貼り返すなら拳ではなく、次の答案だ。",
+    },
+    {
+      title: "固定事件: 体育館裏の進路会議",
+      text: "鉄平「就職も進学も、どっちも怖いっす」\n体育館裏に集まった仲間の顔が、点数より重く見えた。",
+    },
+    {
+      title: "固定事件: 受験票が消えた夜",
+      text: "鉄平が受験票をなくした。机、鞄、単語帳の間まで探す夜に、番長のメンツは声の大きさではなく手の早さで決まる。",
+    },
+    {
+      title: "固定事件: 秋模試の公開順位",
+      text: "黒羽レンの名前が上にある。鉄平は黙って順位表を見つめ、鬼塚先生は進路資料を一枚だけ机に置いた。",
+    },
+    {
+      title: "固定事件: 願書写真の撮り直し",
+      text: "寝不足の顔が写真に残る。顔立ちも、表情も、制服の乱れも、受験の日には逃げ場がない。",
+    },
+    {
+      title: "固定事件: 最後の補習願い",
+      text: "鉄平「番長、最後だけでいいっす。俺も逃げないから」\n赤本のページと舎弟の答案が、同じ机でぶつかった。",
+    },
+    {
+      title: "固定事件: 卒業式前の校門",
+      text: "黒羽レンが校門で待っている。勝ち負けより先に、三年間で何を守ったかを見られている。",
+    },
+  ];
+  const gyaruMilestones = [
+    {
+      title: "固定事件: ミナの進路希望票が空白",
+      text: "ミナ「大学とか、まだ自分の話に聞こえない。でも、置いていかれるのはちょっと怖い」",
+    },
+    {
+      title: "固定事件: 模試会場で黒羽レンが隣席",
+      text: "黒羽レン「そのネイルで何点取るか、隣で見てる」\n優等生ギャルは笑った。見た目で来た言葉は、答案で返す。",
+    },
+    {
+      title: "固定事件: 文化祭と茶化した本音",
+      text: "ミナ「また勉強？ えらすぎて逆に引く」\n笑って茶化したあと、ミナは主人公のノートを閉じずに見ていた。気にしていない顔ほど、少しだけ嘘くさい。",
+    },
+    {
+      title: "固定事件: 鬼塚先生の三者面談前倒し",
+      text: "鬼塚先生「疲れは顔にも声にも出る。勝負するなら、点数だけじゃなく調子も整えろ」",
+    },
+    {
+      title: "固定事件: 夏休みの小テスト前夜",
+      text: "ミナ「小テストだけでも逃げないでみる。あんた、ずっと続けてるし」\n横で聞くか、自分の課題を進めるか。友情は予定表を食う。",
+    },
+    {
+      title: "固定事件: 黒羽レンが点数表を広げる",
+      text: "黒羽レン「見た目で判断するなって言うなら、点数で黙らせてみな」\n爪も答案も、今日は隠さず机に出す。",
+    },
+    {
+      title: "固定事件: ミナが大学受験を口にする",
+      text: "ミナは主人公の模試結果を見たあと、裏で声を落とした。\nミナ「私も大学、目指してみたい。置いていかれるからじゃなくて、自分で」",
+    },
+    {
+      title: "固定事件: ミナの反発",
+      text: "ミナ「置いていかれるのが怖いだけって、決めつけないで」\n初めて語気が強くなった。応援役で終わりたくない気持ちは、もう逃げ道ではなくなっている。",
+    },
+    {
+      title: "固定事件: 秋模試の公開順位",
+      text: "黒羽レンの名前が上にある。ミナは笑っているが、手元の志望校メモだけがくしゃくしゃだった。",
+    },
+    {
+      title: "固定事件: 願書写真の撮り直し",
+      text: "顔立ち、肌、髪、笑い方。見た目で判断される現実は嫌いだ。でも、出願写真は今日の自分を残してしまう。",
+    },
+    {
+      title: "固定事件: 最後の受験準備",
+      text: "ミナ「終わったら、私の過去問も見て。あんたが合格しても、見てるだけで終わりたくない」",
+    },
+    {
+      title: "固定事件: 卒業式前の昇降口",
+      text: "黒羽レンが昇降口で待っている。点数も見た目も友情も、三年間の答えとして並べられる日だ。",
+    },
+  ];
+  const milestones = profileId === "gyaru" ? gyaruMilestones : banchoMilestones;
+  return milestones[Math.min(milestoneIndex, milestones.length - 1)];
 }
 
 function applyTargetSchoolPressure() {
@@ -486,15 +1182,71 @@ function applyStudyQuizResult(effects, card, correct) {
     return nextEffects;
   }
 
-  nextEffects.academics = correct ? clamp(academics + 1, 0, 100) : 0;
+  nextEffects.academics = correct ? clamp(academics + 1, 0, 100) : academics;
   return nextEffects;
 }
 
-function buildStudyQuizResultText(outcome, effects) {
-  const { question, correct } = outcome;
+function buildStudyQuizResultText(outcome, effects, card) {
+  const { question, correct, skipped } = outcome;
+  if (skipped) {
+    return `\n\n五科目チェックは見送った。\n通常どおり予定を進めたが、復習帳には何も増えない。`;
+  }
+
   const result = correct ? "正解" : "不正解";
-  const bonusText = correct ? "学力の伸びに火がついた。" : "理解が浅い部分が残り、学力は伸びなかった。";
-  return `\n\n五科目チェック: ${question.subject} / ${question.area}\n${result}。${bonusText}\n解説: ${question.explanation}\n調整後の学力変動: ${effects.academics > 0 ? `+${effects.academics}` : effects.academics}`;
+  const bonusText = correct ? "学力の伸びに火がついた。" : "理解が浅い部分は復習帳に残した。予定の学力上昇はそのまま進む。";
+  const reactionText = buildStudyQuizReaction(outcome, card);
+  return `\n\n五科目チェック: ${question.subject} / ${question.area}\n${result}。${bonusText}${reactionText}\n解説: ${question.explanation}\n今回の学力変動: ${effects.academics > 0 ? `+${effects.academics}` : effects.academics}`;
+}
+
+function buildStudyQuizReaction(outcome, card) {
+  if (!outcome.correct) {
+    return getProfile().id === "gyaru"
+      ? "\n鬼塚先生「外した問題ほど、次に点へ化ける。復習帳に残せ」"
+      : "\n鬼塚先生「間違いを隠すな。次に拾えば、それも番長の点になる」";
+  }
+
+  const profileId = getProfile().id;
+  const streakLine =
+    outcome.streak >= 3
+      ? profileId === "gyaru"
+        ? "\n集中コンボ: 3連続正解。黒羽レンが一瞬だけ黙った。"
+        : "\n集中コンボ: 3連続正解。鉄平が小さく拍手して、黒羽レンが目をそらした。"
+      : "";
+  const examLine = isTargetExamCard(card)
+    ? profileId === "gyaru"
+      ? "\n黒羽レン「その点、偶然じゃないな」"
+      : "\n黒羽レン「……今の解き方は、まぐれじゃねえな」"
+    : profileId === "gyaru"
+      ? "\n鬼塚先生「今の解き方、入試で使えるぞ」"
+      : "\n鬼塚先生「その一問を拾えるなら、答案はまだ伸びる」";
+
+  return `${examLine}${streakLine}`;
+}
+
+function buildStudyQuizVoiceText(outcome, card) {
+  if (!outcome) {
+    return "";
+  }
+  if (outcome.skipped) {
+    if (outcome.skipCount % 3 !== 0) {
+      return "";
+    }
+    return getProfile().id === "gyaru"
+      ? "黒羽レン「解かない選択も、点数には残る」"
+      : "鬼塚先生「逃げたな。まあ、今日は予定を進めろ」";
+  }
+
+  return buildStudyQuizReaction(outcome, card)
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => /^([^「」:：]{1,24})「(.+)」$/.test(line) || line.startsWith("集中コンボ"))
+    .map((line) => {
+      if (!line.startsWith("集中コンボ")) {
+        return line;
+      }
+      return getProfile().id === "gyaru" ? "黒羽レン「……今のは偶然じゃないな」" : "鉄平「三連続っす。今の番長、強いっす」";
+    })
+    .join("\n");
 }
 
 function rollEffects(effects, variance = EFFECT_VARIANCE) {
@@ -534,6 +1286,10 @@ function resolveEnding() {
     return {
       id: route === "gyaru" ? "passed_gyaru" : "passed_bancho",
       title: route === "gyaru" ? "優等生ギャル" : "合格番長",
+      voiceText:
+        route === "gyaru"
+          ? "優等生ギャル「合格した。ミナの声まで、校門に残ってる」"
+          : "受験番長「合格した。鉄平が泣いてるなら、これで勝ちだ」",
       body:
         route === "gyaru"
           ? `${schoolLine}\n合格発表の日、友だちは泣きながらハイタッチしてきた。\n友情も偏差値も盛り切った、あんたこそ優等生ギャルだ。`
@@ -545,6 +1301,10 @@ function resolveEnding() {
     return {
       id: route === "gyaru" ? "lonely_gyaru" : "lonely_pass",
       title: route === "gyaru" ? "孤独な合格ギャル" : "孤独な合格",
+      voiceText:
+        route === "gyaru"
+          ? "優等生ギャル「合格した。でも、ミナに見せる画面がない」"
+          : "受験番長「合格通知は軽い。誰にも見せられねえと、こんなに軽い」",
       body:
         route === "gyaru"
           ? `${schoolLine}\n合格はした。けど、スマホの通知は思ったより静かだった。\n盛ったノートの厚さだけが、この三年間を知っている。`
@@ -556,9 +1316,13 @@ function resolveEnding() {
     return {
       id: route === "gyaru" ? "waitlist_gyaru" : "waitlist_legend",
       title: route === "gyaru" ? "補欠のギャル伝説" : "補欠の伝説",
+      voiceText:
+        route === "gyaru"
+          ? "ミナ「点数は足りない。でも、次は隣で盛り返そ」"
+          : "鉄平「点数は足りねえ。でも、俺はもう逃げないっす」",
       body:
         route === "gyaru"
-          ? `${schoolLine}\n点数は少し足りない。けど友だちは、誰も責めない。\n来年リベンジ、マヂで盛り返す。`
+          ? `${schoolLine}\n点数は少し足りない。けど友だちは、誰も責めない。\n来年リベンジ、ちゃんと盛り返す。`
           : `${schoolLine}\n点数は少し足りない。だが仲間たちは誰も責めない。\n来年、伝説の第二章が始まる。`,
     };
   }
@@ -567,6 +1331,10 @@ function resolveEnding() {
     return {
       id: route === "gyaru" ? "legend_gyaru" : "bancho_legend",
       title: route === "gyaru" ? "ギャル伝説" : "番長伝説",
+      voiceText:
+        route === "gyaru"
+          ? "優等生ギャル「落ちた。でも、ミナが顔を上げたなら、全部は負けじゃない」"
+          : "受験番長「落ちた。だが、鉄平が逃げねえなら、番長は終わらねえ」",
       body:
         route === "gyaru"
           ? `${schoolLine}\n受験には敗れた。でも、あんたに救われた友だちは数えきれない。\n情に厚いギャルの名前は、卒業後も廊下に残った。`
@@ -577,6 +1345,10 @@ function resolveEnding() {
   return {
     id: route === "gyaru" ? "failed_gyaru" : "failed",
     title: route === "gyaru" ? "不合格ギャル" : "不合格",
+    voiceText:
+      route === "gyaru"
+        ? "優等生ギャル「泣くのは今日だけ。明日、ミナにだけはちゃんと話す」"
+        : "受験番長「答案用紙は逃げねえ。次は俺が逃げねえ」",
     body:
       route === "gyaru"
         ? `${schoolLine}\n勉強も友情も、ちょっとずつ空回りした。\nでも泣いて終わりじゃない。次は予定から盛り直せ。`
@@ -630,6 +1402,11 @@ function render() {
     return;
   }
 
+  if (state.screen === "opening") {
+    renderOpeningIncident();
+    return;
+  }
+
   if (state.screen === "target") {
     renderTargetSchoolSelect();
     return;
@@ -645,7 +1422,7 @@ function render() {
     return;
   }
 
-  if (state.screen === "result" && state.pendingResult) {
+  if ((state.screen === "result" || state.screen === "openingResult") && state.pendingResult) {
     renderResult();
     return;
   }
@@ -659,7 +1436,7 @@ function renderProfileSelect() {
   resetDialogueScroll();
   elements.speakerName.textContent = "主人公選択";
   elements.sceneTag.textContent = "入学式";
-  elements.dialogueText.textContent = "三年間をどっちの受験生で走り抜ける？\n仁義の番長か、マヂ情に厚い優等生ギャルか。卒業式まで、毎週の予定を選び続けろ。";
+  setDialogueText("三年間をどっちの受験生で走り抜ける？\n仁義の番長か、友情も偏差値も上げる優等生ギャルか。卒業式まで、毎週の予定を選び続けろ。");
   elements.choiceList.replaceChildren(...protagonistProfiles.map(createProfileButton));
   elements.advanceButton.hidden = true;
 }
@@ -671,11 +1448,25 @@ function renderIntro() {
   const scene = introScenes[state.introIndex];
   elements.speakerName.textContent = scene.speaker;
   elements.sceneTag.textContent = scene.sceneTag;
-  elements.dialogueText.textContent = scene.text;
+  setDialogueText(scene.text, scene.voiceText);
   elements.choiceList.replaceChildren();
   elements.advanceButton.hidden = false;
-  elements.advanceButton.textContent = state.introIndex === introScenes.length - 1 ? "予定を決める" : "次へ";
+  elements.advanceButton.textContent = state.introIndex === introScenes.length - 1 ? "最初の選択へ" : "次へ";
   elements.advanceButton.onclick = advanceScene;
+  queueCurrentDialogueVoice();
+}
+
+function renderOpeningIncident() {
+  hideEndingArtwork();
+  resetDialogueScroll();
+  const profile = getProfile();
+  const scene = profile.intro[0];
+  elements.speakerName.textContent = scene.speaker;
+  elements.sceneTag.textContent = scene.sceneTag;
+  setDialogueText(`${scene.text}\n\n最初の一手で、何を優先する？`, scene.voiceText);
+  elements.choiceList.replaceChildren(...getOpeningIncidentChoices().map(createOpeningIncidentChoiceButton));
+  elements.advanceButton.hidden = true;
+  queueCurrentDialogueVoice();
 }
 
 function renderTargetSchoolSelect() {
@@ -683,8 +1474,9 @@ function renderTargetSchoolSelect() {
   resetDialogueScroll();
   elements.speakerName.textContent = "進路指導室";
   elements.sceneTag.textContent = "志望校選択";
-  elements.dialogueText.textContent =
-    "三年間の進路計画を決める。\n偏差値が上がるほど、必要な学力も、最後まで保つ胆力も跳ね上がる。どの門を目指す？";
+  setDialogueText(
+    "三年間の進路計画を決める。\n偏差値が上がるほど、必要な学力も、最後まで保つ胆力も跳ね上がる。どの門を目指す？",
+  );
   elements.advanceButton.hidden = true;
   elements.choiceList.replaceChildren(...targetSchools.map(createTargetSchoolButton));
 }
@@ -694,7 +1486,7 @@ function renderChoices() {
   resetDialogueScroll();
   elements.speakerName.textContent = getProfile().title;
   elements.sceneTag.textContent = sceneNameForTurn();
-  elements.dialogueText.textContent = buildChoicePrompt();
+  setDialogueText(buildChoicePrompt());
   elements.advanceButton.hidden = true;
 
   const availableCards = cards.filter(isCardAvailable);
@@ -708,9 +1500,13 @@ function renderStudyQuiz() {
   const cardCopy = getRouteCardCopy(card);
   elements.speakerName.textContent = "五科目チェック";
   elements.sceneTag.textContent = `${question.subject}・${question.area}`;
-  elements.dialogueText.textContent =
-    `${cardCopy.title}の前に一問。\n${question.prompt}\n\n正解なら学力上昇ボーナス。不正解ならこの予定の学力は上がらない。`;
-  elements.choiceList.replaceChildren(...question.choices.map((choice, index) => createStudyQuizChoiceButton(choice, index, cardEffects)));
+  setDialogueText(
+    `${cardCopy.title}の前に一問だけ上乗せを狙える。\n${question.prompt}\n\n正解なら学力+1。不正解でも通常の予定効果は残る。急ぐなら見送って進める。`,
+  );
+  elements.choiceList.replaceChildren(
+    ...question.choices.map((choice, index) => createStudyQuizChoiceButton(choice, index, cardEffects)),
+    createStudyQuizSkipButton(),
+  );
   elements.advanceButton.hidden = true;
 }
 
@@ -726,7 +1522,8 @@ function renderResult() {
   }
   elements.speakerName.textContent = state.pendingResult.speaker;
   elements.sceneTag.textContent = state.pendingResult.sceneTag;
-  elements.dialogueText.textContent = state.pendingResult.text;
+  setDialogueText(state.pendingResult.text, state.pendingResult.voiceText);
+  queueCurrentDialogueVoice();
   if (state.pendingResult.eventChoices?.length) {
     elements.choiceList.replaceChildren(...state.pendingResult.eventChoices.map(createSeasonalEventChoiceButton));
     elements.advanceButton.hidden = true;
@@ -735,7 +1532,7 @@ function renderResult() {
 
   elements.choiceList.replaceChildren();
   elements.advanceButton.hidden = false;
-  elements.advanceButton.textContent = state.complete ? "合格発表へ" : "次の週へ";
+  elements.advanceButton.textContent = state.screen === "openingResult" ? "志望校を決める" : state.complete ? "合格発表へ" : "次の週へ";
   elements.advanceButton.onclick = advanceScene;
   if (shouldScrollToBranch) {
     state.pendingResult.shouldScrollToBranch = false;
@@ -757,11 +1554,12 @@ function renderEnding() {
   resetDialogueScroll();
   elements.speakerName.textContent = "合格発表";
   elements.sceneTag.textContent = "ENDING";
-  elements.dialogueText.textContent = `${ending.title}\n\n${ending.body}`;
+  setDialogueText(`${ending.title}\n\n${ending.body}`, ending.voiceText);
   elements.choiceList.replaceChildren();
   elements.advanceButton.hidden = false;
   elements.advanceButton.textContent = "もう一周する";
   elements.advanceButton.onclick = startNewGame;
+  queueCurrentDialogueVoice();
 }
 
 function attachEndingAssets(ending) {
@@ -787,7 +1585,8 @@ function resetDialogueScroll() {
 
 function openEndingBookPage() {
   state.returnScreen = getReturnableScreen();
-  state.screen = "endingBook";
+  setScreen("endingBook");
+  state.menuOpen = false;
   render();
 }
 
@@ -836,7 +1635,8 @@ function openEventGalleryPage() {
   }
 
   state.returnScreen = getReturnableScreen();
-  state.screen = "eventGallery";
+  setScreen("eventGallery");
+  state.menuOpen = false;
   render();
 }
 
@@ -853,7 +1653,8 @@ function clearEventGallery() {
 
 function openStudyReviewPage() {
   state.returnScreen = getReturnableScreen();
-  state.screen = "studyReview";
+  setScreen("studyReview");
+  state.menuOpen = false;
   render();
 }
 
@@ -925,7 +1726,8 @@ function renderStudyReview() {
 }
 
 function returnFromLibraryPage() {
-  state.screen = state.returnScreen || "choices";
+  setScreen(state.returnScreen || "choices");
+  state.menuOpen = false;
   render();
 }
 
@@ -944,12 +1746,13 @@ function getReturnableScreen() {
 function openArtworkViewer(item, returnScreen) {
   state.artworkViewer = item;
   state.artworkReturnScreen = returnScreen;
-  state.screen = "artworkViewer";
+  setScreen("artworkViewer");
+  state.menuOpen = false;
   render();
 }
 
 function returnFromArtworkViewer() {
-  state.screen = state.artworkReturnScreen || "endingBook";
+  setScreen(state.artworkReturnScreen || "endingBook");
   state.artworkViewer = null;
   render();
 }
@@ -981,7 +1784,8 @@ function canUseSecondRunSkip() {
   const hasClearedOnce = state.unlockedEndingIds.size > 0;
   const canSkipProfileAnimation = state.screen === "profile" && state.profileSelectionLocked && state.pendingProfile;
   const canSkipIntroScenes = state.screen === "intro" && state.profile;
-  return hasClearedOnce && (canSkipProfileAnimation || canSkipIntroScenes);
+  const canSkipOpeningIncident = state.screen === "opening" && state.profile;
+  return hasClearedOnce && (canSkipProfileAnimation || canSkipIntroScenes || canSkipOpeningIncident);
 }
 
 function renderSkipIntroButton() {
@@ -991,10 +1795,13 @@ function renderSkipIntroButton() {
 
 function renderHudControls() {
   const summary = state.savedRunSummary;
+  const isFirstScreen = state.screen === "profile";
+  elements.startTopButton.hidden = !isFirstScreen;
   elements.continueButton.hidden = !summary || state.screen !== "profile";
   elements.continueButton.textContent = summary ? `続きから ${summary.turn}/${summary.totalTurns}` : "続きから";
+  elements.menuPanel.hidden = !state.menuOpen;
+  elements.menuButton.setAttribute("aria-expanded", String(state.menuOpen));
 
-  const isFirstScreen = state.screen === "profile";
   const hasStudyRecords = state.studyReviewRecords.size > 0;
   elements.studyReviewButton.hidden = isFirstScreen && !hasStudyRecords;
 }
@@ -1123,7 +1930,7 @@ function createStudyQuizChoiceButton(choice, index, cardEffects) {
   const button = document.createElement("button");
   button.className = "choice-button choice-button--quiz";
   button.type = "button";
-  button.setAttribute("aria-label", `${choice}を選ぶ。正解なら学力ボーナス、不正解なら学力上昇なし。現在の効果目安: ${formatEffectSummary(cardEffects)}`);
+  button.setAttribute("aria-label", `${choice}を選ぶ。正解なら学力ボーナス。不正解でも通常効果は残る。現在の効果目安: ${formatEffectSummary(cardEffects)}`);
   button.addEventListener("click", () => {
     answerStudyQuiz(index);
   });
@@ -1137,6 +1944,58 @@ function createStudyQuizChoiceButton(choice, index, cardEffects) {
   text.textContent = choice;
 
   button.append(marker, text);
+  return button;
+}
+
+function createStudyQuizSkipButton() {
+  const button = document.createElement("button");
+  button.className = "choice-button choice-button--quiz-skip";
+  button.type = "button";
+  button.setAttribute("aria-label", "五科目チェックを見送って通常効果で予定を進める");
+  button.addEventListener("click", skipStudyQuiz);
+
+  const title = document.createElement("span");
+  title.className = "choice-title";
+  title.textContent = "解かずに予定へ進む";
+
+  const subtitle = document.createElement("span");
+  subtitle.className = "choice-subtitle";
+  subtitle.textContent = "通常効果のまま進行。復習帳には残らない";
+
+  button.append(title, subtitle);
+  return button;
+}
+
+function getOpeningIncidentChoices() {
+  return openingIncidentChoices[getProfile().id] ?? openingIncidentChoices.bancho;
+}
+
+function getPlayableIntroStartIndex(profile = getProfile()) {
+  return profile.intro.length > 1 ? 1 : 0;
+}
+
+function createOpeningIncidentChoiceButton(choice) {
+  const button = document.createElement("button");
+  button.className = "choice-button";
+  button.type = "button";
+  button.setAttribute("aria-label", `${choice.title}。${choice.subtitle}。効果: ${formatEffectSummary(choice.effects)}`);
+  button.addEventListener("click", () => {
+    chooseOpeningIncidentChoice(choice);
+  });
+
+  const title = document.createElement("span");
+  title.className = "choice-title";
+  title.textContent = choice.title;
+
+  const subtitle = document.createElement("span");
+  subtitle.className = "choice-subtitle";
+  subtitle.textContent = choice.subtitle;
+
+  const effects = document.createElement("span");
+  effects.className = "choice-effects";
+  effects.append(...createEffectPills(choice.effects));
+
+  button.append(title, subtitle, effects);
   return button;
 }
 
@@ -1175,10 +2034,22 @@ function createEndingRecord(ending, index) {
 
   const body = document.createElement("p");
   body.className = "ending-record__body";
-  body.textContent = unlocked ? ending.hint : "まだ見ていない結末。";
+  body.textContent = unlocked ? ending.hint : getLockedEndingHint(ending);
 
   record.append(title, body);
   return record;
+}
+
+function getLockedEndingHint(ending) {
+  const hintByType = {
+    passed: "学力も人望もメンツもそろえて校門へ。",
+    lonely: "学力は届く。でも校門に誰がいる？",
+    waitlist: "点数は少し足りない。仲間が残る道。",
+    legend: "合格より校内の名を残す道。",
+    failed: "全部が少しずつ噛み合わなかった道。",
+  };
+  const endingType = ending.id.split("-").pop();
+  return hintByType[endingType] ?? "まだ見ていない結末。";
 }
 
 function createProfileButton(profile) {
@@ -1351,6 +2222,7 @@ function continueCurrentRun() {
     return;
   }
 
+  cancelVoice();
   Object.assign(state, saved);
   setCharacterSprite(getProfile());
   render();
@@ -1390,6 +2262,7 @@ function serializeCurrentRun() {
     complete: state.complete,
     screen: getSavableScreen(),
     introIndex: state.introIndex,
+    openingChoiceId: state.openingChoiceId,
     pendingResult: state.pendingResult,
     pendingStudyQuiz: state.pendingStudyQuiz
       ? {
@@ -1398,6 +2271,8 @@ function serializeCurrentRun() {
           question: state.pendingStudyQuiz.question,
         }
       : null,
+    studyQuizStreak: state.studyQuizStreak,
+    studyQuizSkipCount: state.studyQuizSkipCount,
     profileId: state.profile?.id ?? null,
     targetSchoolId: state.targetSchool?.id ?? null,
     characterCentered: state.characterCentered,
@@ -1415,10 +2290,13 @@ function hydrateCurrentRun(saved) {
   }
 
   const targetSchool = targetSchools.find((candidate) => candidate.id === saved.targetSchoolId) ?? null;
-  const screen = getValidSavedScreen(saved.screen, targetSchool);
   const pendingCard = cards.find((card) => card.id === saved.pendingStudyQuiz?.cardId);
   const pendingQuestion = getStudyQuestionById(saved.pendingStudyQuiz?.question?.id);
   const pendingResult = sanitizeSavedPendingResult(saved.pendingResult);
+  const screen = getValidSavedScreen(saved.screen, targetSchool, {
+    hasPendingResult: Boolean(pendingResult),
+    hasPendingStudyQuiz: Boolean(pendingCard && pendingQuestion),
+  });
 
   return {
     turn: clamp(Number(saved.turn) || 0, 0, Number(saved.totalTurns) || TOTAL_TURNS),
@@ -1428,8 +2306,8 @@ function hydrateCurrentRun(saved) {
     log: Array.isArray(saved.log) ? saved.log.filter((entry) => typeof entry === "string").slice(-40) : [],
     complete: Boolean(saved.complete),
     screen,
-    introIndex: clamp(Number(saved.introIndex) || 0, 0, profile.intro.length),
-    pendingResult: screen === "result" && pendingResult ? pendingResult : null,
+    introIndex: clamp(Number(saved.introIndex) || getPlayableIntroStartIndex(profile), 0, Math.max(0, profile.intro.length - 1)),
+    pendingResult: (screen === "result" || screen === "openingResult") && pendingResult ? pendingResult : null,
     pendingStudyQuiz:
       screen === "studyQuiz" && pendingCard && pendingQuestion
         ? {
@@ -1438,9 +2316,12 @@ function hydrateCurrentRun(saved) {
             question: pendingQuestion,
           }
         : null,
+    studyQuizStreak: clamp(Number(saved.studyQuizStreak) || 0, 0, 999),
+    studyQuizSkipCount: clamp(Number(saved.studyQuizSkipCount) || 0, 0, 999),
     profile,
     pendingProfile: null,
     targetSchool,
+    openingChoiceId: typeof saved.openingChoiceId === "string" ? saved.openingChoiceId : null,
     returnScreen: screen,
     artworkViewer: null,
     artworkReturnScreen: "endingBook",
@@ -1450,6 +2331,7 @@ function hydrateCurrentRun(saved) {
     endingBookRenderKey: "",
     eventGalleryRenderKey: "",
     studyReviewRenderKey: "",
+    menuOpen: false,
     savedRunSummary: null,
   };
 }
@@ -1462,14 +2344,26 @@ function getSavableScreen() {
   return state.screen;
 }
 
-function getValidSavedScreen(screen, targetSchool) {
-  const allowed = new Set(["intro", "target", "choices", "result", "studyQuiz"]);
+function getValidSavedScreen(screen, targetSchool, guards = {}) {
+  const allowed = new Set(["opening", "openingResult", "intro", "target", "choices", "result", "studyQuiz"]);
   if (!allowed.has(screen)) {
     return targetSchool ? "choices" : "target";
   }
 
+  if (screen === "openingResult" && !guards.hasPendingResult) {
+    return "target";
+  }
+
   if ((screen === "choices" || screen === "result" || screen === "studyQuiz") && !targetSchool) {
     return "target";
+  }
+
+  if (screen === "result" && !guards.hasPendingResult) {
+    return targetSchool ? "choices" : "target";
+  }
+
+  if (screen === "studyQuiz" && !guards.hasPendingStudyQuiz) {
+    return targetSchool ? "choices" : "target";
   }
 
   return screen;
@@ -1608,7 +2502,7 @@ function getRouteCardCopy(card) {
       title: "仲間とマクド会議",
       subtitle: "ポテトより厚い友情",
       flavor: "ポテトの塩気で進路相談と恋バナを聞く。参考書は、今日はちょっと薄味だ。",
-      resultLead: "紙袋の底に、マヂで熱い団結が残った。",
+      resultLead: "紙袋の底に、熱い団結が残った。",
     };
   }
 
@@ -1630,7 +2524,11 @@ function renderStats() {
     ...Object.entries(statLabels).map(([key, label]) => {
       const row = document.createElement("div");
       row.className = "stat-row";
-      row.setAttribute("aria-label", `${label} ${state.stats[key]}`);
+      const helpText = statHelpText[key];
+      row.setAttribute("aria-label", helpText ? `${label} ${state.stats[key]}。${helpText}` : `${label} ${state.stats[key]}`);
+      if (helpText) {
+        row.title = helpText;
+      }
 
       const name = document.createElement("span");
       name.className = "stat-name";
@@ -1828,6 +2726,10 @@ function buildTurnText() {
     return "1年春 / 入学式";
   }
 
+  if (state.screen === "opening" || state.screen === "openingResult") {
+    return `${getProfile().title} / 最初の選択`;
+  }
+
   if (state.screen === "target" || !state.targetSchool) {
     return `${getProfile().title} / 志望校選択`;
   }
@@ -1894,56 +2796,42 @@ function isLateStage() {
 function buildCardReaction(card) {
   const profile = getProfile();
   if (profile.id === "gyaru") {
-    if (card.tag === "study") {
-      return "\n優等生ギャル「今日のノート、マヂで盛れた。偏差値も盛る。」";
-    }
-
-    if (card.tag === "teacher") {
-      return "\n生活指導の先生「その見た目でこの集中力か。いい意味で裏切るな。」";
-    }
-
-    if (card.tag === "social") {
-      return "\n友だち「話聞いてくれるの、ほんと救われる。マヂありがと。」";
-    }
-
-    if (card.tag === "fight") {
-      return "\n優等生ギャル「揉めたまま帰るとかナシ。ちゃんと話そ。」";
-    }
-
-    if (card.tag === "rest") {
-      return "\n優等生ギャル「寝不足は盛れない。今日はちゃんと寝る。」";
-    }
-
-    if (card.tag === "exam") {
-      return "\n優等生ギャル「点数、盛れてないなら盛り直すだけ。」";
-    }
+    const reactions = {
+      study_library:
+        "\nミナ「そのノート、色だけじゃなくて中身も強いね。私、受験ってまだ遠いと思ってた」\n優等生ギャル「遠くても、見てるなら近づくし。うちは今日の課題を進める。」",
+      cram_school:
+        "\n鬼塚先生「説教は3分。進路資料は本気で見る」\n優等生ギャル「その爪で国立志望？って言われるなら、答案で黙らせます。」",
+      ramen_meeting:
+        "\nミナ「置いていかれるの、ちょっと怖い。でも、見てるだけの自分も嫌かも」\n優等生ギャル「じゃあ最初は見てて。やりたくなったら横あける。」",
+      rescue_fight:
+        "\n黒羽レン「口だけで止められると思ってんの？」\n優等生ギャル「口で止まるなら、そっちの方が強いじゃん。友だちの前で荒れた顔は見せない。」",
+      sleep_early:
+        "\nミナ「今日は寝な。声がもう余裕ない。私の不安まで背負って潰れないで」\n優等生ギャル「明日の答案も、顔も、雑にしたくないし寝る。」",
+      mock_exam:
+        "\n黒羽レン「その志望校、その見た目で本気なんだ」\n優等生ギャル「見た目込みで本気。点数表にもそう書かせる。」\n黒羽レンは笑ったが、答案の見直しだけはいつもより長かった。",
+      final_sprint:
+        "\n鬼塚先生「最後の夜ほど、顔に焦りが出る。雑な返事で友だちまで削るな」\nミナ「終わったら、私の過去問も見て。私も逃げないから。今度は待つだけにしない。」",
+    };
+    return reactions[card.id] ?? "";
   }
 
-  if (card.tag === "study") {
-    return "\n受験番長「静かな部屋ほど、俺の闘志はうるさくなる。」";
-  }
-
-  if (card.tag === "teacher") {
-    return "\n生活指導の先生「頭を下げられるなら、まだ伸びる。」";
-  }
-
-  if (card.tag === "social") {
-    return "\n舎弟「番長、そういう話も聞いてくれるんすね。」";
-  }
-
-  if (card.tag === "fight") {
-    return "\n受験番長「殴るより難しい喧嘩もある。今日はそれを片づける。」";
-  }
-
-  if (card.tag === "rest") {
-    return "\n受験番長「寝るのも作戦だ。明日の俺にメンツを預ける。」";
-  }
-
-  if (card.tag === "exam") {
-    return "\n受験番長「点数は逃げねえ。なら、俺も逃げねえ。」";
-  }
-
-  return "";
+  const reactions = {
+    study_library:
+      "\n鉄平「番長、俺、名前だけ普通科で中身は補習科っす。でも暗記カードだけは作れるっす」\n受験番長「なら隣で作れ。逃げる手じゃなく、覚える手にしろ。」",
+    cram_school:
+      "\n鬼塚先生「説教は3分。進路指導は本気でやる」\n鉄平「番長が頭下げるなら、俺も数学9点から逃げないっす。補習、明日は自分で行くっす。」",
+    ramen_meeting:
+      "\n鉄平「親に進路希望票を見せるの、まだ怖いっす」\n受験番長「ラーメン伸びる前に作戦立てるぞ。逃げ癖まで替え玉するな。」",
+    rescue_fight:
+      "\n黒羽レン「拳を出さずに済ませる気か。番長の看板、軽いな」\n受験番長「殴らず収める方が重い日もある。今日はそっちで通す。」",
+    sleep_early:
+      "\n鉄平「番長、俺の通知スルーっすか」\n受験番長「朝イチで返す。寝不足の返事で、お前の進路まで雑に扱いたくねえ。」\n鉄平は不満そうだが、補習プリントだけは鞄に入れた。",
+    mock_exam:
+      "\n黒羽レン「番長の点数表、校門に貼ったら伝説になるかもな」\n受験番長「貼るなら合格点にしてから貼れ。俺がそこまで上げる。」\n黒羽レンは煽ったあと、こちらの解き直しを黙って見ていた。",
+    final_sprint:
+      "\n鬼塚先生「最後の夜に義理を全部拾うな。落とした約束は、合格後に拾え」\n鉄平「番長、俺も赤点から逃げないっす。補習は自分で行くんで、今日は赤本行ってください。」",
+  };
+  return reactions[card.id] ?? "";
 }
 
 function getCardSpeaker(card) {
@@ -2103,6 +2991,501 @@ function updateSfxButton() {
   elements.sfxButton.setAttribute("aria-pressed", state.sfxEnabled ? "true" : "false");
 }
 
+function toggleVoice() {
+  if (!voiceSupported()) {
+    updateVoiceButton();
+    return;
+  }
+
+  state.voiceEnabled = !state.voiceEnabled;
+  state.voicePrimed = state.voiceEnabled;
+  localStorage.setItem(VOICE_STORAGE_KEY, String(state.voiceEnabled));
+  if (!state.voiceEnabled) {
+    cancelVoice();
+  } else {
+    state.voicevoxAvailable = null;
+    state.voicevoxSpeakersPromise = null;
+    state.voiceRenderKey = "";
+    queueCurrentDialogueVoice();
+  }
+  updateVoiceButton();
+}
+
+function primeVoiceFromUserGesture() {
+  if (!state.voiceEnabled || state.voicePrimed) {
+    return;
+  }
+
+  state.voicePrimed = true;
+  queueCurrentDialogueVoice();
+  updateVoiceButton();
+}
+
+function voiceSupported() {
+  return voicevoxSupported() || speechVoiceSupported();
+}
+
+function voicevoxSupported() {
+  return typeof fetch === "function" && typeof Audio === "function" && typeof URL === "function" && typeof URL.createObjectURL === "function";
+}
+
+function speechVoiceSupported() {
+  return typeof window.speechSynthesis === "object" && typeof window.SpeechSynthesisUtterance === "function";
+}
+
+function updateVoiceButton() {
+  if (!voiceSupported()) {
+    elements.voiceButton.textContent = "VOICE 未対応";
+    elements.voiceButton.disabled = true;
+    elements.voiceButton.setAttribute("aria-pressed", "false");
+    elements.voiceButton.title = "この環境では音声読み上げに対応していません";
+    return;
+  }
+
+  elements.voiceButton.disabled = false;
+  elements.voiceButton.textContent = `VOICE: ${voiceStatusLabel()}`;
+  elements.voiceButton.setAttribute("aria-pressed", state.voiceEnabled ? "true" : "false");
+  elements.voiceButton.title = "代替音声は動作確認用。キャラ声はVOICEVOX接続時に優先";
+}
+
+function voiceStatusLabel() {
+  if (!state.voiceEnabled) {
+    return "OFF";
+  }
+  if (state.voiceSpeaking && state.voiceBackend === "voicevox") {
+    return "VOICEVOX";
+  }
+  if (state.voiceSpeaking && state.voiceBackend === "fallback") {
+    return "代替音声（動作確認用）";
+  }
+  if (state.voicevoxAvailable === true) {
+    return "VOICEVOX";
+  }
+  if (state.voicevoxAvailable === false) {
+    return "代替音声（動作確認用）";
+  }
+  return state.voicePrimed ? "待機中" : "ON";
+}
+
+function queueCurrentDialogueVoice() {
+  if (!state.voiceEnabled || !state.voicePrimed || !voiceSupported()) {
+    return;
+  }
+
+  const speaker = elements.speakerName.textContent.trim();
+  const text = (elements.dialogueText.dataset.voiceText || elements.dialogueText.textContent).trim();
+  const voiceKey = `${state.screen}:${speaker}:${hashText(text)}`;
+  if (!text || state.voiceRenderKey === voiceKey) {
+    return;
+  }
+
+  state.voiceRenderKey = voiceKey;
+  const lines = buildVoiceLines(speaker, text);
+  if (!lines.length) {
+    cancelVoice();
+    return;
+  }
+
+  scheduleVoiceLines(lines);
+}
+
+function buildVoiceLines(currentSpeaker, text) {
+  const lines = [];
+  const sourceLines = text.split(/\n+/).map((line) => line.trim()).filter(Boolean);
+  for (const sourceLine of sourceLines) {
+    const quote = sourceLine.match(/^([^「」:：]{1,24})「(.+)」$/);
+    if (quote) {
+      addVoiceLine(lines, quote[1].trim(), quote[2].trim());
+      continue;
+    }
+
+    if (shouldReadAsCurrentSpeaker(currentSpeaker, sourceLine)) {
+      addVoiceLine(lines, currentSpeaker, sourceLine);
+    }
+  }
+  return lines.slice(0, 8);
+}
+
+function shouldReadAsCurrentSpeaker(speaker, line) {
+  if (!resolveCastId(speaker) || resolveCastId(speaker) === "narrator") {
+    return false;
+  }
+  if (/^(得たもの|取りこぼしたもの|選択|短期目標|関係レポート|残り|第\d+章|学力|人望|メンツ|ルックス|体力|ストレス)[:：]/.test(line)) {
+    return false;
+  }
+  if (/^[+-]?\d+$/.test(line) || /[+-]\d/.test(line)) {
+    return false;
+  }
+  return line.length <= 90;
+}
+
+function addVoiceLine(lines, speaker, text) {
+  const spokenText = normalizeSpokenText(text);
+  if (!spokenText) {
+    return;
+  }
+
+  const castId = resolveCastId(speaker);
+  const cast = voiceCast[castId] ?? voiceCast.narrator;
+  const chunks = splitSpokenText(spokenText);
+  const pausePolicy = cast.pausePolicy ?? voiceCast.narrator.pausePolicy;
+  chunks.forEach((chunk, index) => {
+    lines.push({
+      speaker,
+      castId,
+      text: chunk,
+      phraseIndex: index,
+      phraseCount: chunks.length,
+      pauseAfter: index === chunks.length - 1 ? pausePolicy.final : pausePolicy.intra,
+      profile: cast.fallback ?? voiceCast.narrator.fallback,
+    });
+  });
+}
+
+function normalizeSpokenText(text) {
+  const stripped = text
+    .replace(/<[^>]*>/g, "")
+    .replace(/[「」]/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return voicePronunciationLexicon
+    .reduce((result, [displayText, voiceText]) => result.replace(new RegExp(escapeRegExp(displayText), "g"), voiceText), stripped)
+    .trim();
+}
+
+function splitSpokenText(text) {
+  if (text.length <= 48) {
+    return [text];
+  }
+  const chunks = text.match(/[^。！？!?]+[。！？!?]?/g)?.map((chunk) => chunk.trim()).filter(Boolean) ?? [text];
+  return chunks.flatMap((chunk) => (chunk.length <= 70 ? [chunk] : chunk.match(/.{1,60}/g) ?? [chunk]));
+}
+
+function resolveCastId(speaker = "") {
+  const normalized = String(speaker).trim();
+  const alias = speakerCastAliases.find((entry) => entry.pattern.test(normalized));
+  return alias?.castId ?? "narrator";
+}
+
+function scheduleVoiceLines(lines) {
+  cancelVoice();
+  const token = state.voiceToken + 1;
+  state.voiceToken = token;
+  state.voiceAbortController = new AbortController();
+  state.voiceTimer = window.setTimeout(() => {
+    state.voiceTimer = 0;
+    void speakVoiceLines(lines, token);
+  }, VOICE_START_DELAY_MS);
+}
+
+async function speakVoiceLines(lines, token) {
+  if (token !== state.voiceToken || !state.voiceEnabled || !state.voicePrimed) {
+    return;
+  }
+
+  state.voiceSpeaking = true;
+  updateBgmVolume();
+  updateVoiceButton();
+  if (voicevoxSupported() && state.voicevoxAvailable !== false) {
+    const spokeWithVoicevox = await trySpeakVoicevoxLines(lines, token);
+    if (spokeWithVoicevox) {
+      state.voiceSpeaking = false;
+      updateBgmVolume();
+      updateVoiceButton();
+      return;
+    }
+  }
+
+  if (token !== state.voiceToken || !state.voiceEnabled) {
+    state.voiceSpeaking = false;
+    updateBgmVolume();
+    updateVoiceButton();
+    return;
+  }
+  state.voicevoxAvailable = false;
+  await speakFallbackLines(lines, token);
+  state.voiceSpeaking = false;
+  updateBgmVolume();
+  updateVoiceButton();
+}
+
+async function trySpeakVoicevoxLines(lines, token) {
+  try {
+    const ready = [];
+    for (const line of lines) {
+      const voiceStyle = await resolveVoicevoxStyle(line);
+      const synthesized = await synthesizeVoicevoxLine(line, voiceStyle);
+      ready.push({ line, voiceStyle, synthesized });
+    }
+    state.voicevoxAvailable = true;
+    state.voiceBackend = "voicevox";
+    updateVoiceButton();
+    for (const item of ready) {
+      if (token !== state.voiceToken || !state.voiceEnabled) {
+        return true;
+      }
+      rememberVoiceDebug({ backend: "voicevox", castId: item.line.castId, speakerName: item.voiceStyle.speakerName, styleId: item.voiceStyle.id, text: item.line.text });
+      await playVoicevoxAudio(item.synthesized.audioUrl, token, item.line.profile.volume);
+      await delay(item.line.pauseAfter);
+    }
+    return true;
+  } catch (error) {
+    state.voicevoxAvailable = false;
+    rememberVoiceDebug({ backend: "voicevox-error", message: error?.message ?? String(error) });
+    return false;
+  }
+}
+
+async function resolveVoicevoxStyle(line) {
+  const speakers = await voicevoxSpeakers();
+  const cast = voiceCast[line.castId] ?? voiceCast.narrator;
+  for (const name of cast.speakerPreferences ?? []) {
+    const speaker = speakers.find((candidate) => normalizedVoiceText(candidate.name).includes(normalizedVoiceText(name)));
+    const style = pickVoicevoxStyle(speaker);
+    if (style) {
+      return { ...style, speakerName: speaker.name, speakerUuid: speaker.speaker_uuid };
+    }
+  }
+  if (cast.strictSpeakerPreference) {
+    throw new Error(`Preferred VOICEVOX speaker is unavailable for ${line.castId}`);
+  }
+  for (const speaker of speakers) {
+    const style = pickVoicevoxStyle(speaker);
+    if (style) {
+      return { ...style, speakerName: speaker.name, speakerUuid: speaker.speaker_uuid };
+    }
+  }
+  throw new Error("VOICEVOX speaker styles are unavailable");
+}
+
+function pickVoicevoxStyle(speaker) {
+  const styles = (speaker?.styles ?? []).filter((style) => Number.isFinite(style.id));
+  return styles.find((style) => /ノーマル|ふつう|normal/i.test(style.name ?? "")) ?? styles[0] ?? null;
+}
+
+async function synthesizeVoicevoxLine(line, voiceStyle) {
+  const cacheKey = voiceCacheKey(line, voiceStyle);
+  const cachedAudioUrl = state.voicevoxAudioCache.get(cacheKey);
+  if (cachedAudioUrl) {
+    return { audioUrl: cachedAudioUrl, cached: true };
+  }
+  if (state.voicevoxSynthesisPromises.has(cacheKey)) {
+    return state.voicevoxSynthesisPromises.get(cacheKey);
+  }
+
+  const synthesisPromise = (async () => {
+    const query = await voicevoxJson("audio_query", {
+      method: "POST",
+      params: { text: line.text, speaker: voiceStyle.id },
+    });
+    applyVoicePlanToQuery(query, line);
+    const audioBlob = await voicevoxBlob("synthesis", {
+      method: "POST",
+      params: { speaker: voiceStyle.id },
+      body: JSON.stringify(query),
+    });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    rememberVoicevoxAudio(cacheKey, audioUrl);
+    return { audioUrl, cached: false };
+  })();
+  state.voicevoxSynthesisPromises.set(cacheKey, synthesisPromise);
+  try {
+    return await synthesisPromise;
+  } finally {
+    state.voicevoxSynthesisPromises.delete(cacheKey);
+  }
+}
+
+function applyVoicePlanToQuery(query, line) {
+  const cast = voiceCast[line.castId] ?? voiceCast.narrator;
+  const defaults = cast.defaults ?? voiceCast.narrator.defaults;
+  const isQuestion = /[？?]$/.test(line.text);
+  query.speedScale = clamp(defaults.speed + (isQuestion ? 0.01 : 0), 0.82, defaults.maxRate ?? 1.12);
+  query.pitchScale = clamp(defaults.pitch + (isQuestion ? 0.01 : 0), -0.06, 0.08);
+  query.intonationScale = clamp(defaults.intonation + (isQuestion ? 0.08 : 0), 0.86, 1.38);
+  query.volumeScale = clamp(defaults.volume, 0.72, 1);
+  query.prePhonemeLength = clamp(defaults.pre + (line.phraseIndex > 0 ? 0.02 : 0), 0.02, 0.18);
+  query.postPhonemeLength = clamp(defaults.post + line.pauseAfter / 2200, 0.04, 0.24);
+}
+
+async function voicevoxSpeakers() {
+  state.voicevoxSpeakersPromise ??= voicevoxJson("speakers", { method: "GET" });
+  return state.voicevoxSpeakersPromise;
+}
+
+async function voicevoxJson(path, options = {}) {
+  const response = await voicevoxFetch(path, options);
+  return response.json();
+}
+
+async function voicevoxBlob(path, options = {}) {
+  const response = await voicevoxFetch(path, {
+    ...options,
+    headers: { "Content-Type": "application/json", ...(options.headers ?? {}) },
+  });
+  return response.blob();
+}
+
+async function voicevoxFetch(path, options = {}) {
+  let lastError = null;
+  for (const url of voicevoxCandidateUrls(path, options.params ?? {})) {
+    try {
+      const response = await fetch(url, {
+        method: options.method ?? "GET",
+        headers: options.headers,
+        body: options.body,
+        signal: state.voiceAbortController?.signal,
+      });
+      if (response.ok) {
+        return response;
+      }
+      lastError = new Error(`VOICEVOX request failed: ${response.status}`);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+  throw lastError ?? new Error("VOICEVOX request failed");
+}
+
+function voicevoxCandidateUrls(path, params = {}) {
+  const candidates = [
+    ...VOICEVOX_DIRECT_URLS.map((baseUrl) => new URL(path, `${baseUrl.replace(/\/$/, "")}/`)),
+    new URL(`${VOICEVOX_PROXY_PATH}/${path}`, window.location.origin),
+  ];
+  for (const url of candidates) {
+    for (const [key, value] of Object.entries(params)) {
+      url.searchParams.set(key, String(value));
+    }
+  }
+  return candidates;
+}
+
+function playVoicevoxAudio(audioUrl, token, volume) {
+  return new Promise((resolve) => {
+    if (token !== state.voiceToken || !state.voiceEnabled) {
+      resolve();
+      return;
+    }
+    const audio = new Audio(audioUrl);
+    state.activeVoiceAudio = audio;
+    audio.volume = clamp(volume, 0.2, 1);
+    audio.onended = () => resolve();
+    audio.onerror = () => resolve();
+    void audio.play().catch(() => resolve());
+  });
+}
+
+async function speakFallbackLines(lines, token) {
+  if (!speechVoiceSupported()) {
+    return;
+  }
+  state.voiceBackend = "fallback";
+  updateVoiceButton();
+  for (const line of lines) {
+    if (token !== state.voiceToken || !state.voiceEnabled) {
+      return;
+    }
+    rememberVoiceDebug({ backend: "fallback", castId: line.castId, speaker: line.speaker, text: line.text });
+    await speakFallbackLine(line);
+    await delay(line.pauseAfter);
+  }
+}
+
+function speakFallbackLine(line) {
+  return new Promise((resolve) => {
+    const utterance = new SpeechSynthesisUtterance(line.text);
+    utterance.lang = "ja-JP";
+    utterance.pitch = line.profile.pitch;
+    utterance.rate = line.profile.rate;
+    utterance.volume = line.profile.volume;
+    utterance.voice = pickSpeechVoice(line.profile);
+    utterance.onend = () => resolve();
+    utterance.onerror = () => resolve();
+    window.speechSynthesis.speak(utterance);
+  });
+}
+
+function pickSpeechVoice(profile) {
+  const voices = window.speechSynthesis
+    .getVoices()
+    .filter((voice) => /^ja([-_]|$)/i.test(voice.lang) || /Japanese|日本|Kyoko|Otoya|Haruka|Ichiro/i.test(voice.name));
+  if (!voices.length) {
+    return null;
+  }
+  if (profile.gender === "male") {
+    return voices.find((voice) => /Otoya|Ichiro|\bMale\b|男性/i.test(voice.name)) ?? voices[0];
+  }
+  if (profile.gender === "female") {
+    return voices.find((voice) => /Kyoko|Haruka|Sayaka|\bFemale\b|女性/i.test(voice.name)) ?? voices[0];
+  }
+  return voices[0];
+}
+
+function cancelVoice() {
+  state.voiceToken += 1;
+  state.voiceSpeaking = false;
+  state.voiceBackend = "idle";
+  updateBgmVolume();
+  if (state.voiceAbortController) {
+    state.voiceAbortController.abort();
+    state.voiceAbortController = null;
+  }
+  if (state.voiceTimer) {
+    window.clearTimeout(state.voiceTimer);
+    state.voiceTimer = 0;
+  }
+  if (speechVoiceSupported()) {
+    window.speechSynthesis.cancel();
+  }
+  if (state.activeVoiceAudio) {
+    state.activeVoiceAudio.pause();
+    state.activeVoiceAudio.removeAttribute?.("src");
+    state.activeVoiceAudio = null;
+  }
+  updateVoiceButton();
+}
+
+function rememberVoicevoxAudio(cacheKey, audioUrl) {
+  state.voicevoxAudioCache.set(cacheKey, audioUrl);
+  if (state.voicevoxAudioCache.size <= 80) {
+    return;
+  }
+  const [oldestKey, oldestUrl] = state.voicevoxAudioCache.entries().next().value;
+  URL.revokeObjectURL(oldestUrl);
+  state.voicevoxAudioCache.delete(oldestKey);
+}
+
+function rememberVoiceDebug(entry) {
+  state.voiceDebugLog.push({ at: Date.now(), ...entry });
+  if (state.voiceDebugLog.length > 80) {
+    state.voiceDebugLog.shift();
+  }
+}
+
+function voiceCacheKey(line, voiceStyle) {
+  return [VOICE_ACTING_VERSION, line.castId, voiceStyle.speakerUuid, voiceStyle.id, hashText(line.text)].join("|");
+}
+
+function normalizedVoiceText(value = "") {
+  return String(value).normalize("NFKC").toLowerCase();
+}
+
+function escapeRegExp(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function delay(ms) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+function hashText(text = "") {
+  let hash = 0;
+  for (let index = 0; index < text.length; index += 1) {
+    hash = (hash * 31 + text.charCodeAt(index)) | 0;
+  }
+  return Math.abs(hash).toString(36);
+}
+
 function playButtonClickSound(event) {
   if (!state.sfxEnabled || !(event.target instanceof Element) || !event.target.closest("button")) {
     return;
@@ -2187,7 +3570,8 @@ function updateBgmButton() {
 }
 
 function updateBgmVolume() {
-  elements.bgmAudio.volume = Number(elements.volumeSlider.value) / 100;
+  const duckingScale = state.voiceSpeaking ? 0.65 : 1;
+  elements.bgmAudio.volume = (Number(elements.volumeSlider.value) / 100) * duckingScale;
 }
 
 function scheduleLightAssetWarmup() {

@@ -37,22 +37,19 @@ export const protagonistProfiles = [
       {
         speaker: "受験番長",
         sceneTag: "1年春・入学式",
-        text: "俺の名は、番田長生。またの名を、受験番長。\n入学式の日から少しばかり顔が利く。仲間が困ってりゃ放っておけねえし、メンツをなくせば番長の看板も泣く。",
+        text: "願書の下書きを握ったまま、舎弟の鉄平からの通知を開いた。文面が、いつもの三倍震えていた。\n鉄平「番長、数学9点っす。進路希望票、親に見せたら終わるっす」\n机に座れば鉄平を見捨てる。鉄平へ走れば、願書は白紙のままだ。",
       },
       {
         speaker: "受験番長",
         sceneTag: "新しい教室",
-        text: "だが高校三年間は長い。\n行事も、仲間との付き合いも、模試も赤本も、全部まとめて押し寄せてくる。",
+        text: "俺の名は、番田長生。またの名を、受験番長。\n机も仲間もメンツも、三年間まとめて背負う。",
+        voiceText: "俺の名は、番田長生。またの名を、受験番長。机も仲間もメンツも、三年間まとめて背負う。",
       },
       {
         speaker: "受験番長",
         sceneTag: "三年計画",
-        text: "毎週、俺は一つの予定を選ぶ。\n机に向かえば学力は積める。仲間と向き合えば人望やメンツは守れる。無理を重ねれば体力とルックスが削れ、焦りも腹にたまる。",
-      },
-      {
-        speaker: "受験番長",
-        sceneTag: "卒業まで三年",
-        text: "卒業式の日、どんな顔で校門を出るか。\n全部まとめて背負ってこそ、番長ってもんだろ。",
+        text: "毎週、選べる予定は一つだけ。\n学力、人望、メンツ、ルックス。どれを取って、何を削るかを決める。",
+        voiceText: "毎週、選べる予定は一つだけ。学力、人望、メンツ、ルックス。どれを取って、何を削るかを決める。",
       },
     ],
   },
@@ -60,7 +57,7 @@ export const protagonistProfiles = [
     id: "gyaru",
     title: "優等生ギャル",
     routeTitle: "目指せ優等生ギャル",
-    subtitle: "マヂ情に厚い、友情も偏差値もアゲるルート",
+    subtitle: "友情も偏差値も、自分の言葉で上げるルート",
     sprite: "./assets/images/protagonists/gyaru-protagonist-transparent.png",
     spriteClass: "character-sprite character-sprite--gyaru",
     spriteAlt: "参考書とシャープペンを持ち、カーディガン姿で笑う優等生ギャル",
@@ -69,22 +66,19 @@ export const protagonistProfiles = [
       {
         speaker: "優等生ギャル",
         sceneTag: "1年春・入学式",
-        text: "ゥチの名前は、優谷生。またの名を、優等生ギャル。\n見た目でナメられがちだけど、友だち泣かすヤツは見過ごせない。マヂ情に厚いって、そーゆーこと。",
+        text: "入学式のリップを直す前に、親友のミナから通知が来た。\nミナ「進路希望票、何も書けなくて返された。もう詰んだかも」\n見た目で判断されんのは飽きた。友だちの涙を既読スルーすんのは、もっと無理。",
       },
       {
         speaker: "優等生ギャル",
         sceneTag: "新しい教室",
-        text: "高校生活、行事も恋バナも友情もぜんぶ盛りたい。\nでも志望校だって諦めたくない。偏差値も気分も、ちゃんとアゲてく。",
+        text: "うちの名前は、優谷生。またの名を、優等生ギャル。\n友情も見た目も偏差値も、三年間ぜんぶ自分の言葉でアゲる。",
+        voiceText: "うちの名前は、優谷生。またの名を、優等生ギャル。友情も見た目も偏差値も、三年間ぜんぶ自分の言葉でアゲる。",
       },
       {
         speaker: "優等生ギャル",
         sceneTag: "三年計画",
-        text: "毎週、選べる予定は一つだけ。\n勉強すれば学力は上がる。友だちと向き合えば人望とメンツは守れる。でも無理しすぎたら、肌も心も荒れてルックスも落ちるってワケ。",
-      },
-      {
-        speaker: "優等生ギャル",
-        sceneTag: "卒業まで三年",
-        text: "卒業式の日、最高に盛れた顔で笑いたい。\n目指せ優等生ギャル。友情も合格も、両方取るし。",
+        text: "毎週、選べる予定は一つだけ。\n学力、人望、メンツ、ルックス。盛るものを選べば、削れるものも出る。",
+        voiceText: "毎週、選べる予定は一つだけ。学力、人望、メンツ、ルックス。盛るものを選べば、削れるものも出る。",
       },
     ],
   },
@@ -312,20 +306,20 @@ export const seasonalEvents = [
       gyaru: {
         speaker: "友だち",
         text:
-          "桜色の窓際で、友だちがノートを抱えたまま固まっていた。\n友だち「ゥチ、春から置いてかれてるかも」\n優等生ギャル「置いてかないし。今日のページ、マヂ一緒に盛るよ」",
+          "桜色の窓際で、ミナが進路希望票を抱えたまま固まっていた。\nミナ「大学とか、まだ自分の話に聞こえない」\n優等生ギャル「じゃ、今日は決めなくていい。うちが机に向かう横で、まず話そ」",
         artwork: "./assets/images/events/gyaru/spring-study-room-gyaru.png",
         artworkAlt: "桜が見える春の教室で、優等生ギャルが友だちとノートを広げて勉強する",
         choices: [
           {
             id: "share_notes",
             label: "神ノートをシェア",
-            text: "優等生ギャル「ここ、色で分けると一気に見えるから」\n友だちのノートに付箋が増え、笑い声も少し戻った。",
+            text: "優等生ギャル「ここ、色で分けると一気に見えるから」\nミナはまだ受験とは言わない。ただ、付箋を貼る手だけは止まらなかった。",
             effects: { academics: 2, trust: 2, face: 0, looks: 1, stamina: -1, stress: 0 },
           },
           {
             id: "listen_first",
             label: "まず話を聞く",
-            text: "優等生ギャル「点数の前に、何がしんどいか聞かせて」\n春の光の中で、友だちはようやく本音をこぼした。",
+            text: "優等生ギャル「点数の前に、何がしんどいか聞かせて」\n春の光の中で、ミナは進路が空白のまま怖いことをようやくこぼした。",
             effects: { academics: 1, trust: 3, face: 0, looks: 1, stamina: 0, stress: -2 },
           },
         ],
@@ -370,7 +364,7 @@ export const seasonalEvents = [
       gyaru: {
         speaker: "夏祭りの夜",
         text:
-          "かき氷のカップの横で、友だちが単語帳をぱたぱた揺らしている。\n友だち「遊びたいけど、明日の小テストもヤバい」\n優等生ギャル「じゃ、遊びながら覚える。マヂ夏っぽくいこ」",
+          "かき氷のカップの横で、ミナが主人公の単語帳をぱたぱた揺らしている。\nミナ「そんなに続けられるの、ちょっとすごい」\n優等生ギャル「まだ小テスト用でいいよ。夏っぽく、一個だけ覚えよ」",
         artwork: "./assets/images/events/gyaru/summer-study-festival-gyaru.png",
         artworkAlt: "夏祭りの夜、優等生ギャルが友だちと提灯の下で単語帳を見せ合う",
         choices: [
@@ -428,20 +422,20 @@ export const seasonalEvents = [
       gyaru: {
         speaker: "文化祭の後",
         text:
-          "飾りの残った教室で、友だちが模試の結果を見て黙り込んだ。\n友だち「文化祭、楽しかったのに急に現実きた」\n優等生ギャル「現実きたなら、こっちも盛って返すだけ」",
+          "飾りの残った教室で、ミナが主人公の模試結果を見て黙り込んだ。\nミナ「ずっとやってたら、本当に点って動くんだ」\n優等生ギャル「動くよ。うちも動かす。ミナがやるって言うなら、横あけとく」",
         artwork: "./assets/images/events/gyaru/autumn-festival-study-gyaru.png",
         artworkAlt: "文化祭後の秋の教室で、優等生ギャルが友だちとカラフルな学習計画を立てる",
         choices: [
           {
             id: "color_plan",
             label: "盛れる計画にする",
-            text: "優等生ギャル「この予定表、見た瞬間やる気出る色にしよ」\n赤点の赤ではなく、前向きな赤い付箋が増えた。",
+            text: "優等生ギャル「この予定表、見た瞬間やる気出る色にしよ」\nミナは「まだ見るだけ」と言いながら、初めて大学名を書くための空欄を作った。",
             effects: { academics: 3, trust: 2, face: 0, looks: 1, stamina: -2, stress: 1 },
           },
           {
             id: "relationship_check",
             label: "友情の空気を整える",
-            text: "優等生ギャル「点数で気まずくなるの、マヂもったいない」\n言いづらかった焦りを出し合うと、教室の空気がほどけた。",
+            text: "ミナ「応援してるだけでいい子ぶるの、ちょっとムカついてきた」\n笑っていた声が少しだけ尖ったあと、ミナは初めて自分の模試日程をスマホに入れた。",
             effects: { academics: 2, trust: 3, face: 1, looks: 1, stamina: -1, stress: -1 },
           },
         ],
@@ -486,7 +480,7 @@ export const seasonalEvents = [
       gyaru: {
         speaker: "雪夜の教室",
         text:
-          "雪明かりの窓際で、友だちが温かい飲み物を机に置いた。\n友だち「もう十分やったよ」\n優等生ギャル「十分じゃなくて、最高にして終わりたい」",
+          "雪明かりの窓際で、ミナが自分の赤本を机に置いた。\nミナ「最初は見てただけなのに、ここまで来ちゃった」\n優等生ギャル「見てただけで終わらなかったじゃん。最後までアゲよ」",
         artwork: "./assets/images/events/gyaru/winter-final-study-gyaru.png",
         artworkAlt: "雪の夜の教室で、優等生ギャルが友だちに支えられながら最終演習に向かう",
         choices: [
@@ -499,7 +493,7 @@ export const seasonalEvents = [
           {
             id: "last_push",
             label: "泣きの一問まで粘る",
-            text: "優等生ギャル「この一問だけ、マヂで置いていけない」\n眠気で目は重い。それでも最後の解法が線になった。",
+            text: "優等生ギャル「この一問だけ、置いていけない」\n眠気で目は重い。それでも最後の解法が線になった。",
             effects: { academics: 4, trust: 2, face: 1, looks: -1, stamina: -5, stress: 4 },
           },
         ],
@@ -524,7 +518,7 @@ export const cards = [
   },
   {
     id: "cram_school",
-    title: "補習を受ける",
+    title: "鬼塚の補習に頭を下げる",
     subtitle: "先生に頭を下げるのも器量",
     flavor: "番長のメンツは少し削れるが、赤点回避の技術は身につく。",
     effects: { academics: 1, trust: 1, face: -1, looks: 0, stamina: -3, stress: 2 },
@@ -550,7 +544,7 @@ export const cards = [
   },
   {
     id: "rescue_fight",
-    title: "仲裁に走る",
+    title: "体育館裏の空気をほどく",
     subtitle: "仲間が絡まれたら、まず止めに入る",
     flavor: "参考書を閉じ、校門へ走る。拳より先に声を張るのが、今日の答案だ。",
     effects: { academics: 0, trust: 2, face: 2, looks: -1, stamina: -5, stress: 3 },
@@ -576,7 +570,7 @@ export const cards = [
   },
   {
     id: "mock_exam",
-    title: "模試に特攻",
+    title: "模試を正面突破",
     subtitle: "点数表から逃げない",
     flavor: "結果から逃げない。点数表を見て次の一手を決める。",
     effects: { academics: 3, trust: 0, face: 1, looks: -1, stamina: -6, stress: 5 },
@@ -585,11 +579,11 @@ export const cards = [
     oneShot: false,
     tag: "exam",
     speaker: "模試監督",
-    resultLead: "答案用紙は、喧嘩より正直だった。",
+    resultLead: "答案用紙は、校門前の空気より正直だった。",
   },
   {
     id: "final_sprint",
-    title: "赤本ラストスパート",
+    title: "赤本最終作戦",
     subtitle: "本番直前の詰め込み仁義",
     flavor: "眠気も弱音も廊下に立たせる。最後は過去問だ。",
     effects: { academics: 4, trust: -2, face: 0, looks: -2, stamina: -9, stress: 7 },
@@ -1347,7 +1341,7 @@ export const events = [
     id: "rival_school",
     title: "ライバル校の挑発",
     speaker: "ライバル校の不良",
-    message: "売られた喧嘩を買わずに睨みだけで返した。余計な火種は消えた。",
+    message: "売られた挑発を買わずに睨みだけで返した。余計な火種は消えた。",
     effects: { academics: 0, trust: 1, face: 2, looks: 0, stamina: -3, stress: 2 },
     minTurn: 16,
     chance: 0.08,

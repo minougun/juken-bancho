@@ -4,7 +4,6 @@ import { extname, join, normalize, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL(".", import.meta.url)));
-const port = Number(process.env.PORT || 4173);
 const voicevoxProxyBase = safeVoicevoxProxyBase(process.env.VOICEVOX_ENGINE_URL ?? "http://127.0.0.1:50021");
 const maxVoicevoxBodyBytes = 512 * 1024;
 const maxVoicevoxTextLength = 500;
@@ -30,7 +29,28 @@ const mimeTypes = {
   ".wav": "audio/wav",
 };
 
-const server = createServer((request, response) => {
+export function createJukenBanchoWebServer() {
+  return createServer((request, response) => {
+    void handleRequest(request, response);
+  });
+}
+
+export function startJukenBanchoWebServer({ port = Number(process.env.PORT || 4173), host = "127.0.0.1", log = console.log } = {}) {
+  const server = createJukenBanchoWebServer();
+  return new Promise((resolveServer, reject) => {
+    server.once("error", reject);
+    server.listen(port, host, () => {
+      server.off("error", reject);
+      const address = server.address();
+      const resolvedPort = typeof address === "object" && address ? address.port : port;
+      log?.(`受験番長 Web test server: http://${host}:${resolvedPort}/`);
+      log?.(`Serving: ${root}`);
+      resolveServer({ server, url: `http://${host}:${resolvedPort}/` });
+    });
+  });
+}
+
+async function handleRequest(request, response) {
   const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
   if (url.pathname.startsWith("/voicevox/")) {
     void handleVoicevoxProxy(request, response, url);
@@ -80,12 +100,7 @@ const server = createServer((request, response) => {
   }
 
   createReadStream(filePath).pipe(response);
-});
-
-server.listen(port, "127.0.0.1", () => {
-  console.log(`受験番長 Web test server: http://127.0.0.1:${port}/`);
-  console.log(`Serving: ${root}`);
-});
+}
 
 async function handleVoicevoxProxy(request, response, url) {
   const endpoint = url.pathname.replace(/^\/voicevox\/?/, "/");
@@ -213,4 +228,12 @@ function readRequestBody(request, maxBytes) {
     request.on("end", () => resolveBody(Buffer.concat(chunks)));
     request.on("error", reject);
   });
+}
+
+function isDirectRun() {
+  return process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+}
+
+if (isDirectRun()) {
+  await startJukenBanchoWebServer();
 }

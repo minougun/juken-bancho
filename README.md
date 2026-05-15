@@ -37,6 +37,20 @@ If that port is already in use:
 PORT=43361 node web/server.mjs
 ```
 
+## Steam / Desktop Build
+
+Steam 初回提出用は、内容差が大きい Unity 側ではなく、現在の `web/` 版を Electron でデスクトップ化します。
+
+```bash
+npm install
+npm run desktop:pack
+npm run steam:stage
+```
+
+- ローカル確認用: `dist/desktop/linux-unpacked/`
+- Windows depot 候補: `dist/desktop/win-unpacked/`
+- Steamworks 手順: `/mnt/c/Users/minou/juken-bancho/docs/steam-release.md`
+
 The Web test build includes local BGM:
 
 - File: `/mnt/c/Users/minou/juken-bancho/web/assets/audio/flesh-and-blood.mp3`

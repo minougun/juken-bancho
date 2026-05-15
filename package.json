@@ -1,15 +1,51 @@
 {
   "name": "juken-bancho",
   "version": "0.1.0",
+  "description": "受験と学校コミュニティを144週で走るカード選択式スケジュールゲーム",
+  "author": "minougun",
+  "license": "UNLICENSED",
   "private": true,
   "type": "module",
+  "main": "electron/main.cjs",
   "scripts": {
     "check": "node --check web/app.js && node --check web/data/game-data.js && node --check web/server.mjs && node scripts/check-data-integrity.mjs",
+    "desktop:start": "electron electron/main.cjs",
+    "desktop:pack": "electron-builder --dir",
+    "steam:stage": "electron-builder --win dir",
     "simulate:balance": "node scripts/simulate-balance.mjs",
+    "test:desktop-package": "node scripts/check-desktop-package.mjs",
     "test:responsive": "node scripts/check-responsive-matrix.mjs",
     "verify": "npm run check && npm run simulate:balance -- --runs 400 --out test-results/balance-simulation-verify.csv && npm run test:responsive"
   },
+  "build": {
+    "appId": "jp.minougun.jukenbancho",
+    "productName": "受験番長",
+    "artifactName": "juken-bancho-${version}-${os}-${arch}.${ext}",
+    "asar": false,
+    "directories": {
+      "output": "dist/desktop"
+    },
+    "files": [
+      "electron/**/*",
+      "web/**/*",
+      "package.json"
+    ],
+    "win": {
+      "signAndEditExecutable": false,
+      "target": [
+        "dir"
+      ]
+    },
+    "linux": {
+      "target": [
+        "dir"
+      ],
+      "category": "Game"
+    }
+  },
   "devDependencies": {
-    "@playwright/test": "1.59.1"
+    "@playwright/test": "1.59.1",
+    "electron": "42.1.0",
+    "electron-builder": "26.8.1"
   }
 }

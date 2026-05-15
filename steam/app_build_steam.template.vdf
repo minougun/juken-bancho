@@ -1,0 +1,11 @@
+"AppBuild"
+{
+  "AppID" "YOUR_STEAM_APP_ID"
+  "Desc" "受験番長 Windows desktop build"
+  "ContentRoot" "../dist/desktop/win-unpacked"
+  "BuildOutput" "../dist/steam-output"
+  "Depots"
+  {
+    "YOUR_WINDOWS_DEPOT_ID" "depot_build_windows.template.vdf"
+  }
+}

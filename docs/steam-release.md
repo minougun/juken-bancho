@@ -12,12 +12,15 @@ npm run check
 npm run test:responsive
 npm run desktop:pack
 npm run steam:stage
+npm run test:desktop-package
+npm run test:desktop-smoke
 ```
 
 成果物:
 
 - Linux ローカル確認: `dist/desktop/linux-unpacked/`
 - Windows Steam depot 候補: `dist/desktop/win-unpacked/`
+- Electron 起動スモーク画像: `test-results/electron-smoke/`
 
 Steam の起動オプションでは、Windows depot の実行ファイルを指定する。
 

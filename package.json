@@ -14,6 +14,7 @@
     "steam:stage": "electron-builder --win dir",
     "simulate:balance": "node scripts/simulate-balance.mjs",
     "test:desktop-package": "node scripts/check-desktop-package.mjs",
+    "test:desktop-smoke": "node scripts/check-electron-smoke.mjs",
     "test:responsive": "node scripts/check-responsive-matrix.mjs",
     "verify": "npm run check && npm run simulate:balance -- --runs 400 --out test-results/balance-simulation-verify.csv && npm run test:responsive"
   },

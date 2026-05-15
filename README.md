@@ -45,6 +45,8 @@ Steam 初回提出用は、内容差が大きい Unity 側ではなく、現在�
 npm install
 npm run desktop:pack
 npm run steam:stage
+npm run test:desktop-package
+npm run test:desktop-smoke
 ```
 
 - ローカル確認用: `dist/desktop/linux-unpacked/`

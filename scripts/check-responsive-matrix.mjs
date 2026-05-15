@@ -232,6 +232,20 @@ async function playToFirstSeasonalEvent(page, label, profile) {
   await assertBranchResultVisible(page, `${label} seasonal branch`);
   await assertNoHorizontalOverflow(page, `${label} seasonal branch`);
   await screenshot(page, `${label}-seasonal-branch`);
+
+  await page.getByRole("button", { name: "次の週へ" }).click();
+  for (let week = 10; week < 12; week += 1) {
+    await page.getByRole("button", { name: /補習/ }).click();
+    await page.waitForFunction(() => document.querySelector(".novel-stage").dataset.screen === "studyQuiz");
+    await page.locator("#choiceList button").first().click();
+    if (week < 11) {
+      await page.getByRole("button", { name: "次の週へ" }).click();
+    }
+  }
+
+  await page.waitForFunction(() => document.querySelector("#dialogueText").textContent.includes("12週レポート"));
+  await assertNoHorizontalOverflow(page, `${label} 12 week report`);
+  await screenshot(page, `${label}-12-week-report`);
 }
 
 async function assertArtworkViewer(page, label, expectedPath) {
@@ -325,9 +339,11 @@ async function assertNoAudioRequestsWhileBgmOff(browser, baseUrl) {
     await page.getByRole("button", { name: /次へ|最初の選択へ/ }).click();
   }
   await page.waitForFunction(() => document.querySelector(".novel-stage").dataset.screen === "opening");
-  await page.getByRole("button", { name: /鉄平の赤点を拾う/ }).click();
+  await page.getByRole("button", { name: /徹平の赤点を拾う/ }).click();
   await page.getByRole("button", { name: "志望校を決める" }).click();
-  await page.getByRole("button", { name: /城北実学大学/ }).click();
+  await page.getByRole("button", { name: /城北実学大学を候補/ }).click();
+  await page.getByRole("button", { name: /城北実学大学で三年間を始める/ }).click();
+  await page.getByRole("button", { name: "最初の12週へ" }).click();
   await page.waitForTimeout(500);
   await page.close();
   if (audioRequests.length) {
@@ -386,7 +402,7 @@ async function assertDialogueVoiceAssignments(browser, baseUrl) {
     window.JUKEN_BANCHO_AUDIO
       .buildVoiceLines(
         "受験番長",
-        "鉄平「数学9点っす」\n受験番長「逃げる手じゃなく、覚える手にしろ」\n鬼塚先生「説教は3分」\n黒羽レン「中途半端だな」\nミナ「私も大学、目指してみたい」\n優等生ギャル「横あけとく」",
+        "徹平「数学9点っす」\n受験番長「逃げる手じゃなく、覚える手にしろ」\n鬼塚先生「説教は3分」\n黒羽レン「中途半端だな」\nミナ「私も大学、目指してみたい」\n優等生ギャル「横あけとく」",
       )
       .map((line) => line.castId),
   );
@@ -503,7 +519,7 @@ async function runCase(browser, baseUrl, viewport, profile) {
   await assertNoHorizontalOverflow(page, `${label} opening`);
   await screenshot(page, `${label}-opening`);
 
-  const firstOpeningChoice = profile.id === "gyaru" ? /ミナの通知に返す/ : /鉄平の赤点を拾う/;
+  const firstOpeningChoice = profile.id === "gyaru" ? /ミナの通知に返す/ : /徹平の赤点を拾う/;
   await page.getByRole("button", { name: firstOpeningChoice }).click();
   await assertCentered(page, `${label} opening-result`, viewport);
   await assertNoHorizontalOverflow(page, `${label} opening-result`);
@@ -514,7 +530,12 @@ async function runCase(browser, baseUrl, viewport, profile) {
   await assertNoHorizontalOverflow(page, `${label} target`);
   await screenshot(page, `${label}-target`);
 
-  await page.getByRole("button", { name: /城北実学大学/ }).click();
+  await page.getByRole("button", { name: /城北実学大学を候補/ }).click();
+  await page.getByRole("button", { name: /城北実学大学で三年間を始める/ }).click();
+  await assertCentered(page, `${label} target-confirm`, viewport);
+  await assertNoHorizontalOverflow(page, `${label} target-confirm`);
+  await screenshot(page, `${label}-target-confirm`);
+  await page.getByRole("button", { name: "最初の12週へ" }).click();
   await assertCentered(page, `${label} choices`, viewport);
   await assertNoHorizontalOverflow(page, `${label} choices`);
   await screenshot(page, `${label}-choices`);

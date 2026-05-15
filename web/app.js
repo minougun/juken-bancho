@@ -105,7 +105,7 @@ const voicePronunciationLexicon = [
 const speakerCastAliases = [
   { pattern: /受験番長|番田長生/, castId: "bancho" },
   { pattern: /優等生ギャル|優谷生/, castId: "gyaru" },
-  { pattern: /鉄平|舎弟/, castId: "teppei" },
+  { pattern: /徹平|舎弟/, castId: "teppei" },
   { pattern: /ミナ|友だち/, castId: "mina" },
   { pattern: /鬼塚|先生|生活指導|進路指導|模試監督|校長/, castId: "teacher" },
   { pattern: /黒羽レン|ライバル/, castId: "ren" },
@@ -114,25 +114,25 @@ const openingIncidentChoices = {
   bancho: [
     {
       id: "help_teppei",
-      title: "鉄平の赤点を拾う",
+      title: "徹平の赤点を拾う",
       subtitle: "舎弟を見捨てず、補習の机へ連れていく",
       text:
-        "鉄平「番長、数学9点っす。進路希望票、親に見せたら終わるっす」\n受験番長は願書の下書きを畳み、鉄平の答案を机に広げた。\n自分の計画は少し遅れた。だが、見捨てない背中は教室に残った。",
-      voiceText: "鉄平「番長、数学9点っす。進路希望票、親に見せたら終わるっす」",
-      gained: "鉄平は救えた。逃げ癖のある舎弟が、初めて答案を自分の手で直し始めた。",
+        "徹平「番長、数学9点っす。進路希望票、親に見せたら終わるっす」\n受験番長は願書の下書きを畳み、徹平の答案を机に広げた。\n自分の計画は少し遅れた。だが、見捨てない背中は教室に残った。",
+      voiceText: "徹平「番長、数学9点っす。進路希望票、親に見せたら終わるっす」",
+      gained: "徹平は救えた。逃げ癖のある舎弟が、初めて答案を自分の手で直し始めた。",
       lost: "ただし、願書の下書きは白紙のまま残った。最初の勉強時間は削れた。",
       effects: { academics: 1, trust: 4, face: 2, looks: 0, stamina: -3, stress: 1 },
-      speaker: "鉄平",
+      speaker: "徹平",
     },
     {
       id: "face_ren",
       title: "黒羽レンの模試勝負を受ける",
       subtitle: "挑発を点数で返す",
       text:
-        "黒羽レン「その願書、名前だけ書いて記念にするのか。舎弟も志望校も、まとめて中途半端だな」\n受験番長は笑わず、模試の申込書にペンを走らせた。\n鉄平の通知は未読のまま光っている。だが、逃げない姿勢は校門前に伝わった。",
+        "黒羽レン「その願書、名前だけ書いて記念にするのか。舎弟も志望校も、まとめて中途半端だな」\n受験番長は笑わず、模試の申込書にペンを走らせた。\n徹平の通知は未読のまま光っている。だが、逃げない姿勢は校門前に伝わった。",
       voiceText: "黒羽レン「点数は、見栄を助けない」",
       gained: "黒羽レンの名前を、倒したい相手として覚えた。校門前の空気は少し締まった。",
-      lost: "鉄平の通知は未読のまま残った。救えるはずの不安を、最初から一つ積み残した。",
+      lost: "徹平の通知は未読のまま残った。救えるはずの不安を、最初から一つ積み残した。",
       effects: { academics: 3, trust: -1, face: 3, looks: 0, stamina: -4, stress: 3 },
       speaker: "黒羽レン",
     },
@@ -141,10 +141,10 @@ const openingIncidentChoices = {
       title: "今日は寝て明日に備える",
       subtitle: "初日から潰れない",
       text:
-        "鬼塚先生「初日から全部背負うな。寝不足の番長ほど話が通じないものはない」\n受験番長はスマホを伏せ、明日の朝に鉄平へ返す言葉だけメモした。\n逃げたわけじゃない。続けるために、今日は寝る。",
+        "鬼塚先生「初日から全部背負うな。寝不足の番長ほど話が通じないものはない」\n受験番長はスマホを伏せ、明日の朝に徹平へ返す言葉だけメモした。\n逃げたわけじゃない。続けるために、今日は寝る。",
       voiceText: "鬼塚先生「初日から全部背負うな。寝不足の番長ほど話が通じないものはない」",
       gained: "顔色と声の余裕は守れた。明日も机に向かえる体力が残った。",
-      lost: "鉄平は一晩だけ、不安を一人で抱えた。番長の返事は朝まで遅れた。",
+      lost: "徹平は一晩だけ、不安を一人で抱えた。番長の返事は朝まで遅れた。",
       effects: { academics: 0, trust: -1, face: 0, looks: 3, stamina: 6, stress: -4 },
       speaker: "鬼塚先生",
     },
@@ -206,6 +206,9 @@ const state = {
   profile: null,
   pendingProfile: null,
   targetSchool: null,
+  pendingTargetSchoolId: null,
+  looksContextIntroduced: false,
+  shortGoalPlan: null,
   returnScreen: "choices",
   artworkViewer: null,
   artworkReturnScreen: "endingBook",
@@ -346,6 +349,9 @@ function startNewGame() {
   state.profile = null;
   state.pendingProfile = null;
   state.targetSchool = null;
+  state.pendingTargetSchoolId = null;
+  state.looksContextIntroduced = false;
+  state.shortGoalPlan = null;
   state.returnScreen = "profile";
   state.artworkViewer = null;
   state.artworkReturnScreen = "endingBook";
@@ -479,7 +485,7 @@ function chooseOpeningIncidentChoice(choice) {
 }
 
 function buildOpeningIncidentResultText(choice, effects) {
-  return `${choice.text}\n\n得たもの: ${choice.gained}\n取りこぼしたもの: ${choice.lost}${formatEffectSentence(effects)}`;
+  return `${choice.text}\n\n得たもの: ${choice.gained}\n取りこぼしたもの: ${choice.lost}${formatEffectSentence(effects, { explainLooks: true })}`;
 }
 
 function buildResultVoiceText(reactionText, event, seasonalEvent, studyQuizOutcome, card, pressureMessages = []) {
@@ -514,14 +520,44 @@ function getPressureVoiceText(message) {
   return typeof message === "string" ? "" : message.voiceText ?? "";
 }
 
+function previewTargetSchool(school) {
+  state.pendingTargetSchoolId = school.id;
+  renderTargetSchoolSelect();
+}
+
+function confirmTargetSchool() {
+  selectTargetSchool(getPendingTargetSchool());
+}
+
 function selectTargetSchool(school) {
   state.targetSchool = school;
+  state.pendingTargetSchoolId = null;
   state.totalTurns = school.totalTurns;
-  state.log.push(`${school.name}を志望校に決めた。偏差値${school.deviation}の門が待っている。`);
-  setScreen("choices");
+  state.shortGoalPlan = createShortGoalPlan(0);
+  const commitmentText = buildTargetSchoolCommitmentText(school);
+  state.pendingResult = {
+    speaker: getProfile().title,
+    sceneTag: "志望校決定",
+    text: commitmentText,
+    artwork: null,
+    artworkAlt: "",
+    eventChoices: null,
+    voiceText: commitmentText.split("\n")[0],
+  };
+  state.log.push(`${school.name}を志望校に決めた。\n${commitmentText}`);
+  setScreen("targetConfirm");
   state.menuOpen = false;
   saveCurrentRun();
   render();
+}
+
+function buildTargetSchoolCommitmentText(school) {
+  const profile = getProfile();
+  if (profile.id === "gyaru") {
+    return `${school.name}。名前だけじゃ、途中で答案が崩れる。\nミナも、自分の机も、三年間で置いていかない。`;
+  }
+
+  return `${school.name}。名前だけで選んだら折れる。\n徹平への義理も、自分の赤本も、三年間で理由に変える。`;
 }
 
 function chooseCard(card) {
@@ -583,22 +619,23 @@ function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
 
   const event = tryApplyRandomEvent();
   const seasonalEvent = tryApplySeasonalEvent();
+  const progressMessages = buildProgressReportMessages();
   const pressureMessages = [
     ...applyTargetSchoolPressure(),
     ...applyAcademicMilestonePressure(),
-    ...buildProgressReportMessages(),
     ...applyLooksMentsQuadrantEvent(),
     ...applyPressureRules(),
   ];
-  const effectText = formatEffectSentence(cardEffects);
+  const effectText = formatEffectSentence(cardEffects, { explainLooks: true });
   const studyQuizText = studyQuizOutcome ? buildStudyQuizResultText(studyQuizOutcome, cardEffects, card) : "";
-  const eventText = event ? `\n\n${event.speaker}「${event.message}」${formatEffectSentence(event.effects)}` : "";
+  const eventText = event ? `\n\n${event.speaker}「${event.message}」${formatEffectSentence(event.effects, { explainLooks: true })}` : "";
   const seasonalText = seasonalEvent
-    ? `\n\n${seasonalEvent.title}\n${seasonalEvent.text}${formatEffectSentence(seasonalEvent.effects)}${
+    ? `\n\n${seasonalEvent.title}\n${seasonalEvent.text}${formatEffectSentence(seasonalEvent.effects, { explainLooks: true })}${
         seasonalEvent.choices?.length ? "\n\nどう返す？" : ""
       }`
     : "";
-  const pressureText = pressureMessages.length ? `\n\n${pressureMessages.map(getPressureText).join("\n")}` : "";
+  const progressText = progressMessages.length ? `${progressMessages.map(getPressureText).join("\n")}\n\n` : "";
+  const pressureText = pressureMessages.length && !progressMessages.length ? `\n\n${pressureMessages.map(getPressureText).join("\n")}` : "";
 
   if (state.turn >= state.totalTurns) {
     state.complete = true;
@@ -606,15 +643,17 @@ function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
 
   const cardCopy = getRouteCardCopy(card);
   const reactionText = buildCardReaction(card);
-  const resultText = `${cardCopy.resultLead}\n${cardCopy.flavor}${reactionText}${studyQuizText}${effectText}${eventText}${seasonalText}${pressureText}`;
+  const resultText = progressMessages.length
+    ? `${progressText}今週の変動: ${formatEffectSummary(cardEffects)}`
+    : `${cardCopy.resultLead}\n${cardCopy.flavor}${reactionText}${studyQuizText}${effectText}${eventText}${seasonalText}${pressureText}`;
   state.pendingResult = {
-    speaker: seasonalEvent?.speaker ?? getCardSpeaker(card),
-    sceneTag: seasonalEvent?.sceneTag ?? (event ? event.title : sceneNameForTurn()),
+    speaker: progressMessages.length ? "進路指導室" : seasonalEvent?.speaker ?? getCardSpeaker(card),
+    sceneTag: progressMessages.length ? "12週レポート" : seasonalEvent?.sceneTag ?? (event ? event.title : sceneNameForTurn()),
     text: resultText,
     artwork: seasonalEvent?.artwork,
     artworkAlt: seasonalEvent?.artworkAlt,
     eventChoices: seasonalEvent?.choices ?? null,
-    voiceText: buildResultVoiceText(reactionText, event, seasonalEvent, studyQuizOutcome, card, pressureMessages),
+    voiceText: buildResultVoiceText(reactionText, event, seasonalEvent, studyQuizOutcome, card, [...progressMessages, ...pressureMessages]),
   };
   state.log.push(resultText);
   setScreen("result");
@@ -623,9 +662,18 @@ function completeCardChoice(card, cardEffects, studyQuizOutcome = null) {
 }
 
 function advanceScene() {
+  if (state.screen === "targetConfirm") {
+    setScreen("choices");
+    state.pendingResult = null;
+    saveCurrentRun();
+    render();
+    return;
+  }
+
   if (state.screen === "openingResult") {
     setScreen("target");
     state.pendingResult = null;
+    state.pendingTargetSchoolId = targetSchools[0]?.id ?? null;
     saveCurrentRun();
     render();
     return;
@@ -772,8 +820,8 @@ function getRouteRandomEventCopy(event) {
   if (event.id === "friend_panic") {
     return {
       ...event,
-      speaker: "鉄平",
-      message: "舎弟の鉄平が進路希望票を握ったまま固まっていた。話を聞くうちに、自分の焦りも少し言葉になった。",
+      speaker: "徹平",
+      message: "舎弟の徹平が進路希望票を握ったまま固まっていた。話を聞くうちに、自分の焦りも少し言葉になった。",
     };
   }
 
@@ -796,8 +844,8 @@ function getRouteRandomEventCopy(event) {
   if (event.id === "exam_ticket_panic") {
     return {
       ...event,
-      speaker: "鉄平",
-      message: "受験票がないと鉄平が大騒ぎになった。机も鞄も総ざらいして、最後は単語帳の間から見つかった。",
+      speaker: "徹平",
+      message: "受験票がないと徹平が大騒ぎになった。机も鞄も総ざらいして、最後は単語帳の間から見つかった。",
     };
   }
 
@@ -811,10 +859,11 @@ function chooseSeasonalEventChoice(choice) {
 
   const effects = rollEffects(choice.effects);
   applyEffects(effects);
-  state.pendingResult.text = `${state.pendingResult.text}\n\n選択: ${choice.label}\n${choice.text}${formatEffectSentence(effects)}`;
+  const effectText = formatEffectSentence(effects, { explainLooks: true });
+  state.pendingResult.text = `${state.pendingResult.text}\n\n選択: ${choice.label}\n${choice.text}${effectText}`;
   state.pendingResult.eventChoices = null;
   state.pendingResult.shouldScrollToBranch = true;
-  state.log.push(`選択: ${choice.label}\n${choice.text}${formatEffectSentence(effects)}`);
+  state.log.push(`選択: ${choice.label}\n${choice.text}${effectText}`);
   saveCurrentRun();
   render();
 }
@@ -871,29 +920,29 @@ function applyLooksMentsQuadrantEvent() {
     voiceText =
       route === "gyaru"
         ? "ミナ「今日、声に余裕ある。ちゃんと前に出てる」"
-        : "鉄平「番長、今日の背中なら任せられるっす」";
+        : "徹平「番長、今日の背中なら任せられるっす」";
   } else if (looksHigh && faceLow) {
     title = "学校の見られ方: ルックス高 / メンツ低";
     text =
       route === "gyaru"
         ? "見た目は整っている。だからこそ、約束を曖昧にした日の空白が目立つ。黒羽レンの視線は、答案より先にそこを刺してきた。"
-        : "顔つきと制服は決まっている。だからこそ、逃げた約束が余計に目立つ。鉄平は笑ってごまかしたが、少しだけ距離を置いた。";
+        : "顔つきと制服は決まっている。だからこそ、逃げた約束が余計に目立つ。徹平は笑ってごまかしたが、少しだけ距離を置いた。";
     effects = { academics: 0, trust: -1, face: -1, looks: 0, stamina: 0, stress: 1 };
     voiceText =
       route === "gyaru"
         ? "黒羽レン「見た目は整ってる。約束の空白の方が目立つな」"
-        : "鉄平「番長、決まってるのに、約束だけ置いてったんすね」";
+        : "徹平「番長、決まってるのに、約束だけ置いてったんすね」";
   } else if (looksLow && faceHigh) {
     title = "学校の見られ方: ルックス低 / メンツ高";
     text =
       route === "gyaru"
         ? "顔色も髪も万全ではない。それでも約束を守って席に着いた姿を、ミナは見ていた。派手さではなく、泥臭い信用が残る日だった。"
-        : "顔色も制服も荒れている。それでも逃げずに机へ戻る姿を、鉄平は見ていた。派手さではなく、泥臭い信用が残る日だった。";
+        : "顔色も制服も荒れている。それでも逃げずに机へ戻る姿を、徹平は見ていた。派手さではなく、泥臭い信用が残る日だった。";
     effects = { academics: 0, trust: 1, face: 0, looks: 0, stamina: 0, stress: 1 };
     voiceText =
       route === "gyaru"
         ? "ミナ「顔は疲れてる。でも逃げてないの、見てた」"
-        : "鉄平「顔は疲れてる。でも逃げてないの、見てたっす」";
+        : "徹平「顔は疲れてる。でも逃げてないの、見てたっす」";
   } else {
     title = "学校の見られ方: ルックス低 / メンツ低";
     text =
@@ -919,18 +968,111 @@ function buildProgressReportMessages() {
   const academicGap = Math.max(0, school.passAcademic - state.stats.academics);
   const milestoneIndex = Math.max(0, Math.floor(state.turn / 12) - 1);
   const milestone = getProgressMilestone(profile.id, state.turn);
-  const shortGoal = getChapterShortGoal(profile.id, milestoneIndex);
-  const relationshipReport = getChapterRelationshipReport(profile.id, milestoneIndex);
+  const completedGoal = getDueShortGoalPlan(state.turn);
+  const nextGoal = createShortGoalPlan(state.turn);
+  const goalReport = buildShortGoalReport(profile.id, completedGoal);
+  const nextGoalLine = formatShortGoalNextLine(profile.id, nextGoal);
   const statusLine = academicGap
     ? `${school.name}まで学力あと${academicGap}。今学期のズレが見えてきた。`
     : `${school.name}の学力ラインは射程内。ここからは人望とメンツも落とせない。`;
+  state.shortGoalPlan = nextGoal;
 
   return [
     {
-      text: `第${milestoneIndex + 1}章: ${milestone.title.replace(/^固定事件: /, "")}\n短期目標: ${shortGoal}\n関係レポート: ${relationshipReport}\n${milestone.text}\n残り${weeksLeft}週。${statusLine}`,
-      voiceText: buildProgressMilestoneVoiceText(profile.id, milestone),
+      text: `12週レポート\n${goalReport.character}\n学力: ${goalReport.academics}\n生活: ${goalReport.stamina}\n次の12週: ${nextGoalLine}\n次章: ${milestone.title.replace(/^固定事件: /, "")}\n${buildCompactMilestoneLine(milestone.text)}\n残り${weeksLeft}週。${statusLine}`,
+      voiceText: goalReport.character,
     },
   ];
+}
+
+function buildCompactMilestoneLine(text) {
+  const quote = text.match(/[^「」\n:：]{1,16}「[^」]+」/)?.[0];
+  if (quote) {
+    return quote;
+  }
+
+  return text.split(/[。\n]/)[0].trim();
+}
+
+function getDueShortGoalPlan(dueTurn) {
+  if (state.shortGoalPlan?.dueTurn === dueTurn) {
+    return state.shortGoalPlan;
+  }
+
+  return createShortGoalPlan(Math.max(0, dueTurn - 12), dueTurn);
+}
+
+function createShortGoalPlan(startTurn, dueTurn = Math.min(state.totalTurns, startTurn + 12)) {
+  const school = getTargetSchool();
+  const cycleIndex = Math.max(0, Math.floor(startTurn / 12));
+  const academicTarget = Math.min(100, state.stats.academics + getShortGoalAcademicStep(school, cycleIndex));
+  return {
+    startTurn,
+    dueTurn,
+    academicTarget,
+    startStats: {
+      academics: state.stats.academics,
+      trust: state.stats.trust,
+      stamina: state.stats.stamina,
+      stress: state.stats.stress,
+    },
+  };
+}
+
+function buildShortGoalReport(profileId, goal) {
+  const academicDone = state.stats.academics >= goal.academicTarget;
+  const academicDelta = state.stats.academics - (goal.startStats?.academics ?? state.stats.academics);
+  const trustDelta = state.stats.trust - (goal.startStats?.trust ?? state.stats.trust);
+  const staminaDelta = state.stats.stamina - (goal.startStats?.stamina ?? state.stats.stamina);
+  return {
+    character: buildShortGoalCharacterReaction(profileId, academicDone, trustDelta),
+    academics: `${goal.academicTarget}目標→${state.stats.academics}。${academicDone ? "届いた" : "未達"}。前回比${formatSignedDelta(academicDelta)}。`,
+    stamina: buildShortGoalStaminaReport(staminaDelta),
+  };
+}
+
+function buildShortGoalCharacterReaction(profileId, academicDone, trustDelta) {
+  if (profileId === "gyaru") {
+    const speaker = "ミナ";
+    if (state.stats.trust < 48) {
+      return `${speaker}「点は${academicDone ? "動いてる" : "まだ足りない"}。でも、うちの通知ちょっと置いてかれてた」`;
+    }
+    if (trustDelta > 0) {
+      return `${speaker}「点も動いたし、うちも置いてかれてない。次も一緒に机戻ろ」`;
+    }
+    return `${speaker}「${academicDone ? "点は届いた" : "点はまだ途中"}。でも、次はうちのことも予定に入れて」`;
+  }
+
+  const speaker = "徹平";
+  if (state.stats.trust < 44) {
+    return `${speaker}「番長、学力は${academicDone ? "上がってる" : "まだ届いてない"}っす。でも俺の補習、置き去りっす」`;
+  }
+  if (trustDelta > 0) {
+    return `${speaker}「点も義理も落としてないっす。次の12週もついて行くっす」`;
+  }
+  return `${speaker}「${academicDone ? "点は届いた" : "点はまだ途中"}っす。次は補習も一回だけ拾ってほしいっす」`;
+}
+
+function buildShortGoalStaminaReport(staminaDelta) {
+  if (state.stats.stamina < 32) {
+    return `体力が危ない。前回比${formatSignedDelta(staminaDelta)}。睡眠を一度挟め。`;
+  }
+  if (state.stats.stress >= 70) {
+    return `ストレスが顔と声に出始めた。体力前回比${formatSignedDelta(staminaDelta)}。`;
+  }
+  return `体力はまだ残っている。前回比${formatSignedDelta(staminaDelta)}。`;
+}
+
+function formatSignedDelta(value) {
+  return `${value >= 0 ? "+" : ""}${value}`;
+}
+
+function formatShortGoalNextLine(profileId, goal) {
+  if (profileId === "gyaru") {
+    return `学力${goal.academicTarget}。友情を切らずに机へ戻れ。`;
+  }
+
+  return `学力${goal.academicTarget}。補習かラーメン会議を一度挟め。`;
 }
 
 function buildProgressMilestoneVoiceText(profileId, milestone) {
@@ -947,52 +1089,19 @@ function buildProgressMilestoneVoiceText(profileId, milestone) {
   return `${speaker}「${line.slice(0, 54)}」`;
 }
 
-function getChapterShortGoal(profileId, milestoneIndex) {
-  const banchoGoals = [
-    "鉄平の赤点を拾いつつ、最初の学力ラインを落とさない。",
-    "黒羽レンに点数で返す準備をする。",
-    "文化祭の火種を消し、仲間の信用を守る。",
-    "三者面談までに数字と生活リズムを整える。",
-    "夏休みの補習と赤本時間を両立する。",
-    "公開された点数表を、次の答案で塗り替える。",
-    "進路から逃げる仲間に、自分で選ばせる。",
-    "受験票事件を片づけ、終盤の集中を切らさない。",
-    "秋模試の順位で、黒羽レンに追いつく。",
-    "願書写真に残る顔と姿勢を整える。",
-    "最後の補習願いを拾うか、赤本へ切るか決める。",
-    "卒業式前に、守ったものを校門で示す。",
-  ];
-  const gyaruGoals = [
-    "ミナの進路未定を聞きつつ、自分の基礎も積む。",
-    "黒羽レンの見た目煽りを答案で返す。",
-    "文化祭で茶化すミナの本音を聞き逃さない。",
-    "面談までに点数、表情、声の余裕を整える。",
-    "夏休みの小テストと課題を、ミナの前で続ける。",
-    "点数表の前で、見た目も答案も隠さない。",
-    "ミナが大学受験を考え始めた瞬間を逃さない。",
-    "ミナの反発を受け止め、初めての受験準備を支える。",
-    "秋模試で黒羽レンに追いつき、ミナの志望校探しも支える。",
-    "願書写真に残る自分を、逃げずに整える。",
-    "最後の受験準備で、憧れではなく並走へ変える。",
-    "卒業式前に、点数も見た目も友情も答えにする。",
-  ];
-  const goals = profileId === "gyaru" ? gyaruGoals : banchoGoals;
-  return goals[Math.min(milestoneIndex, goals.length - 1)];
-}
-
 function getChapterRelationshipReport(profileId, milestoneIndex) {
   const banchoReports = [
-    "鉄平はまだ逃げ腰。鬼塚先生は、怒鳴るだけの番長かどうかを見ている。",
-    "黒羽レンはこちらを舐めている。鉄平は番長が逃げないかを見ている。",
+    "徹平はまだ逃げ腰。鬼塚先生は、怒鳴るだけの番長かどうかを見ている。",
+    "黒羽レンはこちらを舐めている。徹平は番長が逃げないかを見ている。",
     "仲間は拳より約束を見ている。メンツの意味が少し変わる。",
     "鬼塚先生は小言より進路資料を出し始めた。",
-    "鉄平は暗記カードだけは作れると分かってきた。",
+    "徹平は暗記カードだけは作れると分かってきた。",
     "黒羽レンは煽っているが、答案の伸びを警戒し始めた。",
-    "鉄平は進路から逃げたい。でも一人で逃げるのも怖い。",
-    "鉄平は助けを求める前に、自分で机を探し始めた。",
+    "徹平は進路から逃げたい。でも一人で逃げるのも怖い。",
+    "徹平は助けを求める前に、自分で机を探し始めた。",
     "黒羽レンは点数でしか測れない自分を隠している。",
     "鬼塚先生は顔つきまで含めて、受験生として見ている。",
-    "鉄平は最後だけ、逃げない側へ足を出している。",
+    "徹平は最後だけ、逃げない側へ足を出している。",
     "黒羽レンは勝ち負けより、三年間の筋を見に来ている。",
   ];
   const gyaruReports = [
@@ -1017,12 +1126,12 @@ function getProgressMilestone(profileId, turn) {
   const milestoneIndex = Math.max(0, Math.floor(turn / 12) - 1);
   const banchoMilestones = [
     {
-      title: "固定事件: 鉄平の赤点答案が拡散寸前",
-      text: "鉄平「数学9点、拡散されたら親より先に学校に詰むっす」\n鬼塚先生「救うなら答案も生活も見ろ。怒鳴るだけじゃ進路は戻らん」",
+      title: "固定事件: 徹平の赤点答案が拡散寸前",
+      text: "徹平「数学9点、拡散されたら親より先に学校に詰むっす」\n鬼塚先生「救うなら答案も生活も見ろ。怒鳴るだけじゃ進路は戻らん」",
     },
     {
       title: "固定事件: 模試会場で黒羽レンが隣席",
-      text: "黒羽レン「番長の答案、隣で見届けてやるよ」\n鉄平「番長、ここで逃げたら俺も逃げ癖つくっす」",
+      text: "黒羽レン「番長の答案、隣で見届けてやるよ」\n徹平「番長、ここで逃げたら俺も逃げ癖つくっす」",
     },
     {
       title: "固定事件: 文化祭会議の火種",
@@ -1034,7 +1143,7 @@ function getProgressMilestone(profileId, turn) {
     },
     {
       title: "固定事件: 夏休みの補習名簿",
-      text: "鉄平の名前が補習名簿の一番上にあった。自分の赤本を開くか、隣で暗記カードを切るか、机の上で義理が割れる。",
+      text: "徹平の名前が補習名簿の一番上にあった。自分の赤本を開くか、隣で暗記カードを切るか、机の上で義理が割れる。",
     },
     {
       title: "固定事件: 黒羽レンが点数表を校門に貼る",
@@ -1042,15 +1151,15 @@ function getProgressMilestone(profileId, turn) {
     },
     {
       title: "固定事件: 体育館裏の進路会議",
-      text: "鉄平「就職も進学も、どっちも怖いっす」\n体育館裏に集まった仲間の顔が、点数より重く見えた。",
+      text: "徹平「就職も進学も、どっちも怖いっす」\n体育館裏に集まった仲間の顔が、点数より重く見えた。",
     },
     {
       title: "固定事件: 受験票が消えた夜",
-      text: "鉄平が受験票をなくした。机、鞄、単語帳の間まで探す夜に、番長のメンツは声の大きさではなく手の早さで決まる。",
+      text: "徹平が受験票をなくした。机、鞄、単語帳の間まで探す夜に、番長のメンツは声の大きさではなく手の早さで決まる。",
     },
     {
       title: "固定事件: 秋模試の公開順位",
-      text: "黒羽レンの名前が上にある。鉄平は黙って順位表を見つめ、鬼塚先生は進路資料を一枚だけ机に置いた。",
+      text: "黒羽レンの名前が上にある。徹平は黙って順位表を見つめ、鬼塚先生は進路資料を一枚だけ机に置いた。",
     },
     {
       title: "固定事件: 願書写真の撮り直し",
@@ -1058,7 +1167,7 @@ function getProgressMilestone(profileId, turn) {
     },
     {
       title: "固定事件: 最後の補習願い",
-      text: "鉄平「番長、最後だけでいいっす。俺も逃げないから」\n赤本のページと舎弟の答案が、同じ机でぶつかった。",
+      text: "徹平「番長、最後だけでいいっす。俺も逃げないから」\n赤本のページと舎弟の答案が、同じ机でぶつかった。",
     },
     {
       title: "固定事件: 卒業式前の校門",
@@ -1210,7 +1319,7 @@ function buildStudyQuizReaction(outcome, card) {
     outcome.streak >= 3
       ? profileId === "gyaru"
         ? "\n集中コンボ: 3連続正解。黒羽レンが一瞬だけ黙った。"
-        : "\n集中コンボ: 3連続正解。鉄平が小さく拍手して、黒羽レンが目をそらした。"
+        : "\n集中コンボ: 3連続正解。徹平が小さく拍手して、黒羽レンが目をそらした。"
       : "";
   const examLine = isTargetExamCard(card)
     ? profileId === "gyaru"
@@ -1244,7 +1353,7 @@ function buildStudyQuizVoiceText(outcome, card) {
       if (!line.startsWith("集中コンボ")) {
         return line;
       }
-      return getProfile().id === "gyaru" ? "黒羽レン「……今のは偶然じゃないな」" : "鉄平「三連続っす。今の番長、強いっす」";
+      return getProfile().id === "gyaru" ? "黒羽レン「……今のは偶然じゃないな」" : "徹平「三連続っす。今の番長、強いっす」";
     })
     .join("\n");
 }
@@ -1289,7 +1398,7 @@ function resolveEnding() {
       voiceText:
         route === "gyaru"
           ? "優等生ギャル「合格した。ミナの声まで、校門に残ってる」"
-          : "受験番長「合格した。鉄平が泣いてるなら、これで勝ちだ」",
+          : "受験番長「合格した。徹平が泣いてるなら、これで勝ちだ」",
       body:
         route === "gyaru"
           ? `${schoolLine}\n合格発表の日、友だちは泣きながらハイタッチしてきた。\n友情も偏差値も盛り切った、あんたこそ優等生ギャルだ。`
@@ -1319,7 +1428,7 @@ function resolveEnding() {
       voiceText:
         route === "gyaru"
           ? "ミナ「点数は足りない。でも、次は隣で盛り返そ」"
-          : "鉄平「点数は足りねえ。でも、俺はもう逃げないっす」",
+          : "徹平「点数は足りねえ。でも、俺はもう逃げないっす」",
       body:
         route === "gyaru"
           ? `${schoolLine}\n点数は少し足りない。けど友だちは、誰も責めない。\n来年リベンジ、ちゃんと盛り返す。`
@@ -1334,7 +1443,7 @@ function resolveEnding() {
       voiceText:
         route === "gyaru"
           ? "優等生ギャル「落ちた。でも、ミナが顔を上げたなら、全部は負けじゃない」"
-          : "受験番長「落ちた。だが、鉄平が逃げねえなら、番長は終わらねえ」",
+          : "受験番長「落ちた。だが、徹平が逃げねえなら、番長は終わらねえ」",
       body:
         route === "gyaru"
           ? `${schoolLine}\n受験には敗れた。でも、あんたに救われた友だちは数えきれない。\n情に厚いギャルの名前は、卒業後も廊下に残った。`
@@ -1369,7 +1478,8 @@ function render() {
     "novel-stage--route-centered",
     state.characterCentered && state.screen !== "profile" && state.screen !== "ending" && !isFullPageScreen,
   );
-  elements.statsHud.hidden = isFullPageScreen || state.screen === "profile" || state.screen === "intro" || state.screen === "target";
+  elements.statsHud.hidden =
+    isFullPageScreen || state.screen === "profile" || state.screen === "intro" || state.screen === "target" || state.screen === "targetConfirm";
   elements.dialogueBox.hidden = isFullPageScreen;
   if (state.screen !== "profile") {
     clearProfileSelectionAnimation();
@@ -1422,7 +1532,7 @@ function render() {
     return;
   }
 
-  if ((state.screen === "result" || state.screen === "openingResult") && state.pendingResult) {
+  if ((state.screen === "result" || state.screen === "openingResult" || state.screen === "targetConfirm") && state.pendingResult) {
     renderResult();
     return;
   }
@@ -1472,13 +1582,16 @@ function renderOpeningIncident() {
 function renderTargetSchoolSelect() {
   hideEndingArtwork();
   resetDialogueScroll();
+  const selectedSchool = getPendingTargetSchool();
   elements.speakerName.textContent = "進路指導室";
   elements.sceneTag.textContent = "志望校選択";
   setDialogueText(
-    "三年間の進路計画を決める。\n偏差値が上がるほど、必要な学力も、最後まで保つ胆力も跳ね上がる。どの門を目指す？",
+    "志望校を決める。上の札で候補を選び、下の勝ち筋を見て覚悟を決めろ。",
   );
-  elements.advanceButton.hidden = true;
-  elements.choiceList.replaceChildren(...targetSchools.map(createTargetSchoolButton));
+  elements.choiceList.replaceChildren(...targetSchools.map(createTargetSchoolButton), createTargetSchoolDetail(selectedSchool));
+  elements.advanceButton.hidden = false;
+  elements.advanceButton.textContent = `${selectedSchool.name}で三年間を始める`;
+  elements.advanceButton.onclick = confirmTargetSchool;
 }
 
 function renderChoices() {
@@ -1532,7 +1645,8 @@ function renderResult() {
 
   elements.choiceList.replaceChildren();
   elements.advanceButton.hidden = false;
-  elements.advanceButton.textContent = state.screen === "openingResult" ? "志望校を決める" : state.complete ? "合格発表へ" : "次の週へ";
+  elements.advanceButton.textContent =
+    state.screen === "openingResult" ? "志望校を決める" : state.screen === "targetConfirm" ? "最初の12週へ" : state.complete ? "合格発表へ" : "次の週へ";
   elements.advanceButton.onclick = advanceScene;
   if (shouldScrollToBranch) {
     state.pendingResult.shouldScrollToBranch = false;
@@ -2089,15 +2203,17 @@ function createProfileButton(profile) {
 }
 
 function createTargetSchoolButton(school) {
+  const selected = getPendingTargetSchool().id === school.id;
   const button = document.createElement("button");
-  button.className = "choice-button choice-button--school";
+  button.className = `choice-button choice-button--school choice-button--target-option${selected ? " choice-button--selected" : ""}`;
   button.type = "button";
+  button.setAttribute("aria-pressed", String(selected));
   button.setAttribute(
     "aria-label",
-    `${school.name}。偏差値${school.deviation}。必要学力${school.passAcademic}。必要な人望${school.passTrust}、メンツ${school.passFace}。${school.subtitle}`,
+    `${school.name}を候補にする。偏差値${school.deviation}。${school.subtitle}`,
   );
   button.addEventListener("click", () => {
-    selectTargetSchool(school);
+    previewTargetSchool(school);
   });
 
   const title = document.createElement("span");
@@ -2110,10 +2226,38 @@ function createTargetSchoolButton(school) {
 
   const line = document.createElement("span");
   line.className = "school-requirements";
-  line.textContent = `勝ち筋: 学力${school.passAcademic}+ / 人望${school.passTrust}+ / メンツ${school.passFace}+ / 補欠は人望${school.waitlistTrust}+`;
+  line.textContent = `偏差値${school.deviation} / ${selected ? "選択中" : "候補を見る"}`;
 
   button.append(title, subtitle, line);
   return button;
+}
+
+function createTargetSchoolDetail(school) {
+  const detail = document.createElement("article");
+  detail.className = "target-school-detail";
+
+  const label = document.createElement("p");
+  label.className = "target-school-detail__label";
+  label.textContent = "選択中の勝ち筋";
+
+  const title = document.createElement("p");
+  title.className = "target-school-detail__title";
+  title.textContent = `${school.name} / 偏差値${school.deviation}`;
+
+  const body = document.createElement("p");
+  body.className = "target-school-detail__body";
+  body.textContent = `${school.subtitle}。合格ラインは学力${school.passAcademic}+、人望${school.passTrust}+、メンツ${school.passFace}+。`;
+
+  const waitlist = document.createElement("p");
+  waitlist.className = "target-school-detail__body";
+  waitlist.textContent = `補欠は学力${school.waitlistAcademic}+を前提に、人望${school.waitlistTrust}+、メンツ${school.waitlistFace}+で校門前に残る道。`;
+
+  detail.append(label, title, body, waitlist);
+  return detail;
+}
+
+function getPendingTargetSchool() {
+  return targetSchools.find((school) => school.id === state.pendingTargetSchoolId) ?? targetSchools[0];
 }
 
 function unlockEnding(endingId) {
@@ -2276,6 +2420,8 @@ function serializeCurrentRun() {
     profileId: state.profile?.id ?? null,
     targetSchoolId: state.targetSchool?.id ?? null,
     characterCentered: state.characterCentered,
+    looksContextIntroduced: state.looksContextIntroduced,
+    shortGoalPlan: state.shortGoalPlan,
   };
 }
 
@@ -2307,7 +2453,7 @@ function hydrateCurrentRun(saved) {
     complete: Boolean(saved.complete),
     screen,
     introIndex: clamp(Number(saved.introIndex) || getPlayableIntroStartIndex(profile), 0, Math.max(0, profile.intro.length - 1)),
-    pendingResult: (screen === "result" || screen === "openingResult") && pendingResult ? pendingResult : null,
+    pendingResult: (screen === "result" || screen === "openingResult" || screen === "targetConfirm") && pendingResult ? pendingResult : null,
     pendingStudyQuiz:
       screen === "studyQuiz" && pendingCard && pendingQuestion
         ? {
@@ -2321,6 +2467,7 @@ function hydrateCurrentRun(saved) {
     profile,
     pendingProfile: null,
     targetSchool,
+    pendingTargetSchoolId: null,
     openingChoiceId: typeof saved.openingChoiceId === "string" ? saved.openingChoiceId : null,
     returnScreen: screen,
     artworkViewer: null,
@@ -2332,7 +2479,42 @@ function hydrateCurrentRun(saved) {
     eventGalleryRenderKey: "",
     studyReviewRenderKey: "",
     menuOpen: false,
+    looksContextIntroduced: Boolean(saved.looksContextIntroduced),
+    shortGoalPlan: sanitizeSavedShortGoalPlan(saved.shortGoalPlan, targetSchool),
     savedRunSummary: null,
+  };
+}
+
+function sanitizeSavedShortGoalPlan(plan, targetSchool) {
+  if (!targetSchool || !plan || typeof plan !== "object") {
+    return null;
+  }
+
+  const startTurn = clamp(Number(plan.startTurn) || 0, 0, targetSchool.totalTurns);
+  const dueTurn = clamp(Number(plan.dueTurn) || Math.min(targetSchool.totalTurns, startTurn + 12), 0, targetSchool.totalTurns);
+  const academicTarget = clamp(Number(plan.academicTarget) || 0, 0, 100);
+  if (!academicTarget || dueTurn <= startTurn) {
+    return null;
+  }
+
+  return {
+    startTurn,
+    dueTurn,
+    academicTarget,
+    startStats: sanitizeShortGoalStartStats(plan.startStats),
+  };
+}
+
+function sanitizeShortGoalStartStats(stats) {
+  if (!stats || typeof stats !== "object") {
+    return null;
+  }
+
+  return {
+    academics: clamp(Number(stats?.academics) || 0, 0, 100),
+    trust: clamp(Number(stats?.trust) || 0, 0, 100),
+    stamina: clamp(Number(stats?.stamina) || 0, 0, 100),
+    stress: clamp(Number(stats?.stress) || 0, 0, 100),
   };
 }
 
@@ -2345,13 +2527,17 @@ function getSavableScreen() {
 }
 
 function getValidSavedScreen(screen, targetSchool, guards = {}) {
-  const allowed = new Set(["opening", "openingResult", "intro", "target", "choices", "result", "studyQuiz"]);
+  const allowed = new Set(["opening", "openingResult", "intro", "target", "targetConfirm", "choices", "result", "studyQuiz"]);
   if (!allowed.has(screen)) {
     return targetSchool ? "choices" : "target";
   }
 
   if (screen === "openingResult" && !guards.hasPendingResult) {
     return "target";
+  }
+
+  if (screen === "targetConfirm" && (!targetSchool || !guards.hasPendingResult)) {
+    return targetSchool ? "choices" : "target";
   }
 
   if ((screen === "choices" || screen === "result" || screen === "studyQuiz") && !targetSchool) {
@@ -2660,9 +2846,11 @@ function buildChoicePrompt() {
   const profile = getProfile();
   const entry = getCalendarEntry();
   if (state.turn === 0) {
+    const school = getTargetSchool();
+    const shortGoal = buildInitialShortGoal(profile.id);
     return profile.id === "gyaru"
-      ? `${getTargetSchool().name}を目指す三年間が始まる。\n入学式のリップもノートもまだ新品。友情も偏差値も、ここから盛ってく。`
-      : `${getTargetSchool().name}を目指す三年間が始まる。\n入学式の校門はまだ新しい。番長としての義理も、志望校への道も、ここから選び取るしかねえ。`;
+      ? `${school.name}を目指す三年間が始まる。\n${shortGoal}\n友情も偏差値も、ここから盛ってく。`
+      : `${school.name}を目指す三年間が始まる。\n${shortGoal}\n番長としての義理も、志望校への道も、ここから選び取るしかねえ。`;
   }
 
   if (isLateStage()) {
@@ -2681,11 +2869,79 @@ function sceneNameForTurn() {
   return isLateStage() ? `${entry.label}・受験直前` : entry.label;
 }
 
-function formatEffectSentence(effects) {
+function buildInitialShortGoal(profileId) {
+  if (!state.shortGoalPlan) {
+    state.shortGoalPlan = createShortGoalPlan(0);
+  }
+
+  const targetAcademic = state.shortGoalPlan.academicTarget;
+  if (profileId === "gyaru") {
+    return `12週目標: まずは学力${targetAcademic}。ミナを放っておかず、でも自分の机も空けすぎない。`;
+  }
+
+  return `12週目標: まずは学力${targetAcademic}。徹平への借りも、体力も、全部は抱えるな。`;
+}
+
+function getShortGoalAcademicStep(school, cycleIndex = 0) {
+  if (cycleIndex >= 8) {
+    return school.deviation >= 68 ? 8 : 7;
+  }
+  if (cycleIndex >= 4) {
+    return school.deviation >= 68 ? 10 : 8;
+  }
+  if (school.deviation >= 70) {
+    return 14;
+  }
+  if (school.deviation >= 64) {
+    return 12;
+  }
+  return 10;
+}
+
+function formatEffectSentence(effects, options = {}) {
   const parts = Object.entries(statLabels)
     .filter(([key]) => effects[key])
     .map(([key, label]) => `${label}${effects[key] > 0 ? "+" : ""}${effects[key]}`);
-  return parts.length ? `\n[${parts.join(" / ")}]` : "";
+  const looksContext = options.explainLooks ? consumeLooksEffectContext(effects) : "";
+  return parts.length ? `${looksContext}\n[${parts.join(" / ")}]` : "";
+}
+
+function consumeLooksEffectContext(effects) {
+  const looks = Number(effects.looks) || 0;
+  if (!looks) {
+    return "";
+  }
+
+  const isFirstContext = !state.looksContextIntroduced;
+  state.looksContextIntroduced = true;
+  if (isFirstContext) {
+    return looks > 0
+      ? "\n髪、制服、表情、声の余裕。全部そろうと、教室の見られ方まで変わる。顔立ちだけの話じゃない。"
+      : "\n顔立ちは変わらない。けれど寝不足、乱れた制服、余裕のない声を、教室は先に見る。";
+  }
+
+  return looks > 0 ? `\n${pickLooksContextLine(positiveLooksContextLines())}` : `\n${pickLooksContextLine(negativeLooksContextLines())}`;
+}
+
+function pickLooksContextLine(lines) {
+  const index = Math.abs((state.turn || 0) + state.stats.looks + state.stats.stress) % lines.length;
+  return lines[index];
+}
+
+function positiveLooksContextLines() {
+  return [
+    "髪も制服も整った。声に余裕が戻ると、廊下の反応まで少し変わる。",
+    "顔が強いだけじゃない。今日は声も姿勢も崩れていない。視線が、味方寄りに変わる。",
+    "表情が整った。話しかける前の距離が、少しだけ近くなる。",
+  ];
+}
+
+function negativeLooksContextLines() {
+  return [
+    "目元の疲れは隠れない。今日は、話しかけられる前に距離を置かれた。",
+    "顔立ちは変わらない。でも疲れた声と乱れた制服を、教室は先に見る。",
+    "焦りが表情に出た。教室の視線は、事情より先に見た目を拾う。",
+  ];
 }
 
 function formatEffectSummary(effects) {
@@ -2817,19 +3073,19 @@ function buildCardReaction(card) {
 
   const reactions = {
     study_library:
-      "\n鉄平「番長、俺、名前だけ普通科で中身は補習科っす。でも暗記カードだけは作れるっす」\n受験番長「なら隣で作れ。逃げる手じゃなく、覚える手にしろ。」",
+      "\n徹平「番長、俺、名前だけ普通科で中身は補習科っす。でも暗記カードだけは作れるっす」\n受験番長「なら隣で作れ。逃げる手じゃなく、覚える手にしろ。」",
     cram_school:
-      "\n鬼塚先生「説教は3分。進路指導は本気でやる」\n鉄平「番長が頭下げるなら、俺も数学9点から逃げないっす。補習、明日は自分で行くっす。」",
+      "\n鬼塚先生「説教は3分。進路指導は本気でやる」\n徹平「番長が頭下げるなら、俺も数学9点から逃げないっす。補習、明日は自分で行くっす。」",
     ramen_meeting:
-      "\n鉄平「親に進路希望票を見せるの、まだ怖いっす」\n受験番長「ラーメン伸びる前に作戦立てるぞ。逃げ癖まで替え玉するな。」",
+      "\n徹平「親に進路希望票を見せるの、まだ怖いっす」\n受験番長「ラーメン伸びる前に作戦立てるぞ。逃げ癖まで替え玉するな。」",
     rescue_fight:
       "\n黒羽レン「拳を出さずに済ませる気か。番長の看板、軽いな」\n受験番長「殴らず収める方が重い日もある。今日はそっちで通す。」",
     sleep_early:
-      "\n鉄平「番長、俺の通知スルーっすか」\n受験番長「朝イチで返す。寝不足の返事で、お前の進路まで雑に扱いたくねえ。」\n鉄平は不満そうだが、補習プリントだけは鞄に入れた。",
+      "\n徹平「番長、俺の通知スルーっすか」\n受験番長「朝イチで返す。寝不足の返事で、お前の進路まで雑に扱いたくねえ。」\n徹平は不満そうだが、補習プリントだけは鞄に入れた。",
     mock_exam:
       "\n黒羽レン「番長の点数表、校門に貼ったら伝説になるかもな」\n受験番長「貼るなら合格点にしてから貼れ。俺がそこまで上げる。」\n黒羽レンは煽ったあと、こちらの解き直しを黙って見ていた。",
     final_sprint:
-      "\n鬼塚先生「最後の夜に義理を全部拾うな。落とした約束は、合格後に拾え」\n鉄平「番長、俺も赤点から逃げないっす。補習は自分で行くんで、今日は赤本行ってください。」",
+      "\n鬼塚先生「最後の夜に義理を全部拾うな。落とした約束は、合格後に拾え」\n徹平「番長、俺も赤点から逃げないっす。補習は自分で行くんで、今日は赤本行ってください。」",
   };
   return reactions[card.id] ?? "";
 }

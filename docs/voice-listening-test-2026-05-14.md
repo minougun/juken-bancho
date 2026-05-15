@@ -7,14 +7,14 @@ Purpose: do not approve the cast by parameter table alone. Start VOICEVOX Engine
 Pass line:
 
 1. Overall: at least 9 / 12 lines identified correctly by listener.
-2. Mandatory pairs: 受験番長 vs 鉄平, 優等生ギャル vs ミナ, 鬼塚先生 vs narrator, 黒羽レン vs 受験番長 must have 0 clear misidentifications, or at most 1 borderline confusion with an adjustment note before approval.
+2. Mandatory pairs: 受験番長 vs 徹平, 優等生ギャル vs ミナ, 鬼塚先生 vs narrator, 黒羽レン vs 受験番長 must have 0 clear misidentifications, or at most 1 borderline confusion with an adjustment note before approval.
 3. Acting quality: each kept line should score 4 / 5 or higher on all three checks: identifiable speaker, natural character delivery, and no feeling of waiting for the next operation.
 
 | Character | Normal line | Emotion line | Check |
 | --- | --- | --- | --- |
 | 受験番長 | `俺の名は、番田長生。またの名を、受験番長。` | `机も仲間もメンツも、三年間まとめて背負う。` | Middle-low, grounded, not teacher-like. |
 | 優等生ギャル | `うちの名前は、優谷生。またの名を、優等生ギャル。` | `友情も見た目も偏差値も、三年間ぜんぶ自分の言葉でアゲる。` | Bright and forward, not navigation voice. |
-| 鉄平 | `番長、数学9点っす。進路希望票、親に見せたら終わるっす。` | `俺、補習から逃げないっす。明日は自分で行くっす。` | Higher and faster than bancho, anxious but not noisy. |
+| 徹平 | `番長、数学9点っす。進路希望票、親に見せたら終わるっす。` | `俺、補習から逃げないっす。明日は自分で行くっす。` | Higher and faster than bancho, anxious but not noisy. |
 | ミナ | `進路希望票、何も書けなくて返された。もう詰んだかも。` | `私も大学、目指してみたい。置いていかれるからじゃなくて、自分で。` | Softer with pauses early; later line should gain strength. |
 | 鬼塚先生 | `説教は三分だ。進路は逃がさん。` | `最後の夜ほど、顔に焦りが出る。雑な返事で友だちまで削るな。` | Low, dry pressure, not narrator. |
 | 黒羽レン | `その志望校、名前だけで選んだならやめとけ。` | `点数は、見栄を助けない。` | Cool and androgynous/feminine, not a male villain voice. |

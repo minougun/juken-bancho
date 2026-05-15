@@ -757,6 +757,22 @@ button.ending-record:hover {
   background: var(--soft);
 }
 
+.choice-button--selected {
+  background: var(--ink);
+  color: #fff;
+}
+
+.choice-button--selected .choice-title,
+.choice-button--selected .choice-subtitle {
+  color: #fff;
+}
+
+.choice-button--selected .school-requirements {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
 .choice-button--quiz {
   grid-template-columns: auto minmax(0, 1fr);
   align-items: center;
@@ -842,6 +858,41 @@ button.ending-record:hover {
   line-height: 1.5;
 }
 
+.target-school-detail {
+  display: grid;
+  grid-column: 1 / -1;
+  gap: 6px;
+  border-radius: 8px;
+  padding: 12px 14px;
+  background: var(--soft);
+  box-shadow: 0 0 0 1px rgb(235, 235, 235);
+}
+
+.target-school-detail__label {
+  width: fit-content;
+  border-radius: 9999px;
+  padding: 3px 9px;
+  background: #ebf5ff;
+  color: #0068d6;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.target-school-detail__title {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.target-school-detail__body {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+}
+
 .choice-effects {
   display: flex;
   flex-wrap: wrap;
@@ -870,6 +921,12 @@ button.ending-record:hover {
   padding: 11px 16px;
   background: var(--ink);
   color: #fff;
+}
+
+.dialogue-box .advance-button {
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
 }
 
 .credit {
@@ -971,6 +1028,10 @@ button.ending-record:hover {
     margin-top: 4px;
     font-size: 11px;
     line-height: 1.45;
+  }
+
+  .title-lockup {
+    width: 100%;
   }
 
   .system-controls {
@@ -1169,17 +1230,18 @@ button.ending-record:hover {
     bottom: max(8px, env(safe-area-inset-bottom));
     gap: 9px;
     min-height: 0;
-    max-height: min(53svh, 410px);
+    max-height: min(68svh, 560px);
     overflow: auto;
     padding: 12px;
+    scroll-padding-bottom: 58px;
   }
 
   .novel-stage--profile .dialogue-box {
-    max-height: min(46svh, 360px);
+    max-height: min(62svh, 520px);
   }
 
   .novel-stage--profile .choice-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .speaker-row {
@@ -1191,16 +1253,50 @@ button.ending-record:hover {
   .dialogue-text {
     min-height: 0;
     font-size: 17px;
-    line-height: 1.72;
+    line-height: 1.62;
+  }
+
+  .novel-stage[data-screen="opening"] .dialogue-text,
+  .novel-stage[data-screen="target"] .dialogue-text,
+  .novel-stage[data-screen="result"] .dialogue-text,
+  .novel-stage[data-screen="choices"] .dialogue-text,
+  .novel-stage[data-screen="studyQuiz"] .dialogue-text {
+    font-size: 15px;
+    line-height: 1.56;
+  }
+
+  .novel-stage[data-screen="targetConfirm"] .dialogue-box {
+    max-height: min(38svh, 300px);
+  }
+
+  .novel-stage[data-screen="targetConfirm"].novel-stage--route-centered .character-sprite {
+    bottom: 34svh;
+    width: min(300px, 78vw);
+    max-height: 430px;
+    opacity: 1;
+  }
+
+  .novel-stage[data-screen="targetConfirm"].novel-stage--route-centered .character-sprite--gyaru {
+    width: min(280px, 74vw);
   }
 
   .choice-list {
     gap: 8px;
   }
 
+  .novel-stage[data-screen="target"] .choice-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .choice-button {
     min-height: 72px;
-    padding: 10px;
+    padding: 10px 11px;
+  }
+
+  .novel-stage[data-screen="opening"] .choice-button,
+  .novel-stage[data-screen="choices"] .choice-button,
+  .novel-stage[data-screen="target"] .choice-button {
+    min-height: 64px;
   }
 
   .choice-button--quiz {
@@ -1208,7 +1304,16 @@ button.ending-record:hover {
   }
 
   .choice-button--school {
-    min-height: 102px;
+    min-height: 92px;
+  }
+
+  .novel-stage[data-screen="target"] .choice-button--school {
+    min-height: 58px;
+    padding: 8px 10px;
+  }
+
+  .novel-stage[data-screen="target"] .choice-button--target-option .choice-subtitle {
+    display: none;
   }
 
   .choice-button--profile {
@@ -1231,14 +1336,42 @@ button.ending-record:hover {
 
   .choice-title {
     font-size: 14px;
+    line-height: 1.32;
   }
 
   .choice-subtitle {
     font-size: 11px;
+    line-height: 1.42;
   }
 
   .school-requirements {
     font-size: 10px;
+  }
+
+  .novel-stage[data-screen="target"] .school-requirements {
+    margin-top: 2px;
+    padding: 5px 7px;
+    font-size: 9px;
+    line-height: 1.35;
+  }
+
+  .target-school-detail {
+    gap: 4px;
+    padding: 9px 10px;
+  }
+
+  .target-school-detail__label {
+    padding: 2px 8px;
+    font-size: 10px;
+  }
+
+  .target-school-detail__title {
+    font-size: 13px;
+  }
+
+  .target-school-detail__body {
+    font-size: 11px;
+    line-height: 1.45;
   }
 
   .effect-pill {
@@ -1250,6 +1383,7 @@ button.ending-record:hover {
     width: 100%;
     justify-self: stretch;
     min-width: 0;
+    min-height: 46px;
   }
 
   .credit {
@@ -1291,7 +1425,16 @@ button.ending-record:hover {
   }
 
   .novel-stage--profile .dialogue-box {
-    max-height: 54svh;
+    max-height: 62svh;
+  }
+
+  .novel-stage[data-screen="opening"] .dialogue-box,
+  .novel-stage[data-screen="openingResult"] .dialogue-box,
+  .novel-stage[data-screen="target"] .dialogue-box,
+  .novel-stage[data-screen="result"] .dialogue-box,
+  .novel-stage[data-screen="choices"] .dialogue-box,
+  .novel-stage[data-screen="studyQuiz"] .dialogue-box {
+    max-height: 66svh;
   }
 
   .character-sprite {

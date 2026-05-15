@@ -1075,53 +1075,6 @@ function formatShortGoalNextLine(profileId, goal) {
   return `学力${goal.academicTarget}。補習かラーメン会議を一度挟め。`;
 }
 
-function buildProgressMilestoneVoiceText(profileId, milestone) {
-  const quotedLines = milestone.text.match(/[^「」\n:：]{1,24}「[^」]+」/g);
-  if (quotedLines?.length) {
-    return quotedLines.slice(0, 2).join("\n");
-  }
-
-  const speaker = profileId === "gyaru" ? "優等生ギャル" : "受験番長";
-  const line = milestone.text.split(/[。\n]/)[0]?.trim();
-  if (!line) {
-    return "";
-  }
-  return `${speaker}「${line.slice(0, 54)}」`;
-}
-
-function getChapterRelationshipReport(profileId, milestoneIndex) {
-  const banchoReports = [
-    "徹平はまだ逃げ腰。鬼塚先生は、怒鳴るだけの番長かどうかを見ている。",
-    "黒羽レンはこちらを舐めている。徹平は番長が逃げないかを見ている。",
-    "仲間は拳より約束を見ている。メンツの意味が少し変わる。",
-    "鬼塚先生は小言より進路資料を出し始めた。",
-    "徹平は暗記カードだけは作れると分かってきた。",
-    "黒羽レンは煽っているが、答案の伸びを警戒し始めた。",
-    "徹平は進路から逃げたい。でも一人で逃げるのも怖い。",
-    "徹平は助けを求める前に、自分で机を探し始めた。",
-    "黒羽レンは点数でしか測れない自分を隠している。",
-    "鬼塚先生は顔つきまで含めて、受験生として見ている。",
-    "徹平は最後だけ、逃げない側へ足を出している。",
-    "黒羽レンは勝ち負けより、三年間の筋を見に来ている。",
-  ];
-  const gyaruReports = [
-    "ミナはまだ大学受験を自分ごとにしていない。主人公が少し遠く見えている。",
-    "黒羽レンはこちらを見た目で煽るが、答案の伸びを見始めている。",
-    "ミナは勉強を茶化すが、主人公が机に戻る理由を気にしている。",
-    "鬼塚先生は点数だけでなく、声と顔の余裕を見ている。",
-    "ミナは進路の空白を、笑ってごまかす癖をやめられない。",
-    "黒羽レンは見た目を煽るが、自分も順位表から逃げられない。",
-    "ミナは主人公の背中を見て、自分も大学受験を考え始めている。",
-    "ミナは置いていかれるだけと決めつけられ、初めて反発した。",
-    "黒羽レンは順位で上にいるが、こちらを無視できなくなった。",
-    "主人公は見た目で判断される現実を、逃げずに使い返す。",
-    "ミナは置いていかれたくないだけではなく、自分の受験として走ろうとしている。",
-    "黒羽レンは煽りではなく、本気の確認をしに来ている。",
-  ];
-  const reports = profileId === "gyaru" ? gyaruReports : banchoReports;
-  return reports[Math.min(milestoneIndex, reports.length - 1)];
-}
-
 function getProgressMilestone(profileId, turn) {
   const milestoneIndex = Math.max(0, Math.floor(turn / 12) - 1);
   const banchoMilestones = [

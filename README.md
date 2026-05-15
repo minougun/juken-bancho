@@ -47,11 +47,14 @@ npm run desktop:pack
 npm run steam:stage
 npm run test:desktop-package
 npm run test:desktop-smoke
+npm run steam:local-check
 ```
 
 - ローカル確認用: `dist/desktop/linux-unpacked/`
 - Windows depot 候補: `dist/desktop/win-unpacked/`
 - Steamworks 手順: `/mnt/c/Users/minou/juken-bancho/docs/steam-release.md`
+- Steamストア下書き: `/mnt/c/Users/minou/juken-bancho/docs/steam-store-page-draft.md`
+- Steamworks upload runbook: `/mnt/c/Users/minou/juken-bancho/docs/steamworks-upload-runbook.md`
 
 The Web test build includes local BGM:
 

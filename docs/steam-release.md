@@ -14,6 +14,7 @@ npm run desktop:pack
 npm run steam:stage
 npm run test:desktop-package
 npm run test:desktop-smoke
+npm run steam:local-check
 ```
 
 成果物:
@@ -21,6 +22,15 @@ npm run test:desktop-smoke
 - Linux ローカル確認: `dist/desktop/linux-unpacked/`
 - Windows Steam depot 候補: `dist/desktop/win-unpacked/`
 - Electron 起動スモーク画像: `test-results/electron-smoke/`
+
+関連文書:
+
+- 実装書: `docs/steam-implementation.md`
+- ローカル完了チェックリスト: `docs/steam-local-release-checklist.md`
+- ストア説明文・素材下書き: `docs/steam-store-page-draft.md`
+- ストア下書きfact-check: `docs/steam-store-page-fact-check.md`
+- Steam機能スコープ判断: `docs/steam-feature-scope.md`
+- SteamPipe upload runbook: `docs/steamworks-upload-runbook.md`
 
 Steam の起動オプションでは、Windows depot の実行ファイルを指定する。
 

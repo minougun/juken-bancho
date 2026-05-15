@@ -11,6 +11,7 @@
     "check": "node --check web/app.js && node --check web/data/game-data.js && node --check web/server.mjs && node scripts/check-data-integrity.mjs",
     "desktop:start": "electron electron/main.cjs",
     "desktop:pack": "electron-builder --dir",
+    "steam:local-check": "node scripts/check-steam-local-readiness.mjs",
     "steam:stage": "electron-builder --win dir",
     "simulate:balance": "node scripts/simulate-balance.mjs",
     "test:desktop-package": "node scripts/check-desktop-package.mjs",

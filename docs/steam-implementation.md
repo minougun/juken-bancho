@@ -87,9 +87,15 @@ Steam候補buildでは、`electron/**/*`、`web/**/*`、`package.json` がpackag
 | 追加 | `steam/app_build_steam.template.vdf` | SteamPipe用App buildテンプレート。AppID placeholderを含む。 |
 | 追加 | `steam/depot_build_windows.template.vdf` | Windows depot用テンプレート。DepotID placeholderとContentRootを含む。 |
 | 追加 | `docs/steam-release.md` | Steam移植方針、ビルド手順、成果物、Steamworks外部作業、素材/規約注意点。 |
+| 追加 | `docs/steam-local-release-checklist.md` | Steamworks前にローカルで完了できる確認項目。 |
+| 追加 | `docs/steam-store-page-draft.md` | Steamストア説明文下書き、素材サイズ、画像制作ルール。 |
+| 追加 | `docs/steam-store-page-fact-check.md` | ストア下書きの数値、仕様、公開前リスクを確認するfact-check pass。 |
+| 追加 | `docs/steam-feature-scope.md` | Steam Cloud、実績、Overlayの初回提出スコープ判断。 |
+| 追加 | `docs/steamworks-upload-runbook.md` | SteamPipe upload担当者向け手順。 |
 | 変更 | `README.md` | Steam / Desktop Buildセクションを追加。 |
 | 追加 | `scripts/check-desktop-package.mjs` | `win-unpacked` 成果物の必須ファイル、assets、旧表記、stale helperを検証。 |
 | 追加 | `scripts/check-electron-smoke.mjs` | Electronを起動し、初期画面から志望校確定後の最初の12週までを確認するスモーク検証。 |
+| 追加 | `scripts/check-steam-local-readiness.mjs` | Steamworks前に必要なローカル文書、生成物、スクリプト、素材メモを検証。 |
 | 変更 | `.gitignore` | `dist/` を除外。 |
 
 既存の未追跡ファイルとして以下が存在する。
@@ -204,6 +210,7 @@ electron-builder@26.8.1
 {
   "desktop:start": "electron electron/main.cjs",
   "desktop:pack": "electron-builder --dir",
+  "steam:local-check": "node scripts/check-steam-local-readiness.mjs",
   "steam:stage": "electron-builder --win dir",
   "test:desktop-package": "node scripts/check-desktop-package.mjs",
   "test:desktop-smoke": "node scripts/check-electron-smoke.mjs"
@@ -216,6 +223,7 @@ electron-builder@26.8.1
 | --- | --- |
 | `desktop:start` | Electron版をローカル起動する。 |
 | `desktop:pack` | Electron desktop buildをunpacked形式で生成する。 |
+| `steam:local-check` | Steamworks前のローカル生成物、文書、素材準備メモを検証する。 |
 | `steam:stage` | Windows向けunpacked buildを生成し、Steam depot候補を作る。 |
 | `test:desktop-package` | `win-unpacked` の必須ファイルとstale要素を検証する。 |
 | `test:desktop-smoke` | Electronを実起動し、初期導線を操作してスクリーンショットを残す。 |
@@ -317,7 +325,19 @@ npm run test:desktop-smoke
 Electron smoke ok. Screenshots: /mnt/c/Users/minou/juken-bancho/test-results/electron-smoke
 ```
 
-### 8.7 追加検証
+### 8.7 Steamローカル完了チェック
+
+```bash
+npm run steam:local-check
+```
+
+期待される成功例は以下である。
+
+```text
+Steam local readiness ok: 21 files, 10 scripts.
+```
+
+### 8.8 追加検証
 
 ```bash
 npm run verify
@@ -401,6 +421,7 @@ npm run desktop:pack
 npm run steam:stage
 npm run test:desktop-package
 npm run test:desktop-smoke
+npm run steam:local-check
 npm run check
 git diff --check
 ```
@@ -458,7 +479,18 @@ Electron smoke ok. Screenshots: /mnt/c/Users/minou/juken-bancho/test-results/ele
 Data integrity ok: 2 profiles, 4 schools, 7 cards, 4 seasonal events, 6 random events, 30000 study questions.
 ```
 
-### 10.5 旧表記チェック
+### 10.5 Steamローカル完了チェック
+
+`npm run steam:local-check` は、以下を確認する。
+
+- Steam関連docsが揃っている。
+- SteamPipeテンプレートが残っている。
+- Windows/Linuxのunpacked buildが存在する。
+- Electron smokeのスクリーンショットが存在する。
+- `package.json` にSteam関連scriptが存在する。
+- ストア素材サイズ、VOICEVOX/CC0、検証branch手順がdocsに記録されている。
+
+### 10.6 旧表記チェック
 
 以下の検索で、対象範囲には旧表記 `鉄平` のヒットなし。
 
@@ -466,7 +498,7 @@ Data integrity ok: 2 profiles, 4 schools, 7 cards, 4 seasonal events, 6 random e
 rg -n "鉄平" web docs README.md package.json scripts electron steam --glob '!docs/claude-code-review-request-2026-04-27.md'
 ```
 
-### 10.6 未検証の検証領域
+### 10.7 未検証の検証領域
 
 以下は未検証である。
 
@@ -556,6 +588,7 @@ VOICEVOX利用時の公開用クレジット・実使用speakerごとの音声�
 - [ ] `npm run steam:stage` が成功する。
 - [ ] `npm run test:desktop-package` が成功する。
 - [ ] `npm run test:desktop-smoke` が成功する。
+- [ ] `npm run steam:local-check` が成功する。
 - [ ] `git diff --check` が成功する。
 - [ ] `dist/desktop/win-unpacked/受験番長.exe` が存在する。
 - [ ] `dist/desktop/win-unpacked/resources/app/web/index.html` が存在する。
@@ -622,6 +655,12 @@ Steam移植差分を戻す場合は、以下の対象を確認する。
 - `README.md`
 - `scripts/check-desktop-package.mjs`
 - `scripts/check-electron-smoke.mjs`
+- `scripts/check-steam-local-readiness.mjs`
+- `docs/steam-local-release-checklist.md`
+- `docs/steam-store-page-draft.md`
+- `docs/steam-store-page-fact-check.md`
+- `docs/steam-feature-scope.md`
+- `docs/steamworks-upload-runbook.md`
 - `.gitignore`
 
 既存未追跡ファイル `docs/claude-code-review-request-2026-04-27.md` はSteam移植差分ではないため、ロールバック対象に含めない。
@@ -641,6 +680,7 @@ npm run desktop:pack
 npm run steam:stage
 npm run test:desktop-package
 npm run test:desktop-smoke
+npm run steam:local-check
 ```
 
 ### 14.3 Steamworks上のロールバック
@@ -691,6 +731,7 @@ npm run desktop:pack
 npm run steam:stage
 npm run test:desktop-package
 npm run test:desktop-smoke
+npm run steam:local-check
 git diff --check
 ```
 
@@ -713,7 +754,7 @@ rm -rf dist/desktop
 - Web版をElectronでSteam向けdesktop appとして包む実装方針である。
 - `electron/main.cjs` が追加されている。
 - `web/server.mjs` はElectron側から再利用できるよう関数化されている。
-- `npm run desktop:pack`、`npm run steam:stage`、`npm run test:desktop-package`、`npm run test:desktop-smoke` は成功済みである。
+- `npm run desktop:pack`、`npm run steam:stage`、`npm run test:desktop-package`、`npm run test:desktop-smoke`、`npm run steam:local-check` は成功済みである。
 - `dist/desktop/win-unpacked/` と `受験番長.exe` はローカルに生成済みである。
 - `dist/` はGit管理外である。
 - Steamworks upload、審査提出、releaseは未実施である。

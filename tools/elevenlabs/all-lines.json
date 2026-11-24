@@ -1,0 +1,1461 @@
+{
+ "model_id": "eleven_v4",
+ "lines": [
+  {
+   "castId": "bancho",
+   "text": "俺の名は、番田長生。またの名を、じゅけんばんちょう。"
+  },
+  {
+   "castId": "bancho",
+   "text": "入学式の日から少しばかり顔が利く。"
+  },
+  {
+   "castId": "bancho",
+   "text": "仲間が困ってりゃ放っておけねえし、めんつをなくせば番長の看板も泣く。"
+  },
+  {
+   "castId": "bancho",
+   "text": "だが高校三年間は長い。"
+  },
+  {
+   "castId": "bancho",
+   "text": "行事も、仲間との付き合いも、模試もあかほんも、全部まとめて押し寄せてくる。"
+  },
+  {
+   "castId": "bancho",
+   "text": "毎週、俺は一つの予定を選ぶ。"
+  },
+  {
+   "castId": "bancho",
+   "text": "机に向かえば学力は積める。"
+  },
+  {
+   "castId": "bancho",
+   "text": "仲間と向き合えば人望やめんつは守れる。"
+  },
+  {
+   "castId": "bancho",
+   "text": "無理を重ねれば体力とるっくすが削れ、焦りも腹にたまる。"
+  },
+  {
+   "castId": "bancho",
+   "text": "卒業式の日、どんな顔で校門を出るか。"
+  },
+  {
+   "castId": "bancho",
+   "text": "全部まとめて背負ってこそ、番長ってもんだろ。"
+  },
+  {
+   "castId": "bancho",
+   "text": "願書の下書きを握ったまま、舎弟の徹平からの通知を開いた。文面が、いつもの三倍震えていた。"
+  },
+  {
+   "castId": "teppei",
+   "text": "番長、数学9点っす。しんろ きぼうひょう、親に見せたら終わるっす"
+  },
+  {
+   "castId": "bancho",
+   "text": "机に座れば徹平を見捨てる。徹平へ走れば、願書は白紙のままだ。"
+  },
+  {
+   "castId": "bancho",
+   "text": "最初の一手で、何を優先する？"
+  },
+  {
+   "castId": "teacher",
+   "text": "志望校を決める。上の札で候補を選び、下の勝ち筋を見て覚悟を決めろ。"
+  },
+  {
+   "castId": "bancho",
+   "text": "城北実学大学。名前だけで選んだら折れる。"
+  },
+  {
+   "castId": "bancho",
+   "text": "城北実学大学を目指す三年間が始まる。"
+  },
+  {
+   "castId": "bancho",
+   "text": "12週目標: まずは学力25。徹平への借りも、体力も、全部は抱えるな。"
+  },
+  {
+   "castId": "bancho",
+   "text": "番長としての義理も、志望校への道も、ここから選び取るしかねえ。"
+  },
+  {
+   "castId": "teppei",
+   "text": "番長、俺、名前だけ普通科で中身は補習科っす。でも暗記カードだけは作れるっす"
+  },
+  {
+   "castId": "bancho",
+   "text": "なら隣で作れ。逃げる手じゃなく、覚える手にしろ。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・4月第2週・新歓。"
+  },
+  {
+   "castId": "bancho",
+   "text": "廊下には仲間の声、鞄には参考書。番長として、受験生として、今週の予定を選べ。"
+  },
+  {
+   "castId": "teacher",
+   "text": "その一問を拾えるなら、答案はまだ伸びる"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・4月第3週。"
+  },
+  {
+   "castId": "teppei",
+   "text": "親にしんろ きぼうひょうを見せるの、まだ怖いっす"
+  },
+  {
+   "castId": "bancho",
+   "text": "ラーメン伸びる前に作戦立てるぞ。逃げ癖まで替え玉するな。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・4月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・5月第1週。"
+  },
+  {
+   "castId": "teppei",
+   "text": "番長、俺の通知スルーっすか"
+  },
+  {
+   "castId": "bancho",
+   "text": "朝イチで返す。寝不足の返事で、お前の進路まで雑に扱いたくねえ。"
+  },
+  {
+   "castId": "bancho",
+   "text": "徹平は不満そうだが、補習プリントだけは鞄に入れた。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・5月第2週。"
+  },
+  {
+   "castId": "teacher",
+   "text": "間違いを隠すな。次に拾えば、それも番長の点になる"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・5月第3週・中間テスト。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・5月第4週。"
+  },
+  {
+   "castId": "ren",
+   "text": "拳を出さずに済ませる気か。番長の看板、軽いな"
+  },
+  {
+   "castId": "bancho",
+   "text": "殴らず収める方が重い日もある。今日はそっちで通す。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・6月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・6月第2週・体育祭。"
+  },
+  {
+   "castId": "teppei",
+   "text": "桜が散る窓際で、舎弟が苦手科目のノートを差し出した。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・6月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・6月第4週。"
+  },
+  {
+   "castId": "teacher",
+   "text": "徹平は不満そうだが、補習プリントだけは鞄に入れた。"
+  },
+  {
+   "castId": "teppei",
+   "text": "点も義理も落としてないっす。次の12週もついて行くっす"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・7月第1週。"
+  },
+  {
+   "castId": "teacher",
+   "text": "説教は3分。進路指導は本気でやる"
+  },
+  {
+   "castId": "teppei",
+   "text": "番長が頭下げるなら、俺も数学9点から逃げないっす。補習、明日は自分で行くっす。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・7月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・7月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年1学期・7月第4週・期末テスト。"
+  },
+  {
+   "castId": "teacher",
+   "text": "逃げたな。まあ、今日は予定を進めろ"
+  },
+  {
+   "castId": "teppei",
+   "text": "番長、今日の背中なら任せられるっす"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年夏休み・8月第1週・夏休み。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年夏休み・8月第2週。"
+  },
+  {
+   "castId": "narrator",
+   "text": "提灯の明かりの下、舎弟がりんご飴と単語帳を同じ手で持っている。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年夏休み・8月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年夏休み・8月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・9月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・9月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・9月第3週・文化祭。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・9月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・10月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・10月第2週・模試。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・10月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・10月第4週。"
+  },
+  {
+   "castId": "ren",
+   "text": "ライバル校のくろば レンが点数表をひらひら振る。挑発は買わず、次の模試で黙らせると決めた。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・11月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・11月第2週・進路面談。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・11月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・11月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・12月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・12月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・12月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年2学期・12月第4週・冬休み。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・1月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・1月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・1月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・1月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・2月第1週。"
+  },
+  {
+   "castId": "teppei",
+   "text": "舎弟の徹平がしんろ きぼうひょうを握ったまま固まっていた。"
+  },
+  {
+   "castId": "teppei",
+   "text": "話を聞くうちに、自分の焦りも少し言葉になった。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・2月第2週・学年末テスト。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・2月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・2月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・3月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・3月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・3月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "1年3学期・3月第4週・春休み前。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・4月第1週・始業式。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・4月第2週・新歓。"
+  },
+  {
+   "castId": "ren",
+   "text": "番長の点数表、校門に貼ったら伝説になるかもな"
+  },
+  {
+   "castId": "bancho",
+   "text": "貼るなら合格点にしてから貼れ。俺がそこまで上げる。"
+  },
+  {
+   "castId": "teacher",
+   "text": "くろば レンは煽ったあと、こちらの解き直しを黙って見ていた。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・4月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・4月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・5月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・5月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・5月第3週・中間テスト。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・5月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・6月第1週。"
+  },
+  {
+   "castId": "ren",
+   "text": "……今の解き方は、まぐれじゃねえな"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・6月第2週・体育祭。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・6月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・6月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "目が滑る。今日は単語帳を閉じる勇気も必要だ。"
+  },
+  {
+   "castId": "teppei",
+   "text": "点は届いたっす。次は補習も一回だけ拾ってほしいっす"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・7月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・7月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・7月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年1学期・7月第4週・期末テスト。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年夏休み・8月第1週・夏休み。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年夏休み・8月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年夏休み・8月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年夏休み・8月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・9月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・9月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・9月第3週・文化祭。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・9月第4週。"
+  },
+  {
+   "castId": "narrator",
+   "text": "飾りを外した黒板の前で、舎弟が模試の結果を伏せている。"
+  },
+  {
+   "castId": "teppei",
+   "text": "点はまだ途中っす。次は補習も一回だけ拾ってほしいっす"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・10月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・10月第2週・模試。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・10月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・10月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・11月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・11月第2週・進路面談。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・11月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・11月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・12月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・12月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・12月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年2学期・12月第4週・冬休み。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・1月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・1月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・1月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・1月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・2月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・2月第2週・学年末テスト。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・2月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・2月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・3月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・3月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・3月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "2年3学期・3月第4週・春休み前。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・4月第1週・始業式。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・4月第2週・新歓。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・4月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・4月第4週。"
+  },
+  {
+   "castId": "teacher",
+   "text": "番長の顔で揉め事を収め、受験生として自習室の鍵も預かった。なぜか校内が静かになった。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・5月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・5月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・5月第3週・中間テスト。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・5月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・6月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・6月第2週・体育祭。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・6月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・6月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・7月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・7月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・7月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年1学期・7月第4週・期末テスト。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年夏休み・8月第1週・夏休み。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年夏休み・8月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年夏休み・8月第3週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年夏休み・8月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年2学期・9月第1週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年2学期・9月第2週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年2学期・9月第3週・文化祭。"
+  },
+  {
+   "castId": "bancho",
+   "text": "3年2学期・9月第4週。"
+  },
+  {
+   "castId": "bancho",
+   "text": "城北実学大学の本番が近い。"
+  },
+  {
+   "castId": "bancho",
+   "text": "仲間の視線も、あかほんの重みも、背中に乗っている。今週をどう使う？"
+  },
+  {
+   "castId": "teacher",
+   "text": "最後の夜に義理を全部拾うな。落とした約束は、合格後に拾え"
+  },
+  {
+   "castId": "teppei",
+   "text": "番長、俺も赤点から逃げないっす。補習は自分で行くんで、今日はあかほん行ってください。"
+  },
+  {
+   "castId": "narrator",
+   "text": "窓の外では雪が降り、舎弟たちは声を落として見守っている。"
+  },
+  {
+   "castId": "bancho",
+   "text": "合格した。徹平が泣いてるなら、これで勝ちだ"
+  },
+  {
+   "castId": "gyaru",
+   "text": "ゥチの名前は、優谷生。またの名を、優等生ギャル。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "見た目でナメられがちだけど、友だち泣かすヤツは見過ごせない。マヂ情に厚いって、そーゆーこと。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "高校生活、行事も恋バナも友情もぜんぶ盛りたい。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "でも志望校だって諦めたくない。偏差値も気分も、ちゃんとアゲてく。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "毎週、選べる予定は一つだけ。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "勉強すれば学力は上がる。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "友だちと向き合えば人望とめんつは守れる。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "でも無理しすぎたら、肌も心も荒れてるっくすも落ちるってワケ。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "卒業式の日、最高に盛れた顔で笑いたい。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "目指せ優等生ギャル。友情も合格も、両方取るし。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "入学式のリップを直す前に、親友のミナから通知が来た。"
+  },
+  {
+   "castId": "mina",
+   "text": "しんろ きぼうひょう、何も書けなくて返された。もう詰んだかも"
+  },
+  {
+   "castId": "gyaru",
+   "text": "見た目で判断されんのは飽きた。友だちの涙を既読スルーすんのは、もっと無理。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "最初の一手で、何を優先する？"
+  },
+  {
+   "castId": "gyaru",
+   "text": "城北実学大学。名前だけじゃ、途中で答案が崩れる。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "城北実学大学を目指す三年間が始まる。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "12週目標: まずは学力27。ミナを放っておかず、でも自分の机も空けすぎない。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "友情も偏差値も、ここから盛ってく。"
+  },
+  {
+   "castId": "teacher",
+   "text": "説教は3分。進路資料は本気で見る"
+  },
+  {
+   "castId": "gyaru",
+   "text": "その爪で国立志望？って言われるなら、答案で黙らせます。"
+  },
+  {
+   "castId": "teacher",
+   "text": "外した問題ほど、次に点へ化ける。復習帳に残せ"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・4月第2週・新歓。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "教室には友だちの声、鞄には参考書。ギャルとして、受験生として、今週の予定を選べ。"
+  },
+  {
+   "castId": "mina",
+   "text": "そのノート、色だけじゃなくて中身も強いね。私、受験ってまだ遠いと思ってた"
+  },
+  {
+   "castId": "gyaru",
+   "text": "遠くても、見てるなら近づくし。うちは今日の課題を進める。"
+  },
+  {
+   "castId": "teacher",
+   "text": "今の解き方、入試で使えるぞ"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・4月第3週。"
+  },
+  {
+   "castId": "mina",
+   "text": "今日は寝な。声がもう余裕ない。私の不安まで背負って潰れないで"
+  },
+  {
+   "castId": "gyaru",
+   "text": "明日の答案も、顔も、雑にしたくないし寝る。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・4月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・5月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・5月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・5月第3週・中間テスト。"
+  },
+  {
+   "castId": "mina",
+   "text": "置いていかれるの、ちょっと怖い。でも、見てるだけの自分も嫌かも"
+  },
+  {
+   "castId": "gyaru",
+   "text": "じゃあ最初は見てて。やりたくなったら横あける。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・5月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・6月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・6月第2週・体育祭。"
+  },
+  {
+   "castId": "mina",
+   "text": "桜色の窓際で、ミナがしんろ きぼうひょうを抱えたまま固まっていた。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・6月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・6月第4週。"
+  },
+  {
+   "castId": "mina",
+   "text": "点も動いたし、うちも置いてかれてない。次も一緒に机戻ろ"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・7月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・7月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・7月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年1学期・7月第4週・期末テスト。"
+  },
+  {
+   "castId": "mina",
+   "text": "今日、声に余裕ある。ちゃんと前に出てる"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年夏休み・8月第1週・夏休み。"
+  },
+  {
+   "castId": "ren",
+   "text": "口だけで止められると思ってんの？"
+  },
+  {
+   "castId": "gyaru",
+   "text": "口で止まるなら、そっちの方が強いじゃん。友だちの前で荒れた顔は見せない。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年夏休み・8月第2週。"
+  },
+  {
+   "castId": "ren",
+   "text": "解かない選択も、点数には残る"
+  },
+  {
+   "castId": "narrator",
+   "text": "かき氷のカップの横で、ミナが主人公の単語帳をぱたぱた揺らしている。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年夏休み・8月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年夏休み・8月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・9月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・9月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・9月第3週・文化祭。"
+  },
+  {
+   "castId": "ren",
+   "text": "ライバル校のくろば レンが点数表をひらひら振る。言い返すより先に、次の模試で黙らせると決めた。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・9月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・10月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・10月第2週・模試。"
+  },
+  {
+   "castId": "mina",
+   "text": "親友のミナがしんろ きぼうひょうを握ったまま固まっていた。"
+  },
+  {
+   "castId": "mina",
+   "text": "話を聞くうちに、自分の焦りも少し言葉になった。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・10月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・10月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・11月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・11月第2週・進路面談。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・11月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・11月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・12月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・12月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・12月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年2学期・12月第4週・冬休み。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・1月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・1月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・1月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・1月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・2月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・2月第2週・学年末テスト。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・2月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・2月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・3月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・3月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・3月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "1年3学期・3月第4週・春休み前。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・4月第1週・始業式。"
+  },
+  {
+   "castId": "ren",
+   "text": "その志望校、その見た目で本気なんだ"
+  },
+  {
+   "castId": "gyaru",
+   "text": "見た目込みで本気。点数表にもそう書かせる。"
+  },
+  {
+   "castId": "teacher",
+   "text": "くろば レンは笑ったが、答案の見直しだけはいつもより長かった。"
+  },
+  {
+   "castId": "ren",
+   "text": "その点、偶然じゃないな"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・4月第2週・新歓。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・4月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・4月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・5月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・5月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・5月第3週・中間テスト。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・5月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・6月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・6月第2週・体育祭。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・6月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・6月第4週。"
+  },
+  {
+   "castId": "mina",
+   "text": "点は届いた。でも、次はうちのことも予定に入れて"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・7月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・7月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・7月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年1学期・7月第4週・期末テスト。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年夏休み・8月第1週・夏休み。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年夏休み・8月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年夏休み・8月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年夏休み・8月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・9月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・9月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・9月第3週・文化祭。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・9月第4週。"
+  },
+  {
+   "castId": "narrator",
+   "text": "飾りの残った教室で、ミナが主人公の模試結果を見て黙り込んだ。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・10月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・10月第2週・模試。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・10月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・10月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・11月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・11月第2週・進路面談。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・11月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・11月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・12月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・12月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・12月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年2学期・12月第4週・冬休み。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・1月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・1月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・1月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・1月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・2月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・2月第2週・学年末テスト。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・2月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・2月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・3月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・3月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・3月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "2年3学期・3月第4週・春休み前。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・4月第1週・始業式。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・4月第2週・新歓。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・4月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・4月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・5月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・5月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・5月第3週・中間テスト。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・5月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・6月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・6月第2週・体育祭。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・6月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・6月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・7月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・7月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・7月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年1学期・7月第4週・期末テスト。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年夏休み・8月第1週・夏休み。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年夏休み・8月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年夏休み・8月第3週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年夏休み・8月第4週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年2学期・9月第1週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年2学期・9月第2週。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年2学期・9月第3週・文化祭。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "目が滑る。メイクより先に睡眠を盛る日だと、今日は単語帳を閉じた。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "3年2学期・9月第4週。"
+  },
+  {
+   "castId": "mina",
+   "text": "点はまだ途中。でも、次はうちのことも予定に入れて"
+  },
+  {
+   "castId": "gyaru",
+   "text": "城北実学大学の本番が近い。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "友だちの通知もあかほんの重みも、ぜんぶ背中に乗ってる。今週どう盛る？"
+  },
+  {
+   "castId": "teacher",
+   "text": "友だち同士の揉め事を収め、受験生として自習室の鍵も預かった。なぜか校内が静かになった。"
+  },
+  {
+   "castId": "teacher",
+   "text": "最後の夜ほど、顔に焦りが出る。雑な返事で友だちまで削るな"
+  },
+  {
+   "castId": "mina",
+   "text": "終わったら、私の過去問も見て。私も逃げないから。今度は待つだけにしない。"
+  },
+  {
+   "castId": "narrator",
+   "text": "雪明かりの窓際で、ミナが自分のあかほんを机に置いた。"
+  },
+  {
+   "castId": "gyaru",
+   "text": "合格した。ミナの声まで、校門に残ってる"
+  },
+  {
+   "castId": "ren",
+   "text": "その志望校、見栄だけで通ると思うな"
+  },
+  {
+   "castId": "gyaru",
+   "text": "12週目標: まずは学力29。ミナを放っておかず、でも自分の机も空けすぎない。"
+  },
+  {
+   "castId": "teacher",
+   "text": "初日から全部背負うな。寝不足の番長ほど話が通じないものはない"
+  },
+  {
+   "castId": "bancho",
+   "text": "12週目標: まずは学力24。徹平への借りも、体力も、全部は抱えるな。"
+  },
+  {
+   "castId": "teppei",
+   "text": "徹平は不満そうだが、補習プリントだけは鞄に入れた。"
+  },
+  {
+   "castId": "teppei",
+   "text": "三連続っす。今の番長、強いっす"
+  },
+  {
+   "castId": "mina",
+   "text": "受験票がないとミナから泣きラインが来た。机も鞄も総ざらいして、最後は単語帳の間から見つかった。"
+  },
+  {
+   "castId": "ren",
+   "text": "点数は、見栄を助けない"
+  },
+  {
+   "castId": "bancho",
+   "text": "12週目標: まずは学力27。徹平への借りも、体力も、全部は抱えるな。"
+  },
+  {
+   "castId": "teppei",
+   "text": "受験票がないと徹平が大騒ぎになった。机も鞄も総ざらいして、最後は単語帳の間から見つかった。"
+  },
+  {
+   "castId": "ren",
+   "text": "……今のは偶然じゃないな"
+  },
+  {
+   "castId": "narrator",
+   "text": "私は昨日、その本を読んだ。"
+  },
+  {
+   "castId": "teacher",
+   "text": "疲れは顔にも声にも出る。勝負するなら寝ろ"
+  },
+  {
+   "castId": "gyaru",
+   "text": "12週目標: まずは学力26。ミナを放っておかず、でも自分の机も空けすぎない。"
+  }
+ ]
+}

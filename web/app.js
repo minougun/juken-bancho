@@ -3261,6 +3261,9 @@ function voiceStatusLabel() {
   if (!state.voiceEnabled) {
     return "OFF";
   }
+  if (state.voiceSpeaking && state.voiceBackend === "elevenlabs") {
+    return "キャラ声";
+  }
   if (state.voiceSpeaking && state.voiceBackend === "voicevox") {
     return "VOICEVOX";
   }
@@ -3387,6 +3390,49 @@ function scheduleVoiceLines(lines) {
   }, VOICE_START_DELAY_MS);
 }
 
+// ElevenLabs（Eleven v4）で先に作った音声。tools/elevenlabs/el.py が assets/voice/el/manifest.json に
+// 「castId|読み上げる文」→ 音声ファイルの対応を書く。無い・読めないときは使わない。
+const EL_VOICE_BASE = "./assets/voice/el/";
+let elVoiceManifest = null;
+
+async function loadElVoiceManifest() {
+  if (elVoiceManifest) {
+    return elVoiceManifest;
+  }
+  try {
+    const response = await fetch(`${EL_VOICE_BASE}manifest.json`, { cache: "no-cache" });
+    elVoiceManifest = response.ok ? (await response.json()).lines ?? {} : {};
+  } catch {
+    elVoiceManifest = {};
+  }
+  return elVoiceManifest;
+}
+
+async function trySpeakElevenLabsLines(lines, token) {
+  const manifest = await loadElVoiceManifest();
+  // 音声の一式が入っていれば、声は ElevenLabs だけにする（VOICEVOX やブラウザの読み上げには切り替えない）。
+  // 一式に無い行（作り漏れ）は鳴らさずに記録だけ残す（tools/elevenlabs で足す）。一式が無ければ従来どおり。
+  if (!Object.keys(manifest).length) {
+    return false;
+  }
+  state.voiceBackend = "elevenlabs";
+  updateVoiceButton();
+  for (const line of lines) {
+    if (token !== state.voiceToken || !state.voiceEnabled) {
+      return true;
+    }
+    const file = manifest[`${line.castId}|${line.text}`];
+    if (!file) {
+      rememberVoiceDebug({ backend: "elevenlabs-missing", castId: line.castId, text: line.text });
+      continue;
+    }
+    rememberVoiceDebug({ backend: "elevenlabs", castId: line.castId, text: line.text });
+    await playVoicevoxAudio(`${EL_VOICE_BASE}${file}`, token, line.profile.volume);
+    await delay(line.pauseAfter);
+  }
+  return true;
+}
+
 async function speakVoiceLines(lines, token) {
   if (token !== state.voiceToken || !state.voiceEnabled || !state.voicePrimed) {
     return;
@@ -3395,6 +3441,12 @@ async function speakVoiceLines(lines, token) {
   state.voiceSpeaking = true;
   updateBgmVolume();
   updateVoiceButton();
+  if (await trySpeakElevenLabsLines(lines, token)) {
+    state.voiceSpeaking = false;
+    updateBgmVolume();
+    updateVoiceButton();
+    return;
+  }
   if (voicevoxSupported() && state.voicevoxAvailable !== false) {
     const spokeWithVoicevox = await trySpeakVoicevoxLines(lines, token);
     if (spokeWithVoicevox) {

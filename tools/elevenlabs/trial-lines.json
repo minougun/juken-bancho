@@ -1,0 +1,160 @@
+{
+ "model_id": "eleven_v4",
+ "lines": [
+  {
+   "where": "bancho intro[0]",
+   "castId": "bancho",
+   "text": "願書の下書きを握ったまま、舎弟の徹平からの通知を開いた。文面が、いつもの三倍震えていた。"
+  },
+  {
+   "where": "bancho intro[0]",
+   "castId": "teppei",
+   "text": "番長、数学9点っす。しんろ きぼうひょう、親に見せたら終わるっす"
+  },
+  {
+   "where": "bancho intro[0]",
+   "castId": "bancho",
+   "text": "机に座れば徹平を見捨てる。徹平へ走れば、願書は白紙のままだ。"
+  },
+  {
+   "where": "bancho intro[1]",
+   "castId": "bancho",
+   "text": "俺の名は、番田長生。またの名を、じゅけんばんちょう。"
+  },
+  {
+   "where": "bancho intro[1]",
+   "castId": "bancho",
+   "text": "入学式の日から少しばかり顔が利く。"
+  },
+  {
+   "where": "bancho intro[1]",
+   "castId": "bancho",
+   "text": "仲間が困ってりゃ放っておけねえし、めんつをなくせば番長の看板も泣く。"
+  },
+  {
+   "where": "bancho intro[2]",
+   "castId": "bancho",
+   "text": "だが高校三年間は長い。"
+  },
+  {
+   "where": "bancho intro[2]",
+   "castId": "bancho",
+   "text": "行事も、仲間との付き合いも、模試もあかほんも、全部まとめて押し寄せてくる。"
+  },
+  {
+   "where": "bancho intro[3]",
+   "castId": "bancho",
+   "text": "毎週、俺は一つの予定を選ぶ。"
+  },
+  {
+   "where": "bancho intro[3]",
+   "castId": "bancho",
+   "text": "机に向かえば学力は積める。"
+  },
+  {
+   "where": "bancho intro[3]",
+   "castId": "bancho",
+   "text": "仲間と向き合えば人望やめんつは守れる。"
+  },
+  {
+   "where": "bancho intro[3]",
+   "castId": "bancho",
+   "text": "無理を重ねれば体力とるっくすが削れ、焦りも腹にたまる。"
+  },
+  {
+   "where": "bancho intro[4]",
+   "castId": "bancho",
+   "text": "卒業式の日、どんな顔で校門を出るか。"
+  },
+  {
+   "where": "bancho intro[4]",
+   "castId": "bancho",
+   "text": "全部まとめて背負ってこそ、番長ってもんだろ。"
+  },
+  {
+   "where": "gyaru intro[0]",
+   "castId": "gyaru",
+   "text": "入学式のリップを直す前に、親友のミナから通知が来た。"
+  },
+  {
+   "where": "gyaru intro[0]",
+   "castId": "mina",
+   "text": "しんろ きぼうひょう、何も書けなくて返された。もう詰んだかも"
+  },
+  {
+   "where": "gyaru intro[0]",
+   "castId": "gyaru",
+   "text": "見た目で判断されんのは飽きた。友だちの涙を既読スルーすんのは、もっと無理。"
+  },
+  {
+   "where": "gyaru intro[1]",
+   "castId": "gyaru",
+   "text": "ゥチの名前は、優谷生。またの名を、優等生ギャル。"
+  },
+  {
+   "where": "gyaru intro[1]",
+   "castId": "gyaru",
+   "text": "見た目でナメられがちだけど、友だち泣かすヤツは見過ごせない。マヂ情に厚いって、そーゆーこと。"
+  },
+  {
+   "where": "gyaru intro[2]",
+   "castId": "gyaru",
+   "text": "高校生活、行事も恋バナも友情もぜんぶ盛りたい。"
+  },
+  {
+   "where": "gyaru intro[2]",
+   "castId": "gyaru",
+   "text": "でも志望校だって諦めたくない。偏差値も気分も、ちゃんとアゲてく。"
+  },
+  {
+   "where": "gyaru intro[3]",
+   "castId": "gyaru",
+   "text": "毎週、選べる予定は一つだけ。"
+  },
+  {
+   "where": "gyaru intro[3]",
+   "castId": "gyaru",
+   "text": "勉強すれば学力は上がる。"
+  },
+  {
+   "where": "gyaru intro[3]",
+   "castId": "gyaru",
+   "text": "友だちと向き合えば人望とめんつは守れる。"
+  },
+  {
+   "where": "gyaru intro[3]",
+   "castId": "gyaru",
+   "text": "でも無理しすぎたら、肌も心も荒れてるっくすも落ちるってワケ。"
+  },
+  {
+   "where": "gyaru intro[4]",
+   "castId": "gyaru",
+   "text": "卒業式の日、最高に盛れた顔で笑いたい。"
+  },
+  {
+   "where": "gyaru intro[4]",
+   "castId": "gyaru",
+   "text": "目指せ優等生ギャル。友情も合格も、両方取るし。"
+  },
+  {
+   "where": "opening",
+   "castId": "ren",
+   "text": "点数は、見栄を助けない"
+  },
+  {
+   "where": "opening",
+   "castId": "teacher",
+   "text": "初日から全部背負うな。寝不足の番長ほど話が通じないものはない"
+  },
+  {
+   "where": "opening",
+   "castId": "ren",
+   "text": "その志望校、見栄だけで通ると思うな"
+  },
+  {
+   "where": "opening",
+   "castId": "teacher",
+   "text": "疲れは顔にも声にも出る。勝負するなら寝ろ"
+  }
+ ]
+}

@@ -30,3 +30,4 @@ tmp/
 
 # ElevenLabs アカウントの声の一覧（クローンの声の名前を含む。el.py voices で作り直せる）
 tools/elevenlabs/voices.json
+__pycache__/
